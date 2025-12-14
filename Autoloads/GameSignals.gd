@@ -13,3 +13,9 @@ signal game_over(reason: String)
 signal victory(reason: String)
 signal building_constructed(building_type: String)
 signal building_damaged(building_type: String, damage: int)
+
+# Sinais para construção
+signal build_menu_toggled()
+signal building_mode_started()
+signal building_mode_ended()
+signal building_selected(building_type: String)

@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://vvvkk1jvaewx"]
+
+[ext_resource type="PackedScene" uid="uid://bdhkjp71pmugw" path="res://Scenes/Buildings/building.tscn" id="1_ift20"]
+
+[node name="Storage" instance=ExtResource("1_ift20")]
+building_name = "Deposito"
+building_type = "storage"
+cost_wood = 40
+cost_food = 0
+construction_time = 6.0
+health = 150
+
+[node name="Collision" parent="." index="1"]
+debug_color = Color(0.67058825, 1, 0, 0.41960785)

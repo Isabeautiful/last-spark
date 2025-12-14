@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://b0lkab7ggsrcw"]
+
+[ext_resource type="PackedScene" uid="uid://bdhkjp71pmugw" path="res://Scenes/Buildings/building.tscn" id="1_r3u0n"]
+
+[node name="Kitchen" instance=ExtResource("1_r3u0n")]
+building_name = "Cozinha"
+building_type = "kitchen"
+cost_wood = 40
+construction_time = 8.0
+health = 120
+
+[node name="Collision" parent="." index="1"]
+debug_color = Color(0.37839383, 0.0016416437, 0.64964116, 0.41960785)

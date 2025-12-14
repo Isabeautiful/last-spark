@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://070frtdeng84"]
+
+[ext_resource type="PackedScene" uid="uid://bdhkjp71pmugw" path="res://Scenes/Buildings/building.tscn" id="1_qc5ke"]
+
+[node name="Hut" instance=ExtResource("1_qc5ke")]
+
+[node name="Collision" parent="." index="1"]
+debug_color = Color(0, 0, 0, 0.41960785)

@@ -1,14 +1,16 @@
-[gd_scene load_steps=10 format=3 uid="uid://cc6wiwwp00f3e"]
+[gd_scene load_steps=12 format=3 uid="uid://cc6wiwwp00f3e"]
 
 [ext_resource type="PackedScene" uid="uid://coqvrycmqjk2n" path="res://Scenes/player.tscn" id="1_ebmjs"]
 [ext_resource type="Script" uid="uid://mjjo60nrua5g" path="res://Scripts/game.gd" id="1_i6g32"]
 [ext_resource type="PackedScene" uid="uid://cee25h4ch0j0p" path="res://Scenes/map.tscn" id="1_wrm1d"]
+[ext_resource type="PackedScene" uid="uid://bldf4xvt6lvn2" path="res://Scenes/UI/building_menu.tscn" id="2_o5yvi"]
 [ext_resource type="PackedScene" uid="uid://u2uk4f2duxeh" path="res://Scenes/fire.tscn" id="3_3dryh"]
 [ext_resource type="Script" uid="uid://qv03l2a4bfub" path="res://Scripts/camera_2d.gd" id="4_1l0tm"]
 [ext_resource type="PackedScene" uid="uid://bgdym5sje8tfs" path="res://Scenes/shadow_spawner.tscn" id="5_1l0tm"]
 [ext_resource type="PackedScene" uid="uid://briuhj8otokd8" path="res://Scenes/UI/in_game_hud.tscn" id="6_v158k"]
 [ext_resource type="Script" uid="uid://dcwsswxu6opas" path="res://Scripts/MapManager.gd" id="7_v158k"]
 [ext_resource type="Script" uid="uid://wpnxwtj4ix1w" path="res://Scripts/day_night_cycle.gd" id="10_ldgsr"]
+[ext_resource type="Script" uid="uid://d31ikm3ksdoa1" path="res://Scripts/BuildingSystem.gd" id="11_rku1e"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_i6g32")
@@ -35,5 +37,10 @@ spawn_interval = 1.0
 script = ExtResource("10_ldgsr")
 
 [node name="Timer" type="Timer" parent="DayNightCycle"]
+
+[node name="BuildingSystem" type="Node2D" parent="."]
+script = ExtResource("11_rku1e")
+
+[node name="BuildMenu" parent="." instance=ExtResource("2_o5yvi")]
 
 [editable path="MapManager/GroundLayer"]

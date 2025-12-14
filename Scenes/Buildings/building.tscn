@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://bdhkjp71pmugw"]
+
+[ext_resource type="Script" uid="uid://wbsv3bpae7cu" path="res://Scripts/building.gd" id="1_3x4vu"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ocwl4"]
+
+[node name="Building" type="Area2D"]
+collision_layer = 8
+script = ExtResource("1_3x4vu")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+
+[node name="Collision" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_ocwl4")
+
+[node name="ConstructionTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="HighlightArea" type="Sprite2D" parent="."]

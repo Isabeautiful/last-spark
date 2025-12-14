@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://y17x2grop8xv"]
+
+[ext_resource type="PackedScene" uid="uid://bdhkjp71pmugw" path="res://Scenes/Buildings/building.tscn" id="1_ohfnd"]
+
+[node name="Tower" instance=ExtResource("1_ohfnd")]
+building_name = "Torre"
+building_type = "tower"
+cost_wood = 100
+cost_food = 50
+construction_time = 15.0
+health = 200
+
+[node name="Collision" parent="." index="1"]
+debug_color = Color(1, 0.27450982, 0, 0.41960785)

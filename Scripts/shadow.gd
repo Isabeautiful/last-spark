@@ -47,7 +47,8 @@ func _on_area_entered(area: Area2D):
 func _on_reached_fire():
 	var fire = get_tree().get_first_node_in_group("fire")
 	if fire and fire.has_method("take_damage"):
-		fire.take_damage(10)
+		fire.take_damage(15)  # Causa 15 de dano à chama
+		print("Sombra atingiu o fogo!")
 	destroy()
 
 func destroy():

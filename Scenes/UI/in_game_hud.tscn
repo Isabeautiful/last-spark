@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://briuhj8otokd8"]
 
-[ext_resource type="Script" uid="uid://bprgk3e8xri5n" path="res://Scenes/UI/in_game_hud.gd" id="1_f01pg"]
+[ext_resource type="Script" uid="uid://bprgk3e8xri5n" path="res://Scripts/in_game_hud.gd" id="1_f01pg"]
 
 [node name="InGameHUD" type="Control"]
 layout_mode = 3
@@ -43,3 +43,7 @@ layout_mode = 2
 
 [node name="TimeIndicator" type="Label" parent="CanvasLayer/MarginContainer/VBoxContainer"]
 layout_mode = 2
+
+[node name="BuildButton" type="Button" parent="CanvasLayer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Build (B)"
