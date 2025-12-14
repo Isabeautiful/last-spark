@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://coqvrycmqjk2n"]
+[gd_scene load_steps=6 format=3 uid="uid://coqvrycmqjk2n"]
 
 [ext_resource type="Script" uid="uid://dblrxa2uchapy" path="res://Scripts/player.gd" id="1_cvnsp"]
 [ext_resource type="Texture2D" uid="uid://be11vpuqrf33l" path="res://Assets/icon.svg" id="1_v0iea"]
@@ -8,6 +8,9 @@ size = Vector2(36, 38)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6t5aa"]
 size = Vector2(33, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vgqql"]
+size = Vector2(43, 20)
 
 [node name="Player" type="CharacterBody2D"]
 collision_mask = 2
@@ -21,8 +24,16 @@ texture = ExtResource("1_v0iea")
 shape = SubResource("RectangleShape2D_cvnsp")
 
 [node name="HarvestArea" type="Area2D" parent="."]
+collision_mask = 17
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HarvestArea"]
 position = Vector2(36.5, -2)
 shape = SubResource("RectangleShape2D_6t5aa")
 debug_color = Color(0.9590114, 0, 0.5266545, 0.41960785)
+
+[node name="AttackArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
+visibility_layer = 17
+position = Vector2(34.5, -1)
+shape = SubResource("RectangleShape2D_vgqql")

@@ -10,28 +10,50 @@ extends Node2D
 
 var current_day: int = 1
 var game_state: String = "playing"  # "playing", "building", "menu"
+var time_of_day: String = "day"     # "day", "evening", "night"
+
+# Sistema de eventos - agora será um Node normal
+var event_manager: Node
+var active_events: Array = []
 
 func _ready():
+	# Conectar sinais de recursos
 	ResourceManager.wood_changed.connect(_on_wood_changed)
 	ResourceManager.food_changed.connect(_on_food_changed)
 	ResourceManager.population_changed.connect(_on_population_changed)
 	
+	# Configurar HUD inicial
 	hud.update_day(current_day)
 	
+	# Conectar ciclo dia/noite
 	day_night_cycle.day_started.connect(_on_day_started)
 	day_night_cycle.night_started.connect(_on_night_started)
 	
-	# Conectar sinais de fim de jogo
+	# Conectar sinais de jogo
 	GameSignals.game_over.connect(_on_game_over)
 	GameSignals.victory.connect(_on_victory)
 	
+	# Conectar novos sinais (verificar se existem)
+	if GameSignals.has_user_signal("fire_low_warning"):
+		GameSignals.fire_low_warning.connect(_on_fire_low_warning)
+	if GameSignals.has_user_signal("fire_critical"):
+		GameSignals.fire_critical.connect(_on_fire_critical)
+	if GameSignals.has_user_signal("player_status_changed"):
+		GameSignals.player_status_changed.connect(_on_player_status_changed)
+	if GameSignals.has_user_signal("player_died"):
+		GameSignals.player_died.connect(_on_player_died)
+	
+	# Configurar spawner
 	if shadow_spawner:
 		shadow_spawner.set_active(false)
+		# Verificar se o método set_day existe
+		if shadow_spawner.has_method("set_day"):
+			shadow_spawner.set_day(current_day)
 	
 	# Configurar entrada
 	_setup_inputs()
 	
-	# Conectar sinais
+	# Conectar sistema de construção
 	if building_system:
 		building_system.build_mode_changed.connect(_on_build_mode_changed)
 	
@@ -39,8 +61,13 @@ func _ready():
 	if build_menu:
 		build_menu.hide()
 	
-	# Debug: adicionar recursos para teste
-	ResourceManager.debug_add_resources()
+	# Inicializar eventos (agora sem adicionar como filho)
+	initialize_events()
+	
+	print("=== JOGO INICIADO ===")
+	print("Dia ", current_day)
+	print("População: ", ResourceManager.current_population)
+	print("Recursos: Madeira=", ResourceManager.wood, " Comida=", ResourceManager.food)
 
 func _setup_inputs():
 	# Ação para construção
@@ -54,12 +81,12 @@ func _setup_inputs():
 		event_mouse.button_index = MOUSE_BUTTON_RIGHT
 		InputMap.action_add_event("build_menu", event_mouse)
 	
-	# Ação para interagir (com fogo)
-	if not InputMap.has_action("interact"):
-		InputMap.add_action("interact")
-		var event_f = InputEventKey.new()
-		event_f.keycode = KEY_F
-		InputMap.action_add_event("interact", event_f)
+	# Ação para comer (tecla Q)
+	if not InputMap.has_action("eat"):
+		InputMap.add_action("eat")
+		var event_q = InputEventKey.new()
+		event_q.keycode = KEY_Q
+		InputMap.action_add_event("eat", event_q)
 
 func _input(event):
 	# Abrir/fechar menu de construção
@@ -69,13 +96,20 @@ func _input(event):
 		elif game_state == "building" or game_state == "menu":
 			_return_to_playing_mode()
 	
+	# Comer comida (tecla Q)
+	if event.is_action_pressed("eat"):
+		if player and player.has_method("eat_food"):
+			player.eat_food()
+	
 	# Cancelar com ESC
 	if event.is_action_pressed("ui_cancel"):
 		if game_state == "building":
-			building_system.cancel_building()
+			if building_system:
+				building_system.cancel_building()
 			_return_to_playing_mode()
 		elif game_state == "menu":
-			build_menu.hide()
+			if build_menu:
+				build_menu.hide()
 			_return_to_playing_mode()
 
 func _enter_build_menu_mode():
@@ -117,54 +151,172 @@ func _on_build_mode_changed(active: bool):
 	else:
 		_return_to_playing_mode()
 
-func _on_wood_changed(_amount):
-	hud.update_resources()
+func initialize_events():
+	# Criar sistema básico de eventos
+	# EventManager não é mais uma classe interna, é apenas lógica
+	event_manager = Node.new()
+	event_manager.name = "EventManager"
+	
+	# Timer para verificar eventos a cada minuto
+	var event_timer = Timer.new()
+	event_timer.name = "EventTimer"
+	event_timer.wait_time = 60.0
+	event_timer.timeout.connect(_check_events)
+	event_manager.add_child(event_timer)
+	add_child(event_manager)  # AGORA podemos adicionar como filho
+	
+	event_timer.start()
+	print("Sistema de eventos inicializado")
 
-func _on_food_changed(_amount):
-	hud.update_resources()
+func _check_events():
+	if current_day >= 3:
+		# Chance de evento aleatório após o dia 3
+		if randf() < 0.3:  # 30% de chance
+			trigger_random_event()
 
-func _on_population_changed(_amount):
-	hud.update_resources()
+func trigger_random_event():
+	var events = [
+		"storm",      # Tempestade
+		"merchant",   # Mercante
+		"earthquake", # Terremoto
+		"regrowth"    # Renascimento
+	]
+	
+	var random_event = events[randi() % events.size()]
+	handle_event(random_event)
+
+func handle_event(event_type: String):
+	match event_type:
+		"storm":
+			print("=== TEMPESTADE DE NEVE ===")
+			print("Visibilidade reduzida! Recursos congelam temporariamente.")
+			# Chamar sinal para HUD mostrar aviso
+			if hud.has_method("show_warning"):
+				hud.show_warning("Tempestade de neve!")
+		"merchant":
+			print("=== MERCADO VISITANTE ===")
+			print("Um mercante chegou! Troque recursos por itens raros.")
+			if hud.has_method("show_notification"):
+				hud.show_notification("Mercante chegou!")
+		"earthquake":
+			print("=== ATIVIDADE SÍSMICA ===")
+			print("Alguns recursos foram destruídos pelo tremor!")
+			# Aqui poderíamos remover alguns recursos do mapa
+			if hud.has_method("show_warning"):
+				hud.show_warning("Terremoto!")
+		"regrowth":
+			print("=== RENASCIMENTO ===")
+			print("Novas árvores e arbustos surgiram na floresta!")
+			if hud.has_method("show_notification"):
+				hud.show_notification("Floresta renasceu!")
 
 func _on_day_started(day_number: int):
 	print("=== DIA ", day_number, " INICIADO ===")
 	current_day = day_number
+	time_of_day = "day"
+	
 	hud.update_day(current_day)
-	hud.update_time(true, day_night_cycle.get_time_percent())
+	if hud.has_method("update_time_of_day"):
+		hud.update_time_of_day("day")
 	
 	if shadow_spawner:
 		shadow_spawner.set_active(false)
+		# Atualizar dificuldade baseada no dia
+		if shadow_spawner.has_method("set_day"):
+			shadow_spawner.set_day(current_day)
 	
-	# Aumentar dificuldade progressivamente
-	if shadow_spawner and day_number > 1:
-		shadow_spawner.max_shadows = 10 + (day_number * 2)
-		shadow_spawner.spawn_interval = max(0.5, 2.0 - (day_number * 0.1))
-		print("Dificuldade aumentada: Dia ", day_number)
+	# Verificar condições de vitória
+	if current_day >= 15:
+		GameSignals.victory.emit("Sobreviveu 15 dias!")
 	
-	if current_day >= 10:
-		GameSignals.victory.emit("Sobreviveu 10 dias!")
+	# Atualizar dificuldade
+	update_difficulty(day_number)
 
 func _on_night_started():
 	print("=== NOITE INICIADA ===")
-	hud.update_time(false, day_night_cycle.get_time_percent())
+	time_of_day = "night"
+	
+	if hud.has_method("update_time_of_day"):
+		hud.update_time_of_day("night")
 	
 	if shadow_spawner:
 		shadow_spawner.set_active(true)
+	
+	# NPCs devem recolher (se existirem)
+	print("NPCs se recolhendo para a noite...")
+
+func update_difficulty(day: int):
+	# Aumentar consumo da fogueira com o tempo
+	if fire and fire.has_method("set_base_consumption_rate"):
+		var new_rate = 0.5 + (day * 0.05)
+		fire.base_consumption_rate = new_rate
+	
+	print("Dificuldade aumentada para o dia ", day)
+
+func _on_wood_changed(_amount):
+	if hud:
+		hud.update_resources()
+
+func _on_food_changed(_amount):
+	if hud:
+		hud.update_resources()
+
+func _on_population_changed(_amount):
+	if hud:
+		hud.update_resources()
+
+func _on_fire_low_warning(energy_percent: float):
+	print("ALERTA: Fogueira fraca! (", int(energy_percent * 100), "%)")
+	if hud and hud.has_method("show_warning"):
+		hud.show_warning("Fogueira fraca!")
+
+func _on_fire_critical():
+	print("ALERTA CRÍTICO: Fogueira prestes a apagar!")
+	if hud and hud.has_method("show_warning"):
+		hud.show_warning("FOGUEIRA CRÍTICA!")
+
+func _on_player_status_changed(health: float, hunger: float, cold: float):
+	if hud and hud.has_method("update_player_status"):
+		hud.update_player_status(health, hunger, cold)
+	
+	# Verificar status críticos
+	if health < 30:
+		if hud and hud.has_method("show_warning"):
+			hud.show_warning("Saúde baixa!")
+	if hunger < 20:
+		if hud and hud.has_method("show_warning"):
+			hud.show_warning("Fome extrema!")
+	if cold < 20:
+		if hud and hud.has_method("show_warning"):
+			hud.show_warning("Hipotermia!")
+
+func _on_player_died():
+	print("O jogador morreu!")
+	# Verificar se há NPCs para continuar
+	if ResourceManager.current_population > 0:
+		print("NPCs ainda vivem. O jogo continua...")
+		# Aqui poderia trocar para controle de NPC
+	else:
+		GameSignals.game_over.emit("Todos morreram!")
 
 func _on_game_over(reason: String):
 	print("GAME OVER: ", reason)
-	# Aqui você carregaria a tela de derrota
+	
+	# Pausar o jogo
+	get_tree().paused = true
+	
+	# Mostrar tela de game over (implementar depois)
 	# get_tree().change_scene_to_file("res://Scenes/UI/GameOverScreen.tscn")
 	
-	# Por enquanto, apenas recarrega a cena
-	get_tree().reload_current_scene()
+	print("🎮 FIM DE JOGO: ", reason)
 
 func _on_victory(reason: String):
 	print("VITÓRIA: ", reason)
-	# Aqui você carregaria a tela de vitória
+	
+	# Pausar o jogo
+	get_tree().paused = true
+	
+	# Mostrar tela de vitória
 	# get_tree().change_scene_to_file("res://Scenes/UI/VictoryScreen.tscn")
 	
-	# Por enquanto, apenas mostra mensagem
 	print("🎉 PARABÉNS! VOCÊ VENCEU! 🎉")
-	# Pausa o jogo
-	get_tree().paused = true

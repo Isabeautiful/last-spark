@@ -12,8 +12,8 @@ var player_in_range: bool = false
 signal harvested(amount: int)
 
 func _ready():
-	collision_layer = 2
-	collision_mask = 1
+	collision_layer = 2  # collectibles
+	collision_mask = 9   # player_harvest
 	
 	area_entered.connect(_on_self_area_entered)
 	area_exited.connect(_on_self_area_exited)
