@@ -26,12 +26,12 @@ func _on_self_area_entered(area: Area2D):
 		player_in_range = true
 		highlight(true)
 	else:
-		print("❌ Arbusto: Área não identificada como player_area")
+		print("Arbusto: Área não identificada como player_area")
 
 func _on_self_area_exited(area: Area2D):
 	# Verificar se é a área do jogador
 	if area.is_in_group("player_area") or area.is_in_group("player_harvest"):
-		print("🚪 Arbusto: Player saiu da área")
+		print("Arbusto: Player saiu da área")
 		player_in_range = false
 		highlight(false)
 

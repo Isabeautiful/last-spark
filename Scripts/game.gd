@@ -121,7 +121,6 @@ func _enter_build_menu_mode():
 	if player:
 		player.set_can_process_input(false)
 	
-	print("Entrou no modo menu de construção")
 
 func _enter_building_mode():
 	game_state = "building"

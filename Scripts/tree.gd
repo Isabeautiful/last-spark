@@ -20,25 +20,25 @@ func _ready():
 	add_to_group("collectible")
 	add_to_group("resource")
 	
-	print("✅ Árvore pronta. Layers: ", collision_layer, " Mask: ", collision_mask)
-	print("🌳 Posição: ", global_position)
+	print("Árvore pronta. Layers: ", collision_layer, " Mask: ", collision_mask)
+	print("Posição: ", global_position)
 
 func _on_self_area_entered(area: Area2D):
-	print("\n🌳 Árvore: Área entrou - ", area.name)
-	print("🏷️ Grupos da área: ", area.get_groups())
+	print("\nrvore: Área entrou - ", area.name)
+	print("Grupos da área: ", area.get_groups())
 	
 	# Verificar se é a área do jogador
 	if area.is_in_group("player_area") or area.is_in_group("player_harvest"):
-		print("🎯 Árvore: Player entrou na área!")
+		print("Árvore: Player entrou na área!")
 		player_in_range = true
 		highlight(true)
 	else:
-		print("❌ Árvore: Área não identificada como player_area")
+		print("Arvore: Área não identificada como player_area")
 
 func _on_self_area_exited(area: Area2D):
 	# Verificar se é a área do jogador
 	if area.is_in_group("player_area") or area.is_in_group("player_harvest"):
-		print("🚪 Árvore: Player saiu da área")
+		print("Árvore: Player saiu da área")
 		player_in_range = false
 		highlight(false)
 
@@ -48,25 +48,22 @@ func highlight(active: bool):
 	
 	if active:
 		sprite.modulate = Color(1.1, 1.1, 0.9, 1.0)
-		print("✨ Árvore destacada")
 	else:
 		sprite.modulate = Color.WHITE
 
 func harvest() -> bool:
-	print("\n=== 🪓 COLHENDO ÁRVORE ===")
-	print("📊 is_collectible: ", is_collectible)
-	print("📍 player_in_range: ", player_in_range)
+	print("\n=== COLHENDO ÁRVORE ===")
 	
 	if not is_collectible:
-		print("❌ Árvore já foi coletada!")
+		print("Árvore já foi coletada!")
 		return false
 	
 	if not player_in_range:
-		print("❌ Jogador não está na área da árvore!")
+		print("Jogador não está na área da árvore!")
 		return false
 	
 	is_collectible = false
-	print("✅ Emitindo sinal harvested com ", wood_amount, " madeira")
+	print("Emitindo sinal harvested com ", wood_amount, " madeira")
 	
 	# Emitir sinal ANTES do efeito visual
 	harvested.emit(wood_amount)
@@ -82,7 +79,7 @@ func harvest() -> bool:
 	return true
 
 func return_to_pool():
-	print("🔄 Árvore retornando à pool...")
+	print("Arvore retornando à pool...")
 	PoolManager.return_object(self, "tree")
 
 func reset():
@@ -98,4 +95,4 @@ func reset():
 		collision.disabled = false
 	
 	show()
-	print("♻️ Árvore resetada")
+	print("Árvore resetada!!!!!!!!")
