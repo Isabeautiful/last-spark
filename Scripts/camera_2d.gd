@@ -12,4 +12,3 @@ func _process(delta):
 	if target:
 		global_position = global_position.lerp(target.global_position, 10 * delta)
 		
-	# Zoom à noite (implementar depois)

@@ -1,56 +1,9 @@
 extends Node
 class_name BuildingSystem
 
-# Tipos de construção disponíveis
-enum BuildingType {
-	HUT,
-	KITCHEN,
-	STORAGE,
-	TOWER,
-	NONE
-}
+@export var building_resources: Array[BuildingResource] = [] 
 
-# Configurações de cada construção (custos ajustados)
-var building_configs = {
-	BuildingType.HUT: {
-		"name": "Cabana",
-		"type": "hut",
-		"cost_wood": 20,  # CORRIGIDO: de 2 para 20
-		"cost_food": 5,   # CORRIGIDO: mantém 5
-		"scene": preload("res://Scenes/Buildings/hut.tscn"),
-		"size": Vector2(64, 64),
-		"color": Color(0.6, 0.4, 0.2, 0.5)  # Marrom
-	},
-	BuildingType.KITCHEN: {
-		"name": "Cozinha",
-		"type": "kitchen",
-		"cost_wood": 15,  # CORRIGIDO: de 1 para 15
-		"cost_food": 10,  # CORRIGIDO: de 1 para 10
-		"scene": preload("res://Scenes/Buildings/kitchen.tscn"),
-		"size": Vector2(96, 64),
-		"color": Color(0.8, 0.2, 0.2, 0.5)  # Vermelho
-	},
-	BuildingType.STORAGE: {
-		"name": "Depósito",
-		"type": "storage",
-		"cost_wood": 30,  # CORRIGIDO: de 3 para 30
-		"cost_food": 0,
-		"scene": preload("res://Scenes/Buildings/storage.tscn"),
-		"size": Vector2(64, 64),
-		"color": Color(0.5, 0.5, 0.5, 0.5)  # Cinza
-	},
-	BuildingType.TOWER: {
-		"name": "Torre",
-		"type": "tower",
-		"cost_wood": 80,  # CORRIGIDO: de 8 para 80
-		"cost_food": 30,  # CORRIGIDO: de 3 para 30
-		"scene": preload("res://Scenes/Buildings/tower.tscn"),
-		"size": Vector2(96, 96),
-		"color": Color(0.1, 0.1, 0.1, 0.5)  # Preto
-	}
-}
-
-var current_building_type: BuildingType = BuildingType.NONE
+var current_building_index: int = -1 
 var ghost_building: Sprite2D = null
 var is_building_mode: bool = false
 var can_place: bool = false
@@ -60,7 +13,7 @@ var can_place: bool = false
 @onready var camera: Camera2D
 
 signal build_mode_changed(active: bool)
-signal building_placed(building_type: BuildingType, position: Vector2)
+signal building_placed(building_resource: BuildingResource, position: Vector2) 
 
 func _ready():
 	# Obter referências de forma segura
@@ -110,26 +63,36 @@ func _input(event):
 		if event.keycode == KEY_ESCAPE:
 			cancel_building()
 
-func start_building(building_type: BuildingType):
+func start_building(index: int):
 	if is_building_mode:
 		cancel_building()
 	
-	current_building_type = building_type
+	if index < 0 or index >= building_resources.size():
+		push_error("Índice de construção inválido: ", index)
+		return
+	
+	current_building_index = index
 	is_building_mode = true
 	
 	set_process_input(true)
 	
-	var config = building_configs[building_type]
+	var config = building_resources[current_building_index]
+	var use_texture = null
 	
-	# Tentar carregar textura fantasma (usa a textura normal, não ghost)
-	var texture_path = "res://Assets/Buildings/" + config.type + ".png"
-	var texture = load(texture_path)
-	
-	if texture:
-		ghost_building.texture = texture
+	# Carregar textura pelo caminho
+	if not use_texture:
+		var texture_path = "res://Assets/Buildings/" + config.building_type + ".png"
+		var loaded_texture = load(texture_path)
+		
+		if loaded_texture:
+			ghost_building.texture = loaded_texture
+			print("Usando textura carregada do caminho: ", texture_path)
+		else:
+			# Fallback: Criar textura de debug
+			ghost_building.texture = _create_debug_texture(config.size, config.color)
+			print("Usando textura de debug para: ", config.building_name)
 	else:
-		# Usar textura de debug baseada na cor do tipo
-		ghost_building.texture = _create_debug_texture(config.size, config.color)
+		ghost_building.texture = use_texture
 	
 	ghost_building.scale = Vector2.ONE
 	
@@ -140,11 +103,11 @@ func start_building(building_type: BuildingType):
 	can_place = can_place_building(ghost_building.global_position)
 	
 	build_mode_changed.emit(true)
-	print("Modo construção: ", config.name)
+	print("Modo construção: ", config.building_name)
 
 func cancel_building():
 	is_building_mode = false
-	current_building_type = BuildingType.NONE
+	current_building_index = -1
 	
 	set_process_input(false)
 	
@@ -153,14 +116,15 @@ func cancel_building():
 	print("Modo construção cancelado")
 
 func can_place_building(position: Vector2) -> bool:
-	if current_building_type == BuildingType.NONE:
+	if current_building_index == -1:
 		return false
 	
-	var config = building_configs[current_building_type]
+	var config = building_resources[current_building_index]
 	
 	# Verificar recursos
 	if ResourceManager.wood < config.cost_wood or ResourceManager.food < config.cost_food:
-		print("Recursos insuficientes! Madeira: ", ResourceManager.wood, "/", config.cost_wood, " Comida: ", ResourceManager.food, "/", config.cost_food)
+		print("Recursos insuficientes! Madeira: ", ResourceManager.wood, "/", config.cost_wood, 
+			" Comida: ", ResourceManager.food, "/", config.cost_food)
 		return false
 	
 	# Verificar distância da fogueira (não muito longe)
@@ -187,7 +151,7 @@ func can_place_building(position: Vector2) -> bool:
 	
 	query.shape = shape
 	query.transform = Transform2D(0, position)
-	query.collision_mask = 4  # Layer para edifícios
+	query.collision_mask = 5  # Layer para edifícios
 	query.collide_with_bodies = true
 	query.collide_with_areas = true
 	
@@ -200,10 +164,10 @@ func can_place_building(position: Vector2) -> bool:
 	return true
 
 func place_building(position: Vector2):
-	if current_building_type == BuildingType.NONE:
+	if current_building_index == -1:
 		return
 	
-	var config = building_configs[current_building_type]
+	var config = building_resources[current_building_index]
 	
 	# Consumir recursos
 	if not ResourceManager.use_wood(config.cost_wood) or not ResourceManager.use_food(config.cost_food):
@@ -211,17 +175,22 @@ func place_building(position: Vector2):
 		return
 	
 	# Instanciar edifício
-	var building_scene = config.scene
-	var building = building_scene.instantiate()
-	building.global_position = position
-	
-	if game:
-		game.add_child(building)
+	if config.scene:
+		var building = config.scene.instantiate()
+		building.global_position = position
+		
+		# PASSO CRÍTICO: Passar o resource para o building
+		building.building_resource = config  # ← LINHA ADICIONADA
+		
+		if game:
+			game.add_child(building)
+		else:
+			get_tree().current_scene.add_child(building)
+		
+		building_placed.emit(config, position)  # Passa o Resource, não o índice
+		print(config.building_name, " construída em ", position)
 	else:
-		get_tree().current_scene.add_child(building)
-	
-	building_placed.emit(current_building_type, position)
-	print(config.name, " construída em ", position)
+		push_error("Cena não configurada para: ", config.building_name)
 	
 	cancel_building()
 

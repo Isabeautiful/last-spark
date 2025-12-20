@@ -12,7 +12,7 @@ var current_day: int = 1
 var game_state: String = "playing"  # "playing", "building", "menu"
 var time_of_day: String = "day"     # "day", "evening", "night"
 
-# Sistema de eventos - agora será um Node normal
+# Sistema de eventos
 var event_manager: Node
 var active_events: Array = []
 
@@ -93,7 +93,7 @@ func _input(event):
 	if event.is_action_pressed("build_menu"):
 		if game_state == "playing":
 			_enter_build_menu_mode()
-		elif game_state == "building" or game_state == "menu":
+		elif game_state == "menu":
 			_return_to_playing_mode()
 	
 	# Comer comida (tecla Q)
@@ -153,7 +153,6 @@ func _on_build_mode_changed(active: bool):
 
 func initialize_events():
 	# Criar sistema básico de eventos
-	# EventManager não é mais uma classe interna, é apenas lógica
 	event_manager = Node.new()
 	event_manager.name = "EventManager"
 	
@@ -308,7 +307,7 @@ func _on_game_over(reason: String):
 	# Mostrar tela de game over (implementar depois)
 	# get_tree().change_scene_to_file("res://Scenes/UI/GameOverScreen.tscn")
 	
-	print("🎮 FIM DE JOGO: ", reason)
+	print("FIM DE JOGO: ", reason)
 
 func _on_victory(reason: String):
 	print("VITÓRIA: ", reason)
@@ -316,7 +315,7 @@ func _on_victory(reason: String):
 	# Pausar o jogo
 	get_tree().paused = true
 	
-	# Mostrar tela de vitória
+	# Mostrar tela de vitória (implementar depois)
 	# get_tree().change_scene_to_file("res://Scenes/UI/VictoryScreen.tscn")
 	
-	print("🎉 PARABÉNS! VOCÊ VENCEU! 🎉")
+	print("VENCEU!")

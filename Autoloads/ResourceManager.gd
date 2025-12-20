@@ -1,8 +1,8 @@
 extends Node
 
 # Variáveis de recursos expandidas
-var wood: int = 50
-var food: int = 30
+var wood: int = 200
+var food: int = 90
 var stone: int = 10
 var crystal: int = 0
 var current_population: int = 3

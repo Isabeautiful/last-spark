@@ -3,98 +3,67 @@ extends CharacterBody2D
 @export var base_speed: float = 250.0
 @export var run_speed: float = 400.0
 
-@onready var harvest_area: Area2D = $HarvestArea
-@onready var harvest_shape: CollisionShape2D = $HarvestArea/CollisionShape2D
-@onready var attack_area: Area2D = $AttackArea
-@onready var attack_shape: CollisionShape2D = $AttackArea/CollisionShape2D
+@onready var action_area: Area2D = $ActionArea
+@onready var action_shape: CollisionShape2D = $ActionArea/CollisionShape2D
 @onready var sprite: Sprite2D = $Sprite2D
 
 # Status do jogador
 var current_speed: float = 250.0
-var hunger: float = 100.0  # 0-100
-var cold: float = 100.0    # 0-100
-var health: float = 100.0  # 0-100
+var hunger: float = 100.0
+var cold: float = 100.0
+var health: float = 100.0
 var is_running: bool = false
 var is_in_heat_zone: bool = true
 
-# Inventário
-var inventory: Dictionary = {
-	"wood": 0,
-	"food": 0,
-	"stone": 0
-}
-
-# Coleta e combate
+# Direção do jogador
 var current_direction: Vector2 = Vector2.DOWN
-var resources_in_range: Array[Node] = []
-var can_harvest: bool = true
-var can_attack: bool = true
-var current_weapon: String = "stick"  # stick, axe, spear
-var attack_damage: int = 1
+
+# Objetos na área
+var objects_in_range: Dictionary = {
+	"resources": [],   # Árvores, arbustos
+	"enemies": [],     # Sombras
+	"fire": null       # Fogueira (apenas uma)
+}
 
 # Controles
 var can_process_input: bool = true
-var fire_in_range: bool = false
+var can_action: bool = true  # Para cooldown entre ações
+var current_weapon: String = "stick"
+var attack_damage: int = 1
 
 # Timers
-var hunger_timer: Timer
-var cold_timer: Timer
+@onready var hunger_timer: Timer = $HungerTimer
+@onready var cold_timer: Timer = $ColdTimer
 
 func _ready():
 	add_to_group("player")
-	setup_areas()
+	setup_area()
 	setup_timers()
 	
-	# Conectar sinais
-	harvest_area.area_entered.connect(_on_harvest_area_area_entered)
-	harvest_area.area_exited.connect(_on_harvest_area_area_exited)
-	harvest_area.add_to_group("player_harvest")
-	
-	attack_area.area_entered.connect(_on_attack_area_area_entered)
+	# Conectar sinais da área única
+	action_area.area_entered.connect(_on_action_area_entered)
+	action_area.area_exited.connect(_on_action_area_exited)
+	action_area.body_entered.connect(_on_action_area_body_entered)
+	action_area.body_exited.connect(_on_action_area_body_exited)
 	
 	# Configurar entrada
 	_setup_input_actions()
 
-func setup_areas():
-	# Área de coleta/interação (harvest_area)
-	if harvest_shape:
-		var shape = harvest_shape.shape as RectangleShape2D
-		if shape:
-			shape.size = Vector2(80, 40)
+func setup_area():
+	# Adicionar grupos para identificação
+	action_area.add_to_group("player_area")
+	action_area.add_to_group("player_harvest")
 	
-	# Configurar layers e masks
-	harvest_area.collision_layer = 0  # Não precisa detectar outras áreas
-	harvest_area.collision_mask = 2 | 4  # Detecta collectibles (2) e fire (4)
-	
-	# Área de ataque
-	if attack_shape:
-		var shape = attack_shape.shape as RectangleShape2D
-		if shape:
-			shape.size = Vector2(60, 60)
-	
-	attack_area.collision_layer = 0
-	attack_area.collision_mask = 3  # Detecta enemies (3)
-	
-	# O próprio jogador (CharacterBody2D)
-	self.collision_layer = 1  # player
-	self.collision_mask = 1 | 5 | 7  # Colide com player (1), buildings (5), terrain (7)
-	
-	update_areas_position(Vector2.DOWN)
-
+	# Posicionar a área na frente do jogador
+	update_area_position(Vector2.DOWN)
 
 func setup_timers():
 	# Timer de fome
-	hunger_timer = Timer.new()
-	hunger_timer.wait_time = 5.0  # Perde fome a cada 5 segundos
 	hunger_timer.timeout.connect(_on_hunger_timer_timeout)
-	add_child(hunger_timer)
 	hunger_timer.start()
 	
 	# Timer de frio
-	cold_timer = Timer.new()
-	cold_timer.wait_time = 3.0  # Verifica frio a cada 3 segundos
 	cold_timer.timeout.connect(_on_cold_timer_timeout)
-	add_child(cold_timer)
 	cold_timer.start()
 
 func _setup_input_actions():
@@ -151,12 +120,12 @@ func _physics_process(delta):
 		move_and_slide()
 		return
 	
-	# Calcular velocidade baseada na fome e corrida
+	# Calcular velocidade baseada na fome
 	var speed_multiplier = 1.0
 	if hunger > 70:
-		speed_multiplier = 1.1  # Bônus se bem alimentado
+		speed_multiplier = 1.1
 	elif hunger < 30:
-		speed_multiplier = 0.7  # Penalidade se com fome
+		speed_multiplier = 0.7
 	
 	current_speed = base_speed * speed_multiplier
 	
@@ -164,8 +133,6 @@ func _physics_process(delta):
 	if Input.is_action_pressed("run") and hunger > 10:
 		current_speed = run_speed * speed_multiplier
 		is_running = true
-		
-		# Consumir fome extra ao correr
 		hunger -= delta * 5
 	else:
 		is_running = false
@@ -174,193 +141,220 @@ func _physics_process(delta):
 	var input_dir = Input.get_vector("Left", "Right", "Up", "Down")
 	
 	if input_dir.length() > 0.1:
-		current_direction = input_dir.normalized()
-		update_areas_position(current_direction)
+		var new_direction = input_dir.normalized()
 		
-		# Animação simples (poderia ser sprite sheets)
+		# Atualizar direção apenas se mudou significativamente
+		if new_direction.distance_to(current_direction) > 0.1:
+			current_direction = new_direction
+			update_area_position(current_direction)
+		
+		# Animação simples
 		sprite.rotation = current_direction.angle()
 	
 	velocity = input_dir * current_speed
 	move_and_slide()
 	
 	# Atualizar HUD
-	GameSignals.player_status_changed.emit(health, hunger, cold)
+	if GameSignals.has_user_signal("player_status_changed"):
+		GameSignals.player_status_changed.emit(health, hunger, cold)
 
 func _input(event):
-	if not can_process_input:
+	if not can_process_input or not can_action:
 		return
 	
-	# Coleta com botão esquerdo ou tecla E
-	if (event.is_action_pressed("Collect") or 
-		(event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT)):
-		
-		if can_harvest and not resources_in_range.is_empty():
-			try_harvest_in_area()
-	
-	# Interagir com fogo (tecla F) - CORREÇÃO: usar "interact" minúsculo
-	if event.is_action_pressed("Interact"):
-		if fire_in_range:
-			var fire = get_tree().get_first_node_in_group("fire")
-			if fire and fire.has_method("add_fuel_from_inventory"):
-				fire.add_fuel_from_inventory()
-	
-	# Ataque (barra de espaço ou botão direito)
+	# Sistema de ações inteligente
 	if event.is_action_pressed("attack"):
-		if can_attack:
-			perform_attack()
+		# Primeiro tenta atacar inimigos
+		if not objects_in_range["enemies"].is_empty():
+			attack_enemy()
+		else:
+			# Se não tem inimigos, tenta coletar recursos
+			if not objects_in_range["resources"].is_empty():
+				harvest_resource()
+	
+	elif event.is_action_pressed("interact"):
+		# Interage com fogueira se disponível
+		if objects_in_range["fire"] != null:
+			interact_with_fire()
+		# Senão, tenta coletar recursos
+		elif not objects_in_range["resources"].is_empty():
+			harvest_resource()
+		# Remove o print para reduzir logs
+	
+	# Comer comida (tecla Q)
+	elif event.is_action_pressed("eat"):
+		eat_food()
 
-func update_areas_position(direction: Vector2):
+func update_area_position(direction: Vector2):
 	var normalized_dir = direction.normalized()
 	var angle = normalized_dir.angle()
 	
-	# Área de coleta na frente
-	harvest_area.rotation = angle
-	harvest_area.position = normalized_dir * 25
-	
-	# Área de ataque ao redor (ou na frente para arma de longo alcance)
-	if current_weapon == "spear":
-		attack_area.rotation = angle
-		attack_area.position = normalized_dir * 35
-	else:
-		# Armas curtas atacam ao redor
-		attack_area.rotation = 0
-		attack_area.position = Vector2.ZERO
+	action_area.rotation = angle
+	action_area.position = normalized_dir
 
 func _on_hunger_timer_timeout():
-	# Perder fome com o tempo
 	hunger -= 2
 	
-	# Se correu recentemente, perde mais fome
 	if is_running:
 		hunger -= 3
 	
 	hunger = max(hunger, 0)
 	
-	# Se fome muito baixa, perde vida
 	if hunger <= 0:
 		take_damage(5, "fome")
 	
-	# Atualizar HUD
-	GameSignals.player_status_changed.emit(health, hunger, cold)
+	if GameSignals.has_user_signal("player_status_changed"):
+		GameSignals.player_status_changed.emit(health, hunger, cold)
 
 func _on_cold_timer_timeout():
-	# Verificar se está na zona de calor
 	var fire = get_tree().get_first_node_in_group("fire")
 	if fire:
 		var distance_to_fire = global_position.distance_to(fire.global_position)
 		
-		# CORREÇÃO: usar get_light_radius() em vez de get_heat_radius()
 		if fire.has_method("get_light_radius"):
 			var heat_radius = fire.get_light_radius()
-			
 			is_in_heat_zone = distance_to_fire <= heat_radius
 			
-			# Se estiver fora da zona de calor, esfria mais rápido
 			if not is_in_heat_zone:
 				cold -= 10
-				
-				# Se muito frio, toma dano
 				if cold <= 20:
 					take_damage(3, "frio")
 			else:
-				# Dentro da zona de calor, recupera lentamente
 				cold = min(cold + 5, 100)
 		else:
-			# Se o fogo não tem o método, assume que não há calor
 			cold -= 10
 	else:
-		# Sem fogo, esfria rápido
 		cold -= 15
 	
 	cold = max(cold, 0)
 	
-	# Atualizar HUD
-	GameSignals.player_status_changed.emit(health, hunger, cold)
+	if GameSignals.has_user_signal("player_status_changed"):
+		GameSignals.player_status_changed.emit(health, hunger, cold)
 
-func _on_harvest_area_area_entered(area: Area2D):
+func _on_action_area_entered(area: Area2D):
 	if area.is_in_group("tree") or area.is_in_group("bush"):
-		if area.has_method("highlight"):
-			area.highlight(true)
-		
-		if not resources_in_range.has(area):
-			resources_in_range.append(area)
+		if not objects_in_range["resources"].has(area):
+			objects_in_range["resources"].append(area)
+			if area.has_method("highlight"):
+				area.highlight(true)
+	
+	elif area.is_in_group("shadow"):
+		if not objects_in_range["enemies"].has(area):
+			objects_in_range["enemies"].append(area)
+			if area.has_method("highlight"):
+				area.highlight(true)
+	
 	elif area.is_in_group("fire_interaction"):
-		fire_in_range = true
-		print("Perto do fogo - pressione F para adicionar lenha")
+		objects_in_range["fire"] = area
 
-func _on_harvest_area_area_exited(area: Area2D):
-	if (area.is_in_group("tree") or area.is_in_group("bush")) and resources_in_range.has(area):
-		if area.has_method("highlight"):
-			area.highlight(false)
-		
-		resources_in_range.erase(area)
+func _on_action_area_exited(area: Area2D):
+	if area.is_in_group("tree") or area.is_in_group("bush"):
+		if objects_in_range["resources"].has(area):
+			objects_in_range["resources"].erase(area)
+			if area.has_method("highlight"):
+				area.highlight(false)
+	
+	elif area.is_in_group("shadow"):
+		if objects_in_range["enemies"].has(area):
+			objects_in_range["enemies"].erase(area)
+			if area.has_method("highlight"):
+				area.highlight(false)
+	
 	elif area.is_in_group("fire_interaction"):
-		fire_in_range = false
-		print("Saiu da área do fogo")
+		if objects_in_range["fire"] == area:
+			objects_in_range["fire"] = null
 
-func _on_attack_area_area_entered(area: Area2D):
-	if area.is_in_group("shadow"):
-		# Feedback visual de inimigo próximo
-		area.get_parent().highlight(true)
+# Para CharacterBody2D (sombras)
+func _on_action_area_body_entered(body: Node2D):
+	if body.is_in_group("shadow"):
+		if not objects_in_range["enemies"].has(body):
+			objects_in_range["enemies"].append(body)
+			if body.has_method("highlight"):
+				body.highlight(true)
 
-func try_harvest_in_area():
-	if resources_in_range.is_empty():
+func _on_action_area_body_exited(body: Node2D):
+	if body.is_in_group("shadow"):
+		if objects_in_range["enemies"].has(body):
+			objects_in_range["enemies"].erase(body)
+			if body.has_method("highlight"):
+				body.highlight(false)
+
+func attack_enemy():
+	if not can_action or objects_in_range["enemies"].is_empty():
 		return
 	
-	for i in range(resources_in_range.size()):
-		var resource = resources_in_range[i]
+	can_action = false
+	
+	# Pega o inimigo mais próximo
+	var closest_enemy = null
+	var closest_distance = INF
+	
+	for enemy in objects_in_range["enemies"]:
+		if is_instance_valid(enemy):
+			var distance = global_position.distance_to(enemy.global_position)
+			if distance < closest_distance:
+				closest_distance = distance
+				closest_enemy = enemy
+	
+	if closest_enemy and closest_enemy.has_method("take_damage"):
+		# Animação de ataque
+		var original_scale = sprite.scale
+		var tween = create_tween()
+		tween.tween_property(sprite, "scale", original_scale * 1.2, 0.1)
+		tween.tween_property(sprite, "scale", original_scale, 0.1)
 		
-		if resource == null or not is_instance_valid(resource):
-			resources_in_range.remove_at(i)
-			continue
+		closest_enemy.take_damage(attack_damage)
 		
-		if resource.has_method("harvest"):
-			can_harvest = false
-			
-			var harvested = await resource.harvest()
+		if GameSignals.has_user_signal("player_attacked"):
+			GameSignals.player_attacked.emit(attack_damage)
+	
+	# Cooldown
+	await get_tree().create_timer(0.5).timeout
+	can_action = true
+
+func harvest_resource():
+	if not can_action or objects_in_range["resources"].is_empty():
+		return
+	
+	can_action = false
+	
+	# Pega o recurso mais próximo
+	var closest_resource = null
+	var closest_distance = INF
+	
+	for resource in objects_in_range["resources"]:
+		if is_instance_valid(resource):
+			var distance = global_position.distance_to(resource.global_position)
+			if distance < closest_distance:
+				closest_distance = distance
+				closest_resource = resource
+	
+	if closest_resource:
+		if closest_resource.has_method("harvest"):
+			var harvested = await closest_resource.harvest()
 			
 			if harvested:
-				if resources_in_range.has(resource):
-					resources_in_range.erase(resource)
-				break
-		
-		await get_tree().create_timer(0.1).timeout
+				if objects_in_range["resources"].has(closest_resource):
+					objects_in_range["resources"].erase(closest_resource)
 	
+	# Cooldown
 	await get_tree().create_timer(0.3).timeout
-	can_harvest = true
+	can_action = true
 
-func perform_attack():
-	if not can_attack:
+func interact_with_fire():
+	if not can_action or objects_in_range["fire"] == null:
 		return
 	
-	can_attack = false
+	can_action = false
 	
-	# Animação de ataque
-	var original_scale = sprite.scale
-	var tween = create_tween()
-	tween.tween_property(sprite, "scale", original_scale * 1.2, 0.1)
-	tween.tween_property(sprite, "scale", original_scale, 0.1)
+	var fire = get_tree().get_first_node_in_group("fire")
+	if fire and fire.has_method("add_fuel_from_inventory"):
+		if ResourceManager.wood > 0:
+			fire.add_fuel_from_inventory()
 	
-	# Verificar sombras na área de ataque
-	var overlapping_areas = attack_area.get_overlapping_areas()
-	for area in overlapping_areas:
-		if area.is_in_group("shadow"):
-			var shadow = area.get_parent()
-			if shadow and shadow.has_method("take_damage"):
-				shadow.take_damage(attack_damage)
-				
-				# Feedback
-				GameSignals.player_attacked.emit(attack_damage)
-	
-	# Tempo de recarga baseado na arma
-	var cooldown = 0.5
-	if current_weapon == "spear":
-		cooldown = 0.7
-	elif current_weapon == "axe":
-		cooldown = 0.9
-	
-	await get_tree().create_timer(cooldown).timeout
-	can_attack = true
+	# Cooldown curto
+	await get_tree().create_timer(0.2).timeout
+	can_action = true
 
 func take_damage(amount: float, source: String = ""):
 	health -= amount
@@ -371,31 +365,29 @@ func take_damage(amount: float, source: String = ""):
 	var tween = create_tween()
 	tween.tween_property(sprite, "modulate", Color.WHITE, 0.3)
 	
-	print("Jogador tomou dano! -", amount, " de ", source, ". Vida: ", health)
-	
-	# Verificar morte
 	if health <= 0:
 		die()
 	
-	# Atualizar HUD
-	GameSignals.player_status_changed.emit(health, hunger, cold)
+	if GameSignals.has_user_signal("player_status_changed"):
+		GameSignals.player_status_changed.emit(health, hunger, cold)
 
-func eat_food(amount: int = 10):
+func eat_food():
 	if ResourceManager.food >= 1:
 		if ResourceManager.use_food(1):
-			hunger = min(hunger + amount, 100)
-			print("Jogador comeu! Fome: ", hunger)
+			hunger = min(hunger + 15, 100)
 			
 			# Efeito visual
 			var tween = create_tween()
 			tween.tween_property(sprite, "modulate", Color.GREEN, 0.2)
 			tween.tween_property(sprite, "modulate", Color.WHITE, 0.2)
 			
+			if GameSignals.has_user_signal("player_status_changed"):
+				GameSignals.player_status_changed.emit(health, hunger, cold)
+			
 			return true
 	return false
 
 func die():
-	print("JOGADOR MORREU!")
 	can_process_input = false
 	
 	# Animação de morte
@@ -404,9 +396,11 @@ func die():
 	tween.parallel().tween_property(sprite, "rotation", sprite.rotation + PI, 1.0)
 	await tween.finished
 	
-	GameSignals.player_died.emit()
-	# O jogo pode continuar se houver outros NPCs, mas por enquanto game over
-	GameSignals.game_over.emit("O jogador morreu!")
+	if GameSignals.has_user_signal("player_died"):
+		GameSignals.player_died.emit()
+	
+	if GameSignals.has_user_signal("game_over"):
+		GameSignals.game_over.emit("O jogador morreu!")
 
 func set_can_process_input(can_process: bool):
 	can_process_input = can_process

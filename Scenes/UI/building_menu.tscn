@@ -2,33 +2,53 @@
 
 [ext_resource type="Script" uid="uid://miojvsdyfhyy" path="res://Scripts/build_menu.gd" id="1_wfxx7"]
 
-[node name="BuildMenu" type="Control"]
-layout_mode = 3
+[node name="BuildMenu" type="CanvasLayer"]
+script = ExtResource("1_wfxx7")
+
+[node name="Panel" type="Panel" parent="."]
+custom_minimum_size = Vector2(400, 500)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_wfxx7")
-
-[node name="Panel" type="Panel" parent="."]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+theme_override_constants/separation = 20
 
 [node name="HutButton" type="Button" parent="Panel/VBoxContainer"]
+custom_minimum_size = Vector2(200, 80)
 layout_mode = 2
+text = "\"Cabana
+Madeira: 
+Comida: 5\" "
 
 [node name="KitchenButton" type="Button" parent="Panel/VBoxContainer"]
+custom_minimum_size = Vector2(200, 80)
 layout_mode = 2
+text = "\"Cabana
+Madeira: 
+Comida: 5\" "
 
 [node name="StorageButton" type="Button" parent="Panel/VBoxContainer"]
+custom_minimum_size = Vector2(200, 80)
 layout_mode = 2
+text = "\"Cabana
+Madeira: 
+Comida: 5\" "
 
 [node name="TowerButton" type="Button" parent="Panel/VBoxContainer"]
+custom_minimum_size = Vector2(200, 80)
 layout_mode = 2

@@ -24,11 +24,9 @@ var diagonal_length: int
 
 func _ready():
 	if not tilemap_layer:
-		printerr("TileMapLayer não encontrado!")
 		return
 	
 	if not tree_container:
-		printerr("TreeContainer não encontrado!")
 		return
 	
 	PoolManager.ensure_pool("tree")

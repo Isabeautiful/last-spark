@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://cc6wiwwp00f3e"]
+[gd_scene load_steps=17 format=3 uid="uid://cc6wiwwp00f3e"]
 
 [ext_resource type="PackedScene" uid="uid://coqvrycmqjk2n" path="res://Scenes/player.tscn" id="1_ebmjs"]
 [ext_resource type="Script" uid="uid://mjjo60nrua5g" path="res://Scripts/game.gd" id="1_i6g32"]
@@ -10,7 +10,12 @@
 [ext_resource type="PackedScene" uid="uid://briuhj8otokd8" path="res://Scenes/UI/in_game_hud.tscn" id="6_v158k"]
 [ext_resource type="Script" uid="uid://dcwsswxu6opas" path="res://Scripts/MapManager.gd" id="7_v158k"]
 [ext_resource type="Script" uid="uid://wpnxwtj4ix1w" path="res://Scripts/day_night_cycle.gd" id="10_ldgsr"]
+[ext_resource type="Script" uid="uid://cccglwvjiyvj" path="res://Resources/BuildingResource.gd" id="11_nnt18"]
 [ext_resource type="Script" uid="uid://d31ikm3ksdoa1" path="res://Scripts/BuildingSystem.gd" id="11_rku1e"]
+[ext_resource type="Resource" uid="uid://d24ldlw6v07s" path="res://Resources/hut.tres" id="12_ewbju"]
+[ext_resource type="Resource" uid="uid://dkn0fg07xr858" path="res://Resources/kitchen.tres" id="13_85qyi"]
+[ext_resource type="Resource" uid="uid://bdlcc7ahmo2u0" path="res://Resources/storage.tres" id="14_iivbl"]
+[ext_resource type="Resource" uid="uid://cl7ceedjndco0" path="res://Resources/tower.tres" id="15_7nbq1"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_i6g32")
@@ -29,7 +34,6 @@ script = ExtResource("4_1l0tm")
 
 [node name="ShadowSpawner" parent="." instance=ExtResource("5_1l0tm")]
 position = Vector2(737, 0)
-spawn_interval = 1.0
 
 [node name="InGameHUD" parent="." instance=ExtResource("6_v158k")]
 
@@ -40,6 +44,7 @@ script = ExtResource("10_ldgsr")
 
 [node name="BuildingSystem" type="Node2D" parent="."]
 script = ExtResource("11_rku1e")
+building_resources = Array[ExtResource("11_nnt18")]([ExtResource("12_ewbju"), ExtResource("13_85qyi"), ExtResource("14_iivbl"), ExtResource("15_7nbq1")])
 
 [node name="BuildMenu" parent="." instance=ExtResource("2_o5yvi")]
 

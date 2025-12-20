@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://y17x2grop8xv"]
+[gd_scene load_steps=3 format=3 uid="uid://y17x2grop8xv"]
 
 [ext_resource type="PackedScene" uid="uid://bdhkjp71pmugw" path="res://Scenes/Buildings/building.tscn" id="1_ohfnd"]
+[ext_resource type="Texture2D" uid="uid://be11vpuqrf33l" path="res://Assets/icon.svg" id="2_wnsun"]
 
 [node name="Tower" instance=ExtResource("1_ohfnd")]
 building_name = "Torre"
@@ -9,6 +10,12 @@ cost_wood = 100
 cost_food = 50
 construction_time = 15.0
 health = 200
+
+[node name="Sprite2D" parent="." index="0"]
+modulate = Color(1, 0.25882354, 0.043137256, 1)
+position = Vector2(-0.4999981, 0)
+scale = Vector2(0.14843751, 1)
+texture = ExtResource("2_wnsun")
 
 [node name="Collision" parent="." index="1"]
 debug_color = Color(1, 0.27450982, 0, 0.41960785)

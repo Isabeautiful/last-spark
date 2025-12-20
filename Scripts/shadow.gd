@@ -29,8 +29,6 @@ signal destroyed()
 signal took_damage(amount: int)
 
 func _ready():
-	collision_layer = 3  # enemies
-	collision_mask = 8   # player_attack (para ataque do jogador)
 	add_to_group("shadow")
 	add_to_group("enemy")
 	

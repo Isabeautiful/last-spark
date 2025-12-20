@@ -13,6 +13,7 @@ size = Vector2(123.684235, 57.324837)
 z_index = 2
 scale = Vector2(0.37999994, 0.3488889)
 collision_layer = 4
+collision_mask = 9
 script = ExtResource("1_8pobm")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]

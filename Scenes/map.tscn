@@ -264,7 +264,7 @@ texture = ExtResource("7_fls3e")
 15:15/0 = 0
 
 [sub_resource type="TileSet" id="TileSet_p3ir5"]
-physics_layer_0/collision_layer = 2
+physics_layer_0/collision_layer = 64
 sources/0 = SubResource("TileSetAtlasSource_26yhd")
 
 [node name="GroundLayer" type="TileMapLayer"]

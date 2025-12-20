@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="BuildingResource" load_steps=4 format=3 uid="uid://cl7ceedjndco0"]
+
+[ext_resource type="Script" uid="uid://cccglwvjiyvj" path="res://Resources/BuildingResource.gd" id="1_sxgs3"]
+[ext_resource type="PackedScene" uid="uid://y17x2grop8xv" path="res://Scenes/Buildings/tower.tscn" id="1_ta031"]
+[ext_resource type="Texture2D" uid="uid://8ypjsid06mpj" path="res://Assets/Buildings/tower.png" id="3_v0xqa"]
+
+[resource]
+script = ExtResource("1_sxgs3")
+building_name = "Torre"
+building_type = "tower"
+cost_wood = 80
+cost_food = 30
+construction_time = 10.0
+health = 200
+scene = ExtResource("1_ta031")
+color = Color(1, 0.4, 1, 0.5019608)
+texture = ExtResource("3_v0xqa")
+metadata/_custom_type_script = "uid://cccglwvjiyvj"

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="BuildingResource" load_steps=4 format=3 uid="uid://bdlcc7ahmo2u0"]
+
+[ext_resource type="Script" uid="uid://cccglwvjiyvj" path="res://Resources/BuildingResource.gd" id="1_ghtnb"]
+[ext_resource type="PackedScene" uid="uid://vvvkk1jvaewx" path="res://Scenes/Buildings/storage.tscn" id="1_r3vng"]
+[ext_resource type="Texture2D" uid="uid://dvteqij4exdxb" path="res://Assets/Buildings/storage.png" id="3_dn76k"]
+
+[resource]
+script = ExtResource("1_ghtnb")
+building_name = "Deposito"
+building_type = "storage"
+cost_wood = 30
+cost_food = 0
+scene = ExtResource("1_r3vng")
+color = Color(0.6, 0.4, 1, 0.5019608)
+texture = ExtResource("3_dn76k")
+metadata/_custom_type_script = "uid://cccglwvjiyvj"

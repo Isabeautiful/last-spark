@@ -12,7 +12,6 @@ signal day_started(day_number: int)
 signal night_started
 
 func _ready():
-	print("DayNightCycle inicializado")
 	timer.wait_time = day_duration
 	timer.timeout.connect(_on_timer_timeout)
 	timer.start()

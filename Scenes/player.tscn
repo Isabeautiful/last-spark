@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://coqvrycmqjk2n"]
+[gd_scene load_steps=5 format=3 uid="uid://coqvrycmqjk2n"]
 
 [ext_resource type="Script" uid="uid://dblrxa2uchapy" path="res://Scripts/player.gd" id="1_cvnsp"]
 [ext_resource type="Texture2D" uid="uid://be11vpuqrf33l" path="res://Assets/icon.svg" id="1_v0iea"]
@@ -7,13 +7,10 @@
 size = Vector2(36, 38)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6t5aa"]
-size = Vector2(33, 20)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_vgqql"]
-size = Vector2(43, 20)
+size = Vector2(58, 35)
 
 [node name="Player" type="CharacterBody2D"]
-collision_mask = 2
+collision_mask = 82
 script = ExtResource("1_cvnsp")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
@@ -23,17 +20,17 @@ texture = ExtResource("1_v0iea")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_cvnsp")
 
-[node name="HarvestArea" type="Area2D" parent="."]
-collision_mask = 17
+[node name="ActionArea" type="Area2D" parent="."]
+collision_layer = 384
+collision_mask = 46
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HarvestArea"]
-position = Vector2(36.5, -2)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ActionArea"]
+position = Vector2(49, 0.5)
 shape = SubResource("RectangleShape2D_6t5aa")
 debug_color = Color(0.9590114, 0, 0.5266545, 0.41960785)
 
-[node name="AttackArea" type="Area2D" parent="."]
+[node name="HungerTimer" type="Timer" parent="."]
+wait_time = 5.0
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
-visibility_layer = 17
-position = Vector2(34.5, -1)
-shape = SubResource("RectangleShape2D_vgqql")
+[node name="ColdTimer" type="Timer" parent="."]
+wait_time = 3.0
