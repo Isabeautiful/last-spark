@@ -29,3 +29,7 @@ signal food_used(amount: int)
 signal npc_spawned(count: int)
 signal npc_died(reason: String)
 signal temperature_changed(temperature: float)
+
+signal planting_mode_changed(is_active: bool)
+signal seed_type_changed(seed_type: String)
+signal seed_planted(seed_type: String, position: Vector2)

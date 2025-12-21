@@ -14,6 +14,10 @@ var max_food: int = 100
 var max_stone: int = 50
 var max_crystal: int = 20
 
+# Sementes (NOVO)
+var tree_seeds: int = 0
+var bush_seeds: int = 0
+
 # Sinais
 signal wood_changed(amount)
 signal food_changed(amount)
@@ -21,6 +25,9 @@ signal stone_changed(amount)
 signal crystal_changed(amount)
 signal population_changed(amount)
 signal resource_added(type: String, amount: int)
+# Novos sinais para sementes
+signal tree_seeds_changed(amount)
+signal bush_seeds_changed(amount)
 
 func _ready():
 	GameSignals.resource_collected.connect(_on_resource_collected)
@@ -37,6 +44,32 @@ func _on_resource_collected(resource_type: String, amount: int, position: Vector
 		"crystal":
 			add_crystal(amount)
 
+# Funções para sementes (NOVO)
+func add_tree_seed(amount: int):
+	tree_seeds += amount
+	tree_seeds_changed.emit(tree_seeds)
+	print("Sementes de árvore: ", tree_seeds)
+
+func add_bush_seed(amount: int):
+	bush_seeds += amount
+	bush_seeds_changed.emit(bush_seeds)
+	print("Sementes de arbusto: ", bush_seeds)
+
+func use_tree_seed(amount: int) -> bool:
+	if tree_seeds >= amount:
+		tree_seeds -= amount
+		tree_seeds_changed.emit(tree_seeds)
+		return true
+	return false
+
+func use_bush_seed(amount: int) -> bool:
+	if bush_seeds >= amount:
+		bush_seeds -= amount
+		bush_seeds_changed.emit(bush_seeds)
+		return true
+	return false
+
+# Funções de recursos originais
 func add_wood(amount: int):
 	wood = min(wood + amount, max_wood)
 	wood_changed.emit(wood)
@@ -87,7 +120,7 @@ func use_crystal(amount: int) -> bool:
 		return true
 	return false
 
-# Funções para população (agora mais complexas)
+# Funções para população
 func add_population(amount: int, npc_type: String = "survivor"):
 	current_population = min(current_population + amount, max_population)
 	population_changed.emit(current_population)

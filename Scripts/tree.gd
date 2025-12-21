@@ -1,6 +1,9 @@
 extends Area2D
 
 @export var wood_amount: int = 1
+@export var drop_seed_chance: float = 0.5  # 50% chance
+@export var seed_drop_amount: int = 1
+@export var can_drop_seeds: bool = true
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var collision: CollisionShape2D = $CollisionShape2D
@@ -22,6 +25,7 @@ func _ready():
 	
 	print("Árvore pronta. Layers: ", collision_layer, " Mask: ", collision_mask)
 	print("Posição: ", global_position)
+	print("Configuração de drop: ", drop_seed_chance * 100, "% chance, ", seed_drop_amount, " semente(s)")
 
 func _on_self_area_entered(area: Area2D):
 	print("\nrvore: Área entrou - ", area.name)
@@ -53,6 +57,12 @@ func highlight(active: bool):
 
 func harvest() -> bool:
 	print("\n=== COLHENDO ÁRVORE ===")
+	print("Posição: ", global_position)
+	print("É coletável: ", is_collectible)
+	print("Player na área: ", player_in_range)
+	print("Chance de drop: ", drop_seed_chance * 100, "%")
+	print("Pode dropar: ", can_drop_seeds)
+	print("Quantidade de sementes por drop: ", seed_drop_amount)
 	
 	if not is_collectible:
 		print("Árvore já foi coletada!")
@@ -67,6 +77,14 @@ func harvest() -> bool:
 	
 	# Emitir sinal ANTES do efeito visual
 	harvested.emit(wood_amount)
+	
+	# SISTEMA DE DROP DIRETO NA ÁRVORE
+	if can_drop_seeds and randf() < drop_seed_chance:
+		ResourceManager.add_tree_seed(seed_drop_amount)
+		print("✓ DROP CONFIRMADO: ", seed_drop_amount, " semente(s) de árvore!")
+		print("Total de sementes agora: ", ResourceManager.tree_seeds)
+	else:
+		print("✗ Nenhuma semente dropada desta vez")
 	
 	# Efeito visual
 	if sprite:
@@ -95,4 +113,4 @@ func reset():
 		collision.disabled = false
 	
 	show()
-	print("Árvore resetada!!!!!!!!")
+	print("Árvore resetada para nova plantação")

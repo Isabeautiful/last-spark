@@ -15,6 +15,9 @@ var health: float = 100.0
 var is_running: bool = false
 var is_in_heat_zone: bool = true
 
+# Variável para semente atual (apenas para referência, será gerenciado pelo PlantingSystem)
+var current_seed_type: String = "tree"
+
 # Direção do jogador
 var current_direction: Vector2 = Vector2.DOWN
 
@@ -22,12 +25,12 @@ var current_direction: Vector2 = Vector2.DOWN
 var objects_in_range: Dictionary = {
 	"resources": [],   # Árvores, arbustos
 	"enemies": [],     # Sombras
-	"fire": null       # Fogueira (apenas uma)
+	"fire": null,      # Fogueira (apenas uma)
 }
 
 # Controles
 var can_process_input: bool = true
-var can_action: bool = true  # Para cooldown entre ações
+var can_action: bool = true
 var current_weapon: String = "stick"
 var attack_damage: int = 1
 
@@ -40,7 +43,7 @@ func _ready():
 	setup_area()
 	setup_timers()
 	
-	# Conectar sinais da área única
+	# Conectar sinais da área
 	action_area.area_entered.connect(_on_action_area_entered)
 	action_area.area_exited.connect(_on_action_area_exited)
 	action_area.body_entered.connect(_on_action_area_body_entered)
@@ -107,12 +110,13 @@ func _setup_input_actions():
 		event_q.keycode = KEY_Q
 		InputMap.action_add_event("eat", event_q)
 	
-	# Ação de construção (B)
+	# Ação de construção (B) - agora será gerenciada pelo Game.gd
 	if not InputMap.has_action("build_menu"):
 		InputMap.add_action("build_menu")
 		var event_b = InputEventKey.new()
 		event_b.keycode = KEY_B
 		InputMap.action_add_event("build_menu", event_b)
+	
 
 func _physics_process(delta):
 	if not can_process_input:
@@ -162,7 +166,9 @@ func _input(event):
 	if not can_process_input or not can_action:
 		return
 	
-	# Sistema de ações inteligente
+	# REMOVIDO: Sistema de plantio - agora é gerenciado pelo PlantingSystem
+	
+	# Sistema de ações inteligente original
 	if event.is_action_pressed("attack"):
 		# Primeiro tenta atacar inimigos
 		if not objects_in_range["enemies"].is_empty():
@@ -179,7 +185,6 @@ func _input(event):
 		# Senão, tenta coletar recursos
 		elif not objects_in_range["resources"].is_empty():
 			harvest_resource()
-		# Remove o print para reduzir logs
 	
 	# Comer comida (tecla Q)
 	elif event.is_action_pressed("eat"):
@@ -190,7 +195,7 @@ func update_area_position(direction: Vector2):
 	var angle = normalized_dir.angle()
 	
 	action_area.rotation = angle
-	action_area.position = normalized_dir
+	action_area.position = normalized_dir 
 
 func _on_hunger_timer_timeout():
 	hunger -= 2
@@ -264,7 +269,6 @@ func _on_action_area_exited(area: Area2D):
 		if objects_in_range["fire"] == area:
 			objects_in_range["fire"] = null
 
-# Para CharacterBody2D (sombras)
 func _on_action_area_body_entered(body: Node2D):
 	if body.is_in_group("shadow"):
 		if not objects_in_range["enemies"].has(body):
@@ -414,5 +418,6 @@ func get_status() -> Dictionary:
 		"health": health,
 		"hunger": hunger,
 		"cold": cold,
-		"position": global_position
+		"position": global_position,
+		"seed_type": current_seed_type
 	}

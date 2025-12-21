@@ -10,6 +10,10 @@ extends Control
 @onready var build_button = $CanvasLayer/MarginContainer/VBoxContainer/BuildButton
 @onready var player_status = $CanvasLayer/MarginContainer/VBoxContainer/PlayerStatus
 @onready var warning_label = $CanvasLayer/MarginContainer/VBoxContainer/WarningLabel
+# NOVOS labels para sementes
+@onready var tree_seeds_label = $CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer3/TreeSeedsLabel
+@onready var bush_seeds_label = $CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer3/BushSeedsLabel
+@onready var planting_mode_label = $CanvasLayer/MarginContainer/VBoxContainer/PlantingModeLabel
 
 # Barras de status do jogador
 @onready var health_bar = $CanvasLayer/MarginContainer/VBoxContainer/PlayerStatus/HealthBar
@@ -30,6 +34,12 @@ func _ready():
 	health_bar.max_value = 100
 	hunger_bar.max_value = 100
 	cold_bar.max_value = 100
+	
+	# Conectar sinais de sementes
+	ResourceManager.tree_seeds_changed.connect(_on_tree_seeds_changed)
+	ResourceManager.bush_seeds_changed.connect(_on_bush_seeds_changed)
+	
+	GameSignals.planting_mode_changed.connect(_on_planting_mode_changed)
 
 func _on_build_button_pressed():
 	GameSignals.build_menu_toggled.emit()
@@ -46,6 +56,15 @@ func update_resources():
 	wood_label.text = "Lenha: " + str(ResourceManager.wood) + "/" + str(ResourceManager.max_wood)
 	food_label.text = "Comida: " + str(ResourceManager.food) + "/" + str(ResourceManager.max_food)
 	pop_label.text = "Pop: " + str(ResourceManager.current_population) + "/" + str(ResourceManager.max_population)
+	# Atualizar sementes
+	tree_seeds_label.text = "Semente Árvore: " + str(ResourceManager.tree_seeds)
+	bush_seeds_label.text = "Semente Comida: " + str(ResourceManager.bush_seeds)
+
+func _on_tree_seeds_changed(amount: int):
+	tree_seeds_label.text = "Semente Árvore: " + str(amount)
+
+func _on_bush_seeds_changed(amount: int):
+	bush_seeds_label.text = "Semente Comida: " + str(amount)
 
 func update_time_of_day(time: String):
 	match time:
@@ -93,3 +112,20 @@ func show_warning(message: String):
 
 func update_all_displays():
 	update_resources()
+
+func _on_planting_mode_changed(is_active: bool):
+	if is_active:
+		planting_mode_label.text = "MODO PLANTIO ATIVO (V para sair, T para trocar)"
+		planting_mode_label.modulate = Color.GREEN
+		planting_mode_label.show()
+		
+		# Mostrar qual semente está selecionada
+		var planting_system = get_tree().get_first_node_in_group("planting_system")
+		if planting_system and planting_system.has_method("get_current_seed_type"):
+			var seed_type = planting_system.get_current_seed_type()
+			if seed_type == "tree":
+				planting_mode_label.text += "\n[Semente de Árvore Selecionada]"
+			elif seed_type == "bush":
+				planting_mode_label.text += "\n[Semente de Arbusto Selecionada]"
+	else:
+		planting_mode_label.hide()

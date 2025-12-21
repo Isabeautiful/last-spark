@@ -65,7 +65,6 @@ func create_extra_object() -> Node2D:
 	
 	return obj
 
-# Retorna objeto à pool
 func return_object(obj: Node2D) -> void:
 	if not obj or not is_instance_valid(obj):
 		return
@@ -73,10 +72,6 @@ func return_object(obj: Node2D) -> void:
 	obj.hide()
 	obj.process_mode = Node.PROCESS_MODE_DISABLED
 	obj.set_meta("in_pool", true)
-	
-	# Resetar propriedades específicas do objeto
-	if obj.has_method("reset"):
-		obj.reset()
 
 # Conta objetos disponíveis
 func get_available_count() -> int:

@@ -7,9 +7,10 @@ extends Node2D
 @onready var shadow_spawner = $ShadowSpawner
 @onready var building_system = $BuildingSystem
 @onready var build_menu = $BuildMenu
+@onready var planting_system = $PlantingSystem
 
 var current_day: int = 1
-var game_state: String = "playing"  # "playing", "building", "menu"
+var game_state: String = "playing"  # "playing", "building", "planting", "menu"
 var time_of_day: String = "day"     # "day", "evening", "night"
 
 # Sistema de eventos
@@ -46,7 +47,6 @@ func _ready():
 	# Configurar spawner
 	if shadow_spawner:
 		shadow_spawner.set_active(false)
-		# Verificar se o método set_day existe
 		if shadow_spawner.has_method("set_day"):
 			shadow_spawner.set_day(current_day)
 	
@@ -57,11 +57,15 @@ func _ready():
 	if building_system:
 		building_system.build_mode_changed.connect(_on_build_mode_changed)
 	
+	# Conectar sistema de plantio
+	if planting_system:
+		planting_system.planting_mode_changed.connect(_on_planting_mode_changed)
+	
 	# Inicialmente esconder menu
 	if build_menu:
 		build_menu.hide()
 	
-	# Inicializar eventos (agora sem adicionar como filho)
+	# Inicializar eventos
 	initialize_events()
 	
 	print("=== JOGO INICIADO ===")
@@ -70,7 +74,7 @@ func _ready():
 	print("Recursos: Madeira=", ResourceManager.wood, " Comida=", ResourceManager.food)
 
 func _setup_inputs():
-	# Ação para construção
+	# Ação para construção (B)
 	if not InputMap.has_action("build_menu"):
 		InputMap.add_action("build_menu")
 		var event_b = InputEventKey.new()
@@ -81,38 +85,112 @@ func _setup_inputs():
 		event_mouse.button_index = MOUSE_BUTTON_RIGHT
 		InputMap.action_add_event("build_menu", event_mouse)
 	
-	# Ação para comer (tecla Q)
+	# Ação para comer (Q)
 	if not InputMap.has_action("eat"):
 		InputMap.add_action("eat")
 		var event_q = InputEventKey.new()
 		event_q.keycode = KEY_Q
 		InputMap.action_add_event("eat", event_q)
+	
+	# Ação para ativar sistema de plantio (V)
+	if not InputMap.has_action("planting_system"):
+		InputMap.add_action("planting_system")
+		var event_v = InputEventKey.new()
+		event_v.keycode = KEY_V
+		InputMap.action_add_event("planting_system", event_v)
 
 func _input(event):
-	# Abrir/fechar menu de construção
+	# Abrir/fechar menu de construção (B)
 	if event.is_action_pressed("build_menu"):
-		if game_state == "playing":
-			_enter_build_menu_mode()
-		elif game_state == "menu":
-			_return_to_playing_mode()
+		_handle_build_menu_toggle()
+		get_viewport().set_input_as_handled()
+		return
 	
-	# Comer comida (tecla Q)
+	# Ativar sistema de plantio (V)
+	if event.is_action_pressed("planting_system"):
+		_handle_planting_toggle()
+		get_viewport().set_input_as_handled()
+		return
+	
+	# Comer comida (Q)
 	if event.is_action_pressed("eat"):
 		if player and player.has_method("eat_food"):
 			player.eat_food()
+		get_viewport().set_input_as_handled()
+		return
 	
 	# Cancelar com ESC
 	if event.is_action_pressed("ui_cancel"):
-		if game_state == "building":
+		_handle_cancel()
+		get_viewport().set_input_as_handled()
+		return
+
+func _handle_build_menu_toggle():
+	match game_state:
+		"playing":
+			_enter_build_menu_mode()
+		"menu":
+			_return_to_playing_mode()
+		"building":
 			if building_system:
 				building_system.cancel_building()
 			_return_to_playing_mode()
-		elif game_state == "menu":
+		"planting":
+			# Primeiro sair do modo plantio
+			if planting_system:
+				planting_system.cancel_planting()
+			# Depois abrir menu construção
+			_enter_build_menu_mode()
+
+func _handle_planting_toggle():
+	match game_state:
+		"playing":
+			_enter_planting_mode()
+		"planting":
+			_return_from_planting_mode() 
+		"building":
+			# Primeiro sair do modo construção
+			if building_system:
+				building_system.cancel_building()
+			# Depois entrar no modo plantio
+			_enter_planting_mode()
+		"menu":
+			# Fechar menu primeiro
+			_return_to_playing_mode()
+			# Depois entrar no modo plantio
+			_enter_planting_mode()
+
+func _return_from_planting_mode():
+	if planting_system:
+		planting_system.cancel_planting()
+	game_state = "playing"
+	
+	if player:
+		player.set_can_process_input(true)
+	
+	print("Saiu do modo plantio")
+	
+
+func _handle_cancel():
+	match game_state:
+		"building":
+			if building_system:
+				building_system.cancel_building()
+			_return_to_playing_mode()
+		"planting":
+			if planting_system:
+				planting_system.cancel_planting()
+			_return_to_playing_mode()
+		"menu":
 			if build_menu:
 				build_menu.hide()
 			_return_to_playing_mode()
 
 func _enter_build_menu_mode():
+	# Verificar se já está no menu
+	if game_state == "menu":
+		return
+	
 	game_state = "menu"
 	
 	if build_menu:
@@ -121,6 +199,7 @@ func _enter_build_menu_mode():
 	if player:
 		player.set_can_process_input(false)
 	
+	print("Entrou no menu de construção")
 
 func _enter_building_mode():
 	game_state = "building"
@@ -130,14 +209,48 @@ func _enter_building_mode():
 	
 	print("Entrou no modo construção")
 
+func _enter_planting_mode():
+	# Verificar se já está no modo plantio
+	if game_state == "planting":
+		return
+	
+	if not planting_system:
+		print("PlantingSystem não encontrado!")
+		return
+	
+	# Verificar se tem sementes
+	var has_seeds = ResourceManager.tree_seeds > 0 or ResourceManager.bush_seeds > 0
+	if not has_seeds:
+		print("Sem sementes disponíveis!")
+		return
+	
+	game_state = "planting"
+	
+	if player:
+		player.set_can_process_input(false)
+	
+	# Iniciar sistema de plantio com a semente atual do jogador
+	var seed_type = "tree"
+	if player and player.has_method("get_status"):
+		var status = player.get_status()
+		seed_type = status.get("seed_type", "tree")
+	
+	planting_system.start_planting(seed_type)
+	
+	print("Entrou no modo plantio")
+
 func _return_to_playing_mode():
+	if game_state == "playing":
+		return
+	
 	game_state = "playing"
 	
 	if build_menu:
 		build_menu.hide()
 	
-	if building_system and building_system.is_building_mode:
-		building_system.cancel_building()
+	# NÃO chamar cancel_building ou cancel_planting aqui!
+	# Isso causaria recursão infinita
+	# Os sistemas já emitem sinais quando são cancelados
 	
 	if player:
 		player.set_can_process_input(true)
@@ -145,10 +258,28 @@ func _return_to_playing_mode():
 	print("Retornou ao modo jogo")
 
 func _on_build_mode_changed(active: bool):
+	print("Build mode changed: ", active)
 	if active:
 		_enter_building_mode()
 	else:
-		_return_to_playing_mode()
+		# Quando o BuildingSystem é cancelado, ele emite sinal com active=false
+		# Neste ponto, já estamos saindo do modo construção
+		game_state = "playing"
+		if player:
+			player.set_can_process_input(true)
+
+func _on_planting_mode_changed(active: bool):
+	print("Planting mode changed: ", active)
+	if active:
+		# Modo plantio ativado
+		game_state = "planting"
+		if player:
+			player.set_can_process_input(false)
+	else:
+		# Modo plantio desativado
+		game_state = "playing"
+		if player:
+			player.set_can_process_input(true)
 
 func initialize_events():
 	# Criar sistema básico de eventos
@@ -161,23 +292,19 @@ func initialize_events():
 	event_timer.wait_time = 60.0
 	event_timer.timeout.connect(_check_events)
 	event_manager.add_child(event_timer)
-	add_child(event_manager)  # AGORA podemos adicionar como filho
+	add_child(event_manager)
 	
 	event_timer.start()
 	print("Sistema de eventos inicializado")
 
 func _check_events():
 	if current_day >= 3:
-		# Chance de evento aleatório após o dia 3
-		if randf() < 0.3:  # 30% de chance
+		if randf() < 0.3:
 			trigger_random_event()
 
 func trigger_random_event():
 	var events = [
-		"storm",      # Tempestade
-		"merchant",   # Mercante
-		"earthquake", # Terremoto
-		"regrowth"    # Renascimento
+		"storm", "merchant", "earthquake", "regrowth"
 	]
 	
 	var random_event = events[randi() % events.size()]
@@ -187,24 +314,18 @@ func handle_event(event_type: String):
 	match event_type:
 		"storm":
 			print("=== TEMPESTADE DE NEVE ===")
-			print("Visibilidade reduzida! Recursos congelam temporariamente.")
-			# Chamar sinal para HUD mostrar aviso
 			if hud.has_method("show_warning"):
 				hud.show_warning("Tempestade de neve!")
 		"merchant":
 			print("=== MERCADO VISITANTE ===")
-			print("Um mercante chegou! Troque recursos por itens raros.")
 			if hud.has_method("show_notification"):
 				hud.show_notification("Mercante chegou!")
 		"earthquake":
 			print("=== ATIVIDADE SÍSMICA ===")
-			print("Alguns recursos foram destruídos pelo tremor!")
-			# Aqui poderíamos remover alguns recursos do mapa
 			if hud.has_method("show_warning"):
 				hud.show_warning("Terremoto!")
 		"regrowth":
 			print("=== RENASCIMENTO ===")
-			print("Novas árvores e arbustos surgiram na floresta!")
 			if hud.has_method("show_notification"):
 				hud.show_notification("Floresta renasceu!")
 
@@ -219,15 +340,12 @@ func _on_day_started(day_number: int):
 	
 	if shadow_spawner:
 		shadow_spawner.set_active(false)
-		# Atualizar dificuldade baseada no dia
 		if shadow_spawner.has_method("set_day"):
 			shadow_spawner.set_day(current_day)
 	
-	# Verificar condições de vitória
 	if current_day >= 15:
 		GameSignals.victory.emit("Sobreviveu 15 dias!")
 	
-	# Atualizar dificuldade
 	update_difficulty(day_number)
 
 func _on_night_started():
@@ -240,11 +358,9 @@ func _on_night_started():
 	if shadow_spawner:
 		shadow_spawner.set_active(true)
 	
-	# NPCs devem recolher (se existirem)
 	print("NPCs se recolhendo para a noite...")
 
 func update_difficulty(day: int):
-	# Aumentar consumo da fogueira com o tempo
 	if fire and fire.has_method("set_base_consumption_rate"):
 		var new_rate = 0.5 + (day * 0.05)
 		fire.base_consumption_rate = new_rate
@@ -277,7 +393,6 @@ func _on_player_status_changed(health: float, hunger: float, cold: float):
 	if hud and hud.has_method("update_player_status"):
 		hud.update_player_status(health, hunger, cold)
 	
-	# Verificar status críticos
 	if health < 30:
 		if hud and hud.has_method("show_warning"):
 			hud.show_warning("Saúde baixa!")
@@ -290,31 +405,17 @@ func _on_player_status_changed(health: float, hunger: float, cold: float):
 
 func _on_player_died():
 	print("O jogador morreu!")
-	# Verificar se há NPCs para continuar
 	if ResourceManager.current_population > 0:
 		print("NPCs ainda vivem. O jogo continua...")
-		# Aqui poderia trocar para controle de NPC
 	else:
 		GameSignals.game_over.emit("Todos morreram!")
 
 func _on_game_over(reason: String):
 	print("GAME OVER: ", reason)
-	
-	# Pausar o jogo
 	get_tree().paused = true
-	
-	# Mostrar tela de game over (implementar depois)
-	# get_tree().change_scene_to_file("res://Scenes/UI/GameOverScreen.tscn")
-	
 	print("FIM DE JOGO: ", reason)
 
 func _on_victory(reason: String):
 	print("VITÓRIA: ", reason)
-	
-	# Pausar o jogo
 	get_tree().paused = true
-	
-	# Mostrar tela de vitória (implementar depois)
-	# get_tree().change_scene_to_file("res://Scenes/UI/VictoryScreen.tscn")
-	
 	print("VENCEU!")
