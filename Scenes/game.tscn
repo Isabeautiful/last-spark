@@ -16,7 +16,7 @@
 [ext_resource type="Resource" uid="uid://dkn0fg07xr858" path="res://Resources/kitchen.tres" id="13_85qyi"]
 [ext_resource type="Resource" uid="uid://bdlcc7ahmo2u0" path="res://Resources/storage.tres" id="14_iivbl"]
 [ext_resource type="Resource" uid="uid://cl7ceedjndco0" path="res://Resources/tower.tres" id="15_7nbq1"]
-[ext_resource type="Script" uid="uid://c5md1tt1wtnsq" path="res://Scenes/planting_system.gd" id="17_ewbju"]
+[ext_resource type="Script" uid="uid://c5md1tt1wtnsq" path="res://Scripts/planting_system.gd" id="17_ewbju"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_i6g32")

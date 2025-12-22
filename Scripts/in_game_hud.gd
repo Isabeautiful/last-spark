@@ -14,7 +14,6 @@ extends Control
 @onready var tree_seeds_label = $CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer3/TreeSeedsLabel
 @onready var bush_seeds_label = $CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer3/BushSeedsLabel
 @onready var planting_mode_label = $CanvasLayer/MarginContainer/VBoxContainer/PlantingModeLabel
-
 # Barras de status do jogador
 @onready var health_bar = $CanvasLayer/MarginContainer/VBoxContainer/PlayerStatus/HealthBar
 @onready var hunger_bar = $CanvasLayer/MarginContainer/VBoxContainer/PlayerStatus/HungerBar
@@ -79,6 +78,8 @@ func update_time_of_day(time: String):
 			time_indicator.modulate = Color(0.5, 0.5, 1)
 
 func update_player_status(health: float, hunger: float, cold: float):
+	print("vida: ",health," fome: ",hunger," cold: ",cold)
+	
 	health_bar.value = health
 	hunger_bar.value = hunger
 	cold_bar.value = cold
@@ -88,7 +89,7 @@ func update_player_status(health: float, hunger: float, cold: float):
 	update_bar_color(hunger_bar, hunger)
 	update_bar_color(cold_bar, cold)
 
-func update_bar_color(bar: ProgressBar, value: float):
+func update_bar_color(bar, value: float):
 	if value < 25:
 		bar.modulate = Color.RED
 	elif value < 50:

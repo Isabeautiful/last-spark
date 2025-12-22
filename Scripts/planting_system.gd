@@ -315,8 +315,8 @@ func _create_planting_effect(position: Vector2):
 func snap_to_grid(position: Vector2) -> Vector2:
 	var grid_size = 16
 	return Vector2(
-		floor(position.x / grid_size) * grid_size + grid_size/2,
-		floor(position.y / grid_size) * grid_size + grid_size/2
+		floor(position.x / grid_size) * grid_size + grid_size/2.0,
+		floor(position.x / grid_size) * grid_size + grid_size/2.0
 	)
 
 func _get_global_mouse_position() -> Vector2:

@@ -7,6 +7,7 @@ extends CharacterBody2D
 @onready var action_shape: CollisionShape2D = $ActionArea/CollisionShape2D
 @onready var sprite: Sprite2D = $Sprite2D
 
+
 # Status do jogador
 var current_speed: float = 250.0
 var hunger: float = 100.0
