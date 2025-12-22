@@ -1,8 +1,26 @@
-[gd_scene load_steps=2 format=3 uid="uid://b507atckuguwf"]
+[gd_scene load_steps=10 format=3 uid="uid://b507atckuguwf"]
 
 [ext_resource type="Script" uid="uid://ddk2ne03y2vda" path="res://Scripts/main_menu.gd" id="1_5wsvm"]
+[ext_resource type="FontFile" uid="uid://lkjhqdl6wsh7" path="res://Assets/Fonts/Gothic_pixel_font(0S).ttf" id="2_i2xx2"]
+[ext_resource type="Texture2D" uid="uid://cbsq0hbkfoalx" path="res://Assets/Background/orig.png" id="2_o14dv"]
+[ext_resource type="AudioStream" uid="uid://cl2a2hh0kjam5" path="res://Assets/audio/menu/UrbanInterlude - Mourning After.wav" id="4_u7lva"]
+[ext_resource type="AudioStream" uid="uid://cktqfw4v0jb6w" path="res://Assets/audio/hover/video-game-gui-hovering-sound-417440 (mp3cut.net).mp3" id="5_mrfpk"]
+
+[sub_resource type="Theme" id="Theme_i2xx2"]
+default_font = ExtResource("2_i2xx2")
+
+[sub_resource type="Theme" id="Theme_o14dv"]
+default_font = ExtResource("2_i2xx2")
+
+[sub_resource type="Theme" id="Theme_mrfpk"]
+default_font = ExtResource("2_i2xx2")
+
+[sub_resource type="Theme" id="Theme_u7lva"]
+default_font = ExtResource("2_i2xx2")
+default_font_size = 10
 
 [node name="Main Menu" type="Control"]
+clip_contents = true
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,52 +29,80 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_5wsvm")
 
-[node name="ColorRect" type="ColorRect" parent="."]
+[node name="ColorRect" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = -21.333374
+offset_right = 26.666626
+offset_bottom = 3.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.15127608, 0.15127608, 0.15127608, 1)
+texture = ExtResource("2_o14dv")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -136.5
-offset_top = -147.0
-offset_right = 136.5
-offset_bottom = 147.0
+anchors_preset = -1
+anchor_left = 0.49300003
+anchor_top = 0.59000003
+anchor_right = 0.49300003
+anchor_bottom = 0.59000003
+offset_left = -366.83203
+offset_top = -145.00003
+offset_right = 366.16797
+offset_bottom = 145.16336
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 20
 
-[node name="Label" type="Label" parent="VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 3
-theme_override_font_sizes/font_size = 64
-text = "LAST SPARK"
-horizontal_alignment = 1
-vertical_alignment = 1
-
 [node name="Start" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+theme = SubResource("Theme_i2xx2")
+theme_override_colors/font_color = Color(0.74509805, 0.74509805, 0.74509805, 1)
 text = "START"
 
 [node name="Credits" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+theme = SubResource("Theme_o14dv")
+theme_override_colors/font_color = Color(0.74509805, 0.74509805, 0.74509805, 1)
 text = "CREDITS"
 
 [node name="Quit" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+theme = SubResource("Theme_mrfpk")
+theme_override_colors/font_color = Color(0.74509805, 0.74509805, 0.74509805, 1)
 text = "QUIT"
 
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 3.0
+offset_right = 1031.0
+offset_bottom = 163.0
+size_flags_vertical = 3
+theme = SubResource("Theme_u7lva")
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 60
+text = "LAST SPARK"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_u7lva")
+autoplay = true
+
+[node name="AudioStreamPlayer2" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_mrfpk")
+
+[connection signal="mouse_entered" from="VBoxContainer/Start" to="." method="_on_start_mouse_entered"]
+[connection signal="mouse_exited" from="VBoxContainer/Start" to="." method="_on_start_mouse_exited"]
 [connection signal="pressed" from="VBoxContainer/Start" to="." method="_on_start_pressed"]
+[connection signal="mouse_entered" from="VBoxContainer/Credits" to="." method="_on_credits_mouse_entered"]
+[connection signal="mouse_entered" from="VBoxContainer/Quit" to="." method="_on_quit_mouse_entered"]
 [connection signal="pressed" from="VBoxContainer/Quit" to="." method="_on_quit_pressed"]

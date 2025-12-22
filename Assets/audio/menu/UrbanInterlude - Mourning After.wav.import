@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://cl2a2hh0kjam5"
+path="res://.godot/imported/UrbanInterlude - Mourning After.wav-94458ce3a2e4ae4210ec421b4faad6c2.sample"
+
+[deps]
+
+source_file="res://Assets/audio/menu/UrbanInterlude - Mourning After.wav"
+dest_files=["res://.godot/imported/UrbanInterlude - Mourning After.wav-94458ce3a2e4ae4210ec421b4faad6c2.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

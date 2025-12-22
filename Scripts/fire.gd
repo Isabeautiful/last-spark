@@ -10,7 +10,7 @@ var current_consumption_rate: float = 0.5
 var fire_level: int = 1
 var is_fire_lit: bool = true
 
-@onready var sprite: Sprite2D = $Sprite2D
+@onready var sprite: AnimatedSprite2D = $Sprite2D
 @onready var point_light: PointLight2D = $PointLight2D
 @onready var light_area: Area2D = $LightArea
 @onready var light_area_collision: CollisionShape2D = $LightArea/CollisionShape2D

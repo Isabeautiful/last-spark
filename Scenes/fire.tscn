@@ -1,20 +1,44 @@
-[gd_scene load_steps=8 format=3 uid="uid://u2uk4f2duxeh"]
+[gd_scene load_steps=12 format=3 uid="uid://u2uk4f2duxeh"]
 
 [ext_resource type="Script" uid="uid://d4d8rs34233sn" path="res://Scripts/fire.gd" id="1_6cgax"]
-[ext_resource type="Texture2D" uid="uid://be11vpuqrf33l" path="res://Assets/icon.svg" id="2_yr3ur"]
+[ext_resource type="Texture2D" uid="uid://cmf3ylpqk2rt2" path="res://Assets/bonfire_sprites/Bonfire_4.png" id="2_8uni6"]
+[ext_resource type="Texture2D" uid="uid://c5vjqepvavgml" path="res://Assets/bonfire_sprites/Bonfire_3.png" id="3_hrujk"]
+[ext_resource type="Texture2D" uid="uid://bu8v708s2ob2l" path="res://Assets/bonfire_sprites/Bonfire_2.png" id="4_6dmct"]
+[ext_resource type="Texture2D" uid="uid://cyaux0ilqcdk2" path="res://Assets/bonfire_sprites/Bonfire_1.png" id="5_w35r5"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_yr3ur"]
 radius = 172.16562
-
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_idb68"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_idb68"]
 radius = 336.0134
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_yr3ur"]
-size = Vector2(38, 38)
+size = Vector2(89, 136)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_idb68"]
+size = Vector2(85, 132)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_lcnk6"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_8uni6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_hrujk")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_6dmct")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_w35r5")
+}],
+"loop": true,
+"name": &"bonfire",
+"speed": 5.0
+}]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_idb68"]
 
 [node name="Fire" type="Area2D"]
 z_index = 3
@@ -22,22 +46,12 @@ collision_layer = 8
 collision_mask = 165
 script = ExtResource("1_6cgax")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-modulate = Color(1, 0, 0.043137256, 1)
-scale = Vector2(0.3, 0.3)
-texture = ExtResource("2_yr3ur")
-
 [node name="LightArea" type="Area2D" parent="."]
 collision_layer = 8
 collision_mask = 53
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="LightArea"]
 shape = SubResource("CircleShape2D_yr3ur")
-
-[node name="PointLight2D" type="PointLight2D" parent="."]
-energy = 1.5
-shadow_enabled = true
-texture = SubResource("CompressedTexture2D_idb68")
 
 [node name="HeatArea" type="Area2D" parent="."]
 collision_layer = 8
@@ -48,6 +62,7 @@ shape = SubResource("CircleShape2D_idb68")
 debug_color = Color(0.9137255, 0.29411766, 0, 0.09411765)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(7.5, -16)
 shape = SubResource("RectangleShape2D_yr3ur")
 debug_color = Color(0.9871103, 0.112929456, 5.7756904e-07, 0.41960785)
 
@@ -56,4 +71,20 @@ collision_layer = 8
 collision_mask = 128
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea"]
+position = Vector2(7.5, -16)
 shape = SubResource("RectangleShape2D_idb68")
+
+[node name="Sprite2D" type="AnimatedSprite2D" parent="."]
+modulate = Color(1, 0, 0.043137256, 1)
+position = Vector2(8, -57.000004)
+scale = Vector2(5.028409, 5.028409)
+sprite_frames = SubResource("SpriteFrames_lcnk6")
+animation = &"bonfire"
+autoplay = "bonfire"
+frame_progress = 0.77319276
+
+[node name="PointLight2D" type="PointLight2D" parent="."]
+position = Vector2(1, 0)
+energy = 1.5
+shadow_enabled = true
+texture = SubResource("CompressedTexture2D_idb68")
