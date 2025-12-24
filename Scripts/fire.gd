@@ -25,8 +25,8 @@ func _ready():
 	current_energy = max_energy
 	
 	# Obter referência da HUD
-	if get_node_or_null("/root/Game/InGameHUD/CanvasLayer/MarginContainer/VBoxContainer/EnergyBar"):
-		energy_bar = get_node("/root/Game/InGameHUD/CanvasLayer/MarginContainer/VBoxContainer/EnergyBar")
+	if get_node_or_null("/root/Game/InGameHUD/CanvasLayer/MarginContainer3/VBoxContainer/HBoxContainer4/EnergyBar"):
+		energy_bar = get_node("/root/Game/InGameHUD/CanvasLayer/MarginContainer3/VBoxContainer/HBoxContainer4/EnergyBar")
 	
 	add_to_group("fire")
 	

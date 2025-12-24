@@ -396,12 +396,15 @@ func _on_player_status_changed(health: float, hunger: float, cold: float):
 	if health < 30:
 		if hud and hud.has_method("show_warning"):
 			hud.show_warning("Saúde baixa!")
-	if hunger < 20:
+	elif hunger < 20:
 		if hud and hud.has_method("show_warning"):
 			hud.show_warning("Fome extrema!")
-	if cold < 20:
+	elif cold < 20:
 		if hud and hud.has_method("show_warning"):
 			hud.show_warning("Hipotermia!")
+	else:
+		GameSignals.hideWarning.emit()
+	
 
 func _on_player_died():
 	print("O jogador morreu!")

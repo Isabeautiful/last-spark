@@ -1,23 +1,25 @@
 extends Control
 
 @onready var canvas_layer = $CanvasLayer
-@onready var energy_bar = $CanvasLayer/MarginContainer/VBoxContainer/EnergyBar
-@onready var day_label = $CanvasLayer/MarginContainer/VBoxContainer/DayLabel
+@onready var energy_bar = $CanvasLayer/MarginContainer3/VBoxContainer/HBoxContainer4/EnergyBar
+@onready var day_label = $CanvasLayer/MarginContainer2/HBoxContainer/VBoxContainer/VBoxContainer_day/DayLabel
 @onready var wood_label = $CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer/WoodLabel
 @onready var food_label = $CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer/FoodLabel
 @onready var pop_label = $CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer2/PopulationLabel
-@onready var time_indicator = $CanvasLayer/MarginContainer/VBoxContainer/TimeIndicator
+@onready var time_indicator: Label = $CanvasLayer/MarginContainer2/HBoxContainer/VBoxContainer/VBoxContainer_day/TimeIndicator
 @onready var build_button = $CanvasLayer/MarginContainer/VBoxContainer/BuildButton
-@onready var player_status = $CanvasLayer/MarginContainer/VBoxContainer/PlayerStatus
-@onready var warning_label = $CanvasLayer/MarginContainer/VBoxContainer/WarningLabel
+@onready var player_status = $CanvasLayer/MarginContainer3/VBoxContainer/PlayerStatus
+@onready var warning_label = $CanvasLayer/MarginContainer2/HBoxContainer/VBoxContainer/WarningLabel
 # NOVOS labels para sementes
 @onready var tree_seeds_label = $CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer3/TreeSeedsLabel
 @onready var bush_seeds_label = $CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer3/BushSeedsLabel
 @onready var planting_mode_label = $CanvasLayer/MarginContainer/VBoxContainer/PlantingModeLabel
 # Barras de status do jogador
-@onready var health_bar = $CanvasLayer/MarginContainer/VBoxContainer/PlayerStatus/HealthBar
-@onready var hunger_bar = $CanvasLayer/MarginContainer/VBoxContainer/PlayerStatus/HungerBar
-@onready var cold_bar = $CanvasLayer/MarginContainer/VBoxContainer/PlayerStatus/ColdBar
+@onready var health_bar = $CanvasLayer/MarginContainer3/VBoxContainer/PlayerStatus/HBoxContainer/HealthBar
+@onready var hunger_bar = $CanvasLayer/MarginContainer3/VBoxContainer/PlayerStatus/HBoxContainer2/HungerBar
+@onready var cold_bar = $CanvasLayer/MarginContainer3/VBoxContainer/PlayerStatus/HBoxContainer3/ColdBar
+
+
 
 func _ready():
 	update_all_displays()
@@ -27,7 +29,8 @@ func _ready():
 		build_button.text = "Construir (B/RClick)"
 	
 	# Inicialmente esconder warning
-	warning_label.hide()
+	GameSignals.hideWarning.connect(hide_warning)
+	GameSignals.hideWarning.emit()
 	
 	# Configurar barras de status
 	health_bar.max_value = 100
@@ -77,9 +80,7 @@ func update_time_of_day(time: String):
 			time_indicator.text = "🌙 NOITE"
 			time_indicator.modulate = Color(0.5, 0.5, 1)
 
-func update_player_status(health: float, hunger: float, cold: float):
-	print("vida: ",health," fome: ",hunger," cold: ",cold)
-	
+func update_player_status(health: float, hunger: float, cold: float):	
 	health_bar.value = health
 	hunger_bar.value = hunger
 	cold_bar.value = cold
@@ -105,14 +106,21 @@ func show_warning(message: String):
 	var tween = create_tween()
 	tween.tween_property(warning_label, "modulate:a", 0.5, 0.5)
 	tween.tween_property(warning_label, "modulate:a", 1.0, 0.5)
+	tween.tween_property(warning_label, "scale", Vector2.ONE*1.1, 0.5)
+	tween.tween_property(warning_label, "scale", Vector2.ONE*1.0, 0.5)
 	tween.set_loops(3)
 	
 	# Esconder após 3 segundos
-	await get_tree().create_timer(3.0).timeout
-	warning_label.hide()
+	#await get_tree().create_timer(3.0).timeout
+	#warning_label.hide()
 
+func hide_warning():
+	warning_label.hide()
+	
 func update_all_displays():
 	update_resources()
+
+
 
 func _on_planting_mode_changed(is_active: bool):
 	if is_active:

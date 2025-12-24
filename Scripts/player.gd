@@ -7,7 +7,6 @@ extends CharacterBody2D
 @onready var action_shape: CollisionShape2D = $ActionArea/CollisionShape2D
 @onready var sprite: Sprite2D = $Sprite2D
 
-
 # Status do jogador
 var current_speed: float = 250.0
 var hunger: float = 100.0
@@ -117,7 +116,6 @@ func _setup_input_actions():
 		var event_b = InputEventKey.new()
 		event_b.keycode = KEY_B
 		InputMap.action_add_event("build_menu", event_b)
-	
 
 func _physics_process(delta):
 	if not can_process_input:
@@ -212,6 +210,7 @@ func _on_hunger_timer_timeout():
 	if GameSignals.has_user_signal("player_status_changed"):
 		GameSignals.player_status_changed.emit(health, hunger, cold)
 
+#função para verificação do status de frio
 func _on_cold_timer_timeout():
 	var fire = get_tree().get_first_node_in_group("fire")
 	if fire:
@@ -225,6 +224,8 @@ func _on_cold_timer_timeout():
 				cold -= 10
 				if cold <= 20:
 					take_damage(3, "frio")
+				else:
+					GameSignals.hideWarning.emit()
 			else:
 				cold = min(cold + 5, 100)
 		else:

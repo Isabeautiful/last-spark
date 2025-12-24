@@ -22,6 +22,7 @@ signal fire_critical()
 signal fire_level_changed(level: int)
 signal player_status_changed(health: float, hunger: float, cold: float)
 signal player_died()
+signal hideWarning
 signal player_attacked(damage: int)
 signal shadow_damaged(damage: int)
 signal wood_used(amount: int)
