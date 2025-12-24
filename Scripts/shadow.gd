@@ -17,6 +17,7 @@ var health: int = 1
 var damage_amount: int = 15
 var is_in_light: bool = false
 var light_timer: float = 0.0
+@onready var area_2d: Area2D = $Area2D
 
 # Cor baseada no tipo
 var type_colors = {
@@ -35,7 +36,7 @@ func _ready():
 	# Configurar baseado no tipo
 	configure_by_type()
 	
-	target_position = Vector2.ZERO
+	#target_position = Vector2.ZERO
 
 func reset():
 	if sprite:
@@ -69,18 +70,19 @@ func configure_by_type():
 		sprite.modulate = type_colors[shadow_type]
 
 func setup_spawn_position(spawn_center: Vector2, spawn_distance: float):
+	print("Chegou no setup_spawn_position: ",spawn_center, " , ", spawn_distance)
 	var spawn_angle = randf_range(0, 2 * PI)
 	global_position = spawn_center + Vector2(cos(spawn_angle), sin(spawn_angle)) * spawn_distance
 	
 	var fire = get_tree().get_first_node_in_group("fire")
 	if fire:
 		target_position = fire.global_position
-
+	print('é igual: ',target_position == Vector2.ZERO)
+	
 func _physics_process(delta):
-	if target_position != Vector2.ZERO:
-		var direction = (target_position - global_position).normalized()
-		velocity = direction * current_speed
-		move_and_slide()
+	#if target_position != Vector2.ZERO: o fogo tá posicionado no (0.0,0.0) então ele é o Vector2.ZERO
+		var dv = (target_position-position).normalized()
+		translate(dv * current_speed * delta)
 		
 		if global_position.distance_to(target_position) < 30:
 			_on_reached_fire()
@@ -122,9 +124,11 @@ func get_max_health() -> int:
 	return 1
 
 func _on_area_entered(area: Area2D):
+	print("colidiu")
 	if area.is_in_group("fire_light"):
 		is_in_light = true
 		print("Sombra entrou na luz!")
+		
 	elif area.is_in_group("fire_core"):
 		_on_reached_fire()
 
@@ -177,3 +181,7 @@ func highlight(active: bool):
 	else:
 		sprite.modulate = type_colors[shadow_type]
 		sprite.modulate.a = sprite.modulate.a
+
+func _on_area_2d_body_entered(body: Node2D) -> void:
+	if body.is_in_group("player"):
+		GameSignals.player_hit.emit(20.0)

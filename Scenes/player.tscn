@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://be11vpuqrf33l" path="res://Assets/icon.svg" id="1_v0iea"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_cvnsp"]
-size = Vector2(36, 38)
+size = Vector2(36, 36)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6t5aa"]
 size = Vector2(58, 35)
@@ -36,3 +36,5 @@ wait_time = 5.0
 wait_time = 3.0
 
 [node name="PlantCheckTimer" type="Timer" parent="."]
+
+[connection signal="body_entered" from="ActionArea" to="." method="_on_action_area_body_entered"]

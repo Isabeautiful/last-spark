@@ -15,6 +15,11 @@ var health: float = 100.0
 var is_running: bool = false
 var is_in_heat_zone: bool = true
 
+#variáveis para controle do 
+@export var is_hunger_warning_set = false
+@export var is_cold_warning_set = false
+@export var is_health_warning_set = false
+
 # Variável para semente atual (apenas para referência, será gerenciado pelo PlantingSystem)
 var current_seed_type: String = "tree"
 
@@ -49,6 +54,8 @@ func _ready():
 	action_area.body_entered.connect(_on_action_area_body_entered)
 	action_area.body_exited.connect(_on_action_area_body_exited)
 	
+	GameSignals.player_hit.connect(take_damage)
+	
 	# Configurar entrada
 	_setup_input_actions()
 
@@ -60,6 +67,15 @@ func setup_area():
 	# Posicionar a área na frente do jogador
 	update_area_position(Vector2.DOWN)
 
+func set_warning_status(status,cond):
+	match cond:
+		"health":
+			is_health_warning_set = status
+		"hunger":
+			is_hunger_warning_set = status
+		"cold":
+			is_cold_warning_set = status
+			
 func setup_timers():
 	# Timer de fome
 	hunger_timer.timeout.connect(_on_hunger_timer_timeout)

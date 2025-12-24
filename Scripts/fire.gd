@@ -16,6 +16,9 @@ var is_fire_lit: bool = true
 @onready var light_area_collision: CollisionShape2D = $LightArea/CollisionShape2D
 @onready var interaction_area: Area2D = $InteractionArea
 
+var is_low_warning_set = false
+var is_critical_warning_set = false
+
 var energy_bar = null
 
 var base_light_energy: float = 1.5
@@ -54,6 +57,13 @@ func _ready():
 	consumption_timer.timeout.connect(_on_consumption_timer_timeout)
 	add_child(consumption_timer)
 	consumption_timer.start()
+	
+func set_warning_status(status,cond):
+	match cond:
+		"low":
+			is_low_warning_set = status
+		"critical":
+			is_critical_warning_set = status
 
 func _on_consumption_timer_timeout():
 	current_consumption_rate = base_consumption_rate * fire_level
@@ -74,6 +84,8 @@ func _on_consumption_timer_timeout():
 	
 	if current_energy / max_energy < min_energy_percentage:
 		emit_chama_fraca_warning()
+	elif is_low_warning_set:
+		is_low_warning_set = false
 
 func update_fire_level():
 	var energy_percent = current_energy / max_energy
@@ -122,6 +134,9 @@ func take_damage(amount: float):
 	if current_energy / max_energy < 0.1:
 		if GameSignals.has_user_signal("fire_critical"):
 			GameSignals.fire_critical.emit()
+	elif is_critical_warning_set:
+		is_critical_warning_set = false
+	
 
 func add_fuel(amount: float):
 	current_energy = min(current_energy + amount, max_energy)

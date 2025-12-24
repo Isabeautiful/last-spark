@@ -9,7 +9,8 @@ extends Control
 @onready var time_indicator: Label = $CanvasLayer/MarginContainer2/HBoxContainer/VBoxContainer/VBoxContainer_day/TimeIndicator
 @onready var build_button = $CanvasLayer/MarginContainer/VBoxContainer/BuildButton
 @onready var player_status = $CanvasLayer/MarginContainer3/VBoxContainer/PlayerStatus
-@onready var warning_label = $CanvasLayer/MarginContainer2/HBoxContainer/VBoxContainer/WarningLabel
+
+@onready var warning_label_Cont = $CanvasLayer/MarginContainer2/HBoxContainer/VBoxContainer/WarningLabel
 # NOVOS labels para sementes
 @onready var tree_seeds_label = $CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer3/TreeSeedsLabel
 @onready var bush_seeds_label = $CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer3/BushSeedsLabel
@@ -29,8 +30,8 @@ func _ready():
 		build_button.text = "Construir (B/RClick)"
 	
 	# Inicialmente esconder warning
-	GameSignals.hideWarning.connect(hide_warning)
-	GameSignals.hideWarning.emit()
+	#GameSignals.hideWarning.connect(hide_warning)
+	#GameSignals.hideWarning.emit()
 	
 	# Configurar barras de status
 	health_bar.max_value = 100
@@ -98,29 +99,30 @@ func update_bar_color(bar, value: float):
 	else:
 		bar.modulate = Color.GREEN
 
-func show_warning(message: String):
+func show_warning(message: String,child_meta:String):
+	var warning_label = Label.new()
 	warning_label.text = "⚠️ " + message
-	warning_label.show()
-	
+	warning_label.set_meta("tipo",child_meta)
 	# Efeito de piscar
 	var tween = create_tween()
 	tween.tween_property(warning_label, "modulate:a", 0.5, 0.5)
 	tween.tween_property(warning_label, "modulate:a", 1.0, 0.5)
-	tween.tween_property(warning_label, "scale", Vector2.ONE*1.1, 0.5)
-	tween.tween_property(warning_label, "scale", Vector2.ONE*1.0, 0.5)
-	tween.set_loops(3)
+	tween.set_loops(5)
+	
+	warning_label_Cont.add_child(warning_label)
 	
 	# Esconder após 3 segundos
 	#await get_tree().create_timer(3.0).timeout
 	#warning_label.hide()
-
-func hide_warning():
-	warning_label.hide()
+	
+func hide_warning(child_meta:String):
+	for child in warning_label_Cont.get_children():
+		if child.get_meta("tipo") == child_meta:
+			warning_label_Cont.remove_child(child)
+			child.queue_free()
 	
 func update_all_displays():
 	update_resources()
-
-
 
 func _on_planting_mode_changed(is_active: bool):
 	if is_active:

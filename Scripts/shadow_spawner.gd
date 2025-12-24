@@ -84,6 +84,7 @@ func _on_spawn_timer_timeout():
 
 func spawn_shadow():
 	var fire = get_tree().get_first_node_in_group("fire")
+	print("Conexão no shadowSpawner feita, fogo: ",fire.global_position)
 	if not fire:
 		return
 	

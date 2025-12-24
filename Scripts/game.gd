@@ -292,6 +292,7 @@ func initialize_events():
 	event_timer.wait_time = 60.0
 	event_timer.timeout.connect(_check_events)
 	event_manager.add_child(event_timer)
+	
 	add_child(event_manager)
 	
 	event_timer.start()
@@ -309,26 +310,29 @@ func trigger_random_event():
 	
 	var random_event = events[randi() % events.size()]
 	handle_event(random_event)
-
+	
 func handle_event(event_type: String):
 	match event_type:
 		"storm":
 			print("=== TEMPESTADE DE NEVE ===")
 			if hud.has_method("show_warning"):
-				hud.show_warning("Tempestade de neve!")
+				hud.show_warning("Tempestade de neve!","storm")
 		"merchant":
 			print("=== MERCADO VISITANTE ===")
 			if hud.has_method("show_notification"):
-				hud.show_notification("Mercante chegou!")
+				hud.show_notification("Mercante chegou!","merchant")
 		"earthquake":
 			print("=== ATIVIDADE SÍSMICA ===")
 			if hud.has_method("show_warning"):
-				hud.show_warning("Terremoto!")
+				hud.show_warning("Terremoto!","earthquake")
 		"regrowth":
 			print("=== RENASCIMENTO ===")
 			if hud.has_method("show_notification"):
-				hud.show_notification("Floresta renasceu!")
-
+				hud.show_notification("Floresta renasceu!","regrowth")
+				
+	await get_tree().create_timer(5.0)
+	hud.hide_warning(event_type)
+	
 func _on_day_started(day_number: int):
 	print("=== DIA ", day_number, " INICIADO ===")
 	current_day = day_number
@@ -381,29 +385,47 @@ func _on_population_changed(_amount):
 
 func _on_fire_low_warning(energy_percent: float):
 	print("ALERTA: Fogueira fraca! (", int(energy_percent * 100), "%)")
-	if hud and hud.has_method("show_warning"):
-		hud.show_warning("Fogueira fraca!")
+	
+	if hud and hud.has_method("show_warning") and not fire.is_critical_warning_set and not fire.is_low_warning_set:
+		hud.show_warning("Fogueira fraca!","Fogueira Fraca")
+		fire.set_warning_status(true,"low")
 
 func _on_fire_critical():
 	print("ALERTA CRÍTICO: Fogueira prestes a apagar!")
-	if hud and hud.has_method("show_warning"):
-		hud.show_warning("FOGUEIRA CRÍTICA!")
+	if fire.is_low_warning_set:
+		hud.hide_warning("low")
+		
+	if hud and hud.has_method("show_warning") and not fire.is_critical_warning_set:
+		hud.show_warning("FOGUEIRA CRÍTICA!","Fogueira Crítica")
+		fire.set_warning_status(true,"critical")
 
 func _on_player_status_changed(health: float, hunger: float, cold: float):
 	if hud and hud.has_method("update_player_status"):
 		hud.update_player_status(health, hunger, cold)
 	
-	if health < 30:
+	if health < 30 and not player.is_health_warning_set:
 		if hud and hud.has_method("show_warning"):
-			hud.show_warning("Saúde baixa!")
-	elif hunger < 20:
-		if hud and hud.has_method("show_warning"):
-			hud.show_warning("Fome extrema!")
-	elif cold < 20:
-		if hud and hud.has_method("show_warning"):
-			hud.show_warning("Hipotermia!")
+			player.set_warning_status(true,"health")
+			hud.show_warning("Saúde baixa!","health")
 	else:
-		GameSignals.hideWarning.emit()
+		player.set_warning_status(false,"health")
+		hud.hide_warning("health")
+			
+	if hunger < 20 and not player.is_hunger_warning_set:
+		if hud and hud.has_method("show_warning"):
+			player.set_warning_status(true,"hunger")
+			hud.show_warning("Fome extrema!","hunger")
+	elif hunger >= 20:
+		player.set_warning_status(false,"hunger")
+		hud.hide_warning("hunger")
+			
+	if cold < 20 and not player.is_cold_warning_set:
+		if hud and hud.has_method("show_warning"):
+			player.set_warning_status(true,"cold")
+			hud.show_warning("Hipotermia!","cold")
+	elif cold >= 20:
+		player.set_warning_status(false,"cold")
+		hud.hide_warning("cold")
 	
 
 func _on_player_died():

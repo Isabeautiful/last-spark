@@ -80,9 +80,8 @@ size_flags_vertical = 3
 text = "☀️ DIA"
 horizontal_alignment = 1
 
-[node name="WarningLabel" type="Label" parent="CanvasLayer/MarginContainer2/HBoxContainer/VBoxContainer"]
+[node name="WarningLabel" type="VBoxContainer" parent="CanvasLayer/MarginContainer2/HBoxContainer/VBoxContainer"]
 layout_mode = 2
-text = "UOOUOOUOOOOHHH"
 
 [node name="MarginContainer3" type="MarginContainer" parent="CanvasLayer"]
 offset_left = 813.0

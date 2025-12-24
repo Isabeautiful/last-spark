@@ -58,7 +58,7 @@ func _ready():
 	print("Arbustos: ", placed_food.size())
 
 func calculate_derived_variables():
-	map_size = 2 * map_radius + 1
+	map_size = 2* map_radius + 1
 	max_coord = map_radius - 2
 	path_length = int(map_radius * path_length_percentage)
 	diagonal_length = int(map_radius * diagonal_path_percentage)

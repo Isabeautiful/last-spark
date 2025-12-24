@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://cc6wiwwp00f3e"]
+[gd_scene load_steps=18 format=4 uid="uid://cc6wiwwp00f3e"]
 
 [ext_resource type="PackedScene" uid="uid://coqvrycmqjk2n" path="res://Scenes/player.tscn" id="1_ebmjs"]
 [ext_resource type="Script" uid="uid://mjjo60nrua5g" path="res://Scripts/game.gd" id="1_i6g32"]
@@ -25,6 +25,7 @@ script = ExtResource("1_i6g32")
 script = ExtResource("7_v158k")
 
 [node name="GroundLayer" parent="MapManager" instance=ExtResource("1_wrm1d")]
+tile_map_data = PackedByteArray("AAAEAAAAAAAGAAYAAAAFAAAAAAAGAAYAAAAGAAAAAAAGAAYAAAAHAAEAAAAGAAYAAAAGAAEAAAAGAAYAAAAEAAEAAAAGAAYAAAAFAAEAAAAGAAYAAAAEAAIAAAAGAAYAAAAFAAIAAAAGAAYAAAAGAAIAAAAGAAYAAAAHAAIAAAAFAAYAAAAHAAAAAAAGAAYAAAAPAAoAAAAFAAYAAAA=")
 
 [node name="Player" parent="." instance=ExtResource("1_ebmjs")]
 
@@ -37,6 +38,7 @@ script = ExtResource("4_1l0tm")
 position = Vector2(737, 0)
 
 [node name="InGameHUD" parent="." instance=ExtResource("6_v158k")]
+visible = false
 
 [node name="DayNightCycle" type="Node" parent="."]
 script = ExtResource("10_ldgsr")
