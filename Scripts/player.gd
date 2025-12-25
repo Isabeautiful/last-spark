@@ -15,7 +15,14 @@ var health: float = 100.0
 var is_running: bool = false
 var is_in_heat_zone: bool = true
 
-#variáveis para controle do 
+#enum pra gerenciar os status do player mais fácil
+var PlayerStatus = {hungry=false,hurt = false, cold = false}
+
+#Váriaveis de controle de dano de inimigos
+var damage_cooldown = 0.5
+var is_on_damage_cooldown = false
+
+#variáveis para controle dos avisos 
 @export var is_hunger_warning_set = false
 @export var is_cold_warning_set = false
 @export var is_health_warning_set = false
@@ -47,6 +54,7 @@ func _ready():
 	add_to_group("player")
 	setup_area()
 	setup_timers()
+	set_meta("CharacterType","Player")
 	
 	# Conectar sinais da área
 	action_area.area_entered.connect(_on_action_area_entered)
@@ -133,7 +141,7 @@ func _setup_input_actions():
 		event_b.keycode = KEY_B
 		InputMap.action_add_event("build_menu", event_b)
 
-func _physics_process(delta):
+func _physics_process(delta):	
 	if not can_process_input:
 		velocity = Vector2.ZERO
 		move_and_slide()
@@ -173,16 +181,26 @@ func _physics_process(delta):
 	velocity = input_dir * current_speed
 	move_and_slide()
 	
-	# Atualizar HUD
-	if GameSignals.has_user_signal("player_status_changed"):
-		GameSignals.player_status_changed.emit(health, hunger, cold)
+	if health < 100:
+		health += Get_heal_factor() * delta
 
+#Retorna o valor de cura do jogador de acordo com o status
+func Get_heal_factor():
+	if PlayerStatus.hungry: return 0
+	var sum  = 0.0
+	
+	if not PlayerStatus.cold: sum += 0.30
+	if not PlayerStatus.hurt: sum += 0.30 
+	
+	if hunger >= 80: sum += 0.40
+	elif not PlayerStatus.hungry: sum += 0.2
+	
+	return sum
 func _input(event):
 	if not can_process_input or not can_action:
 		return
 	
 	# REMOVIDO: Sistema de plantio - agora é gerenciado pelo PlantingSystem
-	
 	# Sistema de ações inteligente original
 	if event.is_action_pressed("attack"):
 		# Primeiro tenta atacar inimigos
@@ -222,6 +240,9 @@ func _on_hunger_timer_timeout():
 	
 	if hunger <= 0:
 		take_damage(5, "fome")
+		PlayerStatus.hungry = true
+	else:
+		PlayerStatus.hungry = false
 	
 	if GameSignals.has_user_signal("player_status_changed"):
 		GameSignals.player_status_changed.emit(health, hunger, cold)
@@ -239,9 +260,11 @@ func _on_cold_timer_timeout():
 			if not is_in_heat_zone:
 				cold -= 10
 				if cold <= 20:
+					PlayerStatus.cold = true
 					take_damage(3, "frio")
 				else:
-					GameSignals.hideWarning.emit()
+					PlayerStatus.cold = false
+					GameSignals.hideWarning.emit("cold")
 			else:
 				cold = min(cold + 5, 100)
 		else:
@@ -389,6 +412,11 @@ func take_damage(amount: float, source: String = ""):
 	
 	if health <= 0:
 		die()
+	
+	if health <= 20:
+		PlayerStatus.hurt = true
+	else:
+		PlayerStatus.hurt = false
 	
 	if GameSignals.has_user_signal("player_status_changed"):
 		GameSignals.player_status_changed.emit(health, hunger, cold)

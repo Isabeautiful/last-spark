@@ -86,6 +86,8 @@ func _on_consumption_timer_timeout():
 		emit_chama_fraca_warning()
 	elif is_low_warning_set:
 		is_low_warning_set = false
+		print("foi foi")
+		GameSignals.hideWarning.emit("low")
 
 func update_fire_level():
 	var energy_percent = current_energy / max_energy
@@ -134,8 +136,11 @@ func take_damage(amount: float):
 	if current_energy / max_energy < 0.1:
 		if GameSignals.has_user_signal("fire_critical"):
 			GameSignals.fire_critical.emit()
+			
 	elif is_critical_warning_set:
 		is_critical_warning_set = false
+		print("foi")
+		GameSignals.hideWarning.emit("critical")
 	
 
 func add_fuel(amount: float):

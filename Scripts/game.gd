@@ -387,7 +387,7 @@ func _on_fire_low_warning(energy_percent: float):
 	print("ALERTA: Fogueira fraca! (", int(energy_percent * 100), "%)")
 	
 	if hud and hud.has_method("show_warning") and not fire.is_critical_warning_set and not fire.is_low_warning_set:
-		hud.show_warning("Fogueira fraca!","Fogueira Fraca")
+		hud.show_warning("Fogueira fraca!","low")
 		fire.set_warning_status(true,"low")
 
 func _on_fire_critical():
@@ -396,9 +396,12 @@ func _on_fire_critical():
 		hud.hide_warning("low")
 		
 	if hud and hud.has_method("show_warning") and not fire.is_critical_warning_set:
-		hud.show_warning("FOGUEIRA CRÍTICA!","Fogueira Crítica")
+		hud.show_warning("FOGUEIRA CRÍTICA!","critical")
 		fire.set_warning_status(true,"critical")
 
+#Controle da emissão dos warnings
+#id0 = health,  id1=hunger, id2=cold
+var ac = [0,0,0]
 func _on_player_status_changed(health: float, hunger: float, cold: float):
 	if hud and hud.has_method("update_player_status"):
 		hud.update_player_status(health, hunger, cold)
@@ -407,25 +410,30 @@ func _on_player_status_changed(health: float, hunger: float, cold: float):
 		if hud and hud.has_method("show_warning"):
 			player.set_warning_status(true,"health")
 			hud.show_warning("Saúde baixa!","health")
-	else:
+			ac[0] = 0
+	elif ac[0] == 0:
 		player.set_warning_status(false,"health")
 		hud.hide_warning("health")
+		ac[0]+=1
 			
 	if hunger < 20 and not player.is_hunger_warning_set:
 		if hud and hud.has_method("show_warning"):
 			player.set_warning_status(true,"hunger")
 			hud.show_warning("Fome extrema!","hunger")
-	elif hunger >= 20:
+			ac[1] = 0
+	elif ac[1]==0:
 		player.set_warning_status(false,"hunger")
 		hud.hide_warning("hunger")
-			
+		ac[1]+=1
 	if cold < 20 and not player.is_cold_warning_set:
 		if hud and hud.has_method("show_warning"):
 			player.set_warning_status(true,"cold")
 			hud.show_warning("Hipotermia!","cold")
-	elif cold >= 20:
+			ac[2]=0
+	elif ac[2]==0:
 		player.set_warning_status(false,"cold")
 		hud.hide_warning("cold")
+		ac[2]+=1
 	
 
 func _on_player_died():

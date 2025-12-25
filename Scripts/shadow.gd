@@ -14,7 +14,7 @@ enum ShadowType {
 var target_position: Vector2
 var current_speed: float = 50.0
 var health: int = 1
-var damage_amount: int = 15
+var damage_amount: int
 var is_in_light: bool = false
 var light_timer: float = 0.0
 @onready var area_2d: Area2D = $Area2D
@@ -36,8 +36,6 @@ func _ready():
 	# Configurar baseado no tipo
 	configure_by_type()
 	
-	#target_position = Vector2.ZERO
-
 func reset():
 	if sprite:
 		sprite.modulate.a = 1.0
@@ -55,34 +53,39 @@ func configure_by_type():
 	match shadow_type:
 		ShadowType.COMMON:
 			current_speed = base_speed
-			damage_amount = 15
+			damage_amount = 1.5
 			health = 1
 		ShadowType.RESILIENT:
 			current_speed = base_speed * 0.7
-			damage_amount = 25
+			damage_amount = 2.5
 			health = 3
 		ShadowType.WINTER:
 			current_speed = base_speed * 1.3
-			damage_amount = 35
+			damage_amount = 3.5
 			health = 2
 	
 	if sprite:
 		sprite.modulate = type_colors[shadow_type]
 
 func setup_spawn_position(spawn_center: Vector2, spawn_distance: float):
-	print("Chegou no setup_spawn_position: ",spawn_center, " , ", spawn_distance)
 	var spawn_angle = randf_range(0, 2 * PI)
 	global_position = spawn_center + Vector2(cos(spawn_angle), sin(spawn_angle)) * spawn_distance
 	
 	var fire = get_tree().get_first_node_in_group("fire")
 	if fire:
 		target_position = fire.global_position
-	print('é igual: ',target_position == Vector2.ZERO)
 	
 func _physics_process(delta):
 	#if target_position != Vector2.ZERO: o fogo tá posicionado no (0.0,0.0) então ele é o Vector2.ZERO
 		var dv = (target_position-position).normalized()
-		translate(dv * current_speed * delta)
+		velocity = dv * current_speed * delta
+		
+		var collision = move_and_collide(dv * current_speed * delta)
+		
+		if(collision) and collision.get_collider().get_meta("CharacterType")=="Player":
+			GameSignals.player_hit.emit(20.0,"Enemy")
+			destroyed.emit()
+			return_to_pool()
 		
 		if global_position.distance_to(target_position) < 30:
 			_on_reached_fire()
@@ -114,6 +117,7 @@ func get_dissolve_time() -> float:
 		ShadowType.COMMON: return 1.0
 		ShadowType.RESILIENT: return 3.0
 		ShadowType.WINTER: return 2.0
+		
 	return 1.0
 
 func get_max_health() -> int:
@@ -124,7 +128,6 @@ func get_max_health() -> int:
 	return 1
 
 func _on_area_entered(area: Area2D):
-	print("colidiu")
 	if area.is_in_group("fire_light"):
 		is_in_light = true
 		print("Sombra entrou na luz!")
@@ -143,6 +146,7 @@ func _on_reached_fire():
 	if fire and fire.has_method("take_damage"):
 		fire.take_damage(damage_amount)
 		print("Sombra ", shadow_type, " atingiu o fogo! Dano: ", damage_amount)
+	
 	destroy()
 
 func take_damage(amount: int):
@@ -181,7 +185,3 @@ func highlight(active: bool):
 	else:
 		sprite.modulate = type_colors[shadow_type]
 		sprite.modulate.a = sprite.modulate.a
-
-func _on_area_2d_body_entered(body: Node2D) -> void:
-	if body.is_in_group("player"):
-		GameSignals.player_hit.emit(20.0)

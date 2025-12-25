@@ -36,5 +36,3 @@ wait_time = 5.0
 wait_time = 3.0
 
 [node name="PlantCheckTimer" type="Timer" parent="."]
-
-[connection signal="body_entered" from="ActionArea" to="." method="_on_action_area_body_entered"]

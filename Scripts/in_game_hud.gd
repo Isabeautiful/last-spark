@@ -29,10 +29,6 @@ func _ready():
 		build_button.pressed.connect(_on_build_button_pressed)
 		build_button.text = "Construir (B/RClick)"
 	
-	# Inicialmente esconder warning
-	#GameSignals.hideWarning.connect(hide_warning)
-	#GameSignals.hideWarning.emit()
-	
 	# Configurar barras de status
 	health_bar.max_value = 100
 	hunger_bar.max_value = 100
@@ -43,7 +39,8 @@ func _ready():
 	ResourceManager.bush_seeds_changed.connect(_on_bush_seeds_changed)
 	
 	GameSignals.planting_mode_changed.connect(_on_planting_mode_changed)
-
+	GameSignals.hideWarning.connect(hide_warning)
+	
 func _on_build_button_pressed():
 	GameSignals.build_menu_toggled.emit()
 
@@ -111,12 +108,10 @@ func show_warning(message: String,child_meta:String):
 	
 	warning_label_Cont.add_child(warning_label)
 	
-	# Esconder após 3 segundos
-	#await get_tree().create_timer(3.0).timeout
-	#warning_label.hide()
-	
 func hide_warning(child_meta:String):
+	print("RODOU, removendo: ",child_meta)
 	for child in warning_label_Cont.get_children():
+		print("lista: ",child.get_meta("tipo"),"busca: ", child_meta)
 		if child.get_meta("tipo") == child_meta:
 			warning_label_Cont.remove_child(child)
 			child.queue_free()
