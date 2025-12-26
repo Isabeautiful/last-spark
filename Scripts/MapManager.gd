@@ -50,6 +50,7 @@ func _ready():
 	
 	calculate_derived_variables()
 	generate_ground_layer()
+	generate_map_borders()
 	place_resources()
 	place_central_path()
 	
@@ -73,6 +74,38 @@ func generate_ground_layer():
 				continue
 			tilemap_layer.set_cell(tile_pos, 0, Vector2i(0, 0), 0)
 
+func generate_map_borders():
+	var borders = []
+	var collision_shapes = []
+	var sum = 0
+	
+	for i in range(4):
+		var staticBody = StaticBody2D.new()
+		var shapeInstance = CollisionShape2D.new()
+		var col = RectangleShape2D.new()
+		
+		shapeInstance.shape = col
+		staticBody.collision_layer = 2
+		staticBody.collision_mask = 1
+		
+		borders.push_back(staticBody)
+		collision_shapes.push_back(shapeInstance)
+		
+		borders.get(i).add_child(collision_shapes.get(i))
+		
+	borders[0].position = Vector2(0,map_radius*16)
+	borders[1].position = Vector2(map_radius*16,0)
+	borders[2].position = Vector2(0,-map_radius*16)
+	borders[3].position = Vector2(-map_radius*16,0)
+	
+	collision_shapes[0].scale = Vector2(map_radius*16,1.0)
+	collision_shapes[1].scale = Vector2(1.0,map_radius*16)
+	collision_shapes[2].scale = Vector2(map_radius*16,1.0)
+	collision_shapes[3].scale = Vector2(1.0,map_radius*16)
+	
+	for i in range(4):
+		add_child(borders[i])
+		
 func place_central_path():
 	if not tilemap_layer:
 		return

@@ -30,6 +30,10 @@ tile_map_data = PackedByteArray("AAAEAAAAAAAGAAYAAAAFAAAAAAAGAAYAAAAGAAAAAAAGAAY
 [node name="Player" parent="." instance=ExtResource("1_ebmjs")]
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
+limit_left = -1120
+limit_top = -1120
+limit_right = 1120
+limit_bottom = 1120
 script = ExtResource("4_1l0tm")
 
 [node name="Fire" parent="." instance=ExtResource("3_3dryh")]

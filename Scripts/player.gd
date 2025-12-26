@@ -63,7 +63,6 @@ func _ready():
 	action_area.body_exited.connect(_on_action_area_body_exited)
 	
 	GameSignals.player_hit.connect(take_damage)
-	
 	# Configurar entrada
 	_setup_input_actions()
 
@@ -94,6 +93,7 @@ func setup_timers():
 	cold_timer.start()
 
 func _setup_input_actions():
+	
 	# Ação de correr (Shift)
 	if not InputMap.has_action("run"):
 		InputMap.add_action("run")
@@ -178,11 +178,13 @@ func _physics_process(delta):
 		# Animação simples
 		sprite.rotation = current_direction.angle()
 	
-	velocity = input_dir * current_speed
-	move_and_slide()
-	
+	velocity = input_dir * current_speed * delta
+	move_and_collide(velocity)
+
 	if health < 100:
 		health += Get_heal_factor() * delta
+	
+	GameSignals.player_status_changed.emit(health,hunger,cold)
 
 #Retorna o valor de cura do jogador de acordo com o status
 func Get_heal_factor():
@@ -241,39 +243,75 @@ func _on_hunger_timer_timeout():
 	if hunger <= 0:
 		take_damage(5, "fome")
 		PlayerStatus.hungry = true
+		
+		if not is_hunger_warning_set:
+			GameSignals.showWarning.emit("Fome Extrema!","hunger")
+			is_hunger_warning_set = true
 	else:
 		PlayerStatus.hungry = false
+		is_hunger_warning_set = false
+		GameSignals.hideWarning.emit("hunger")
 	
 	if GameSignals.has_user_signal("player_status_changed"):
 		GameSignals.player_status_changed.emit(health, hunger, cold)
 
 #função para verificação do status de frio
+#func _on_cold_timer_timeout():
+#	var fire = get_tree().get_first_node_in_group("fire")
+	
+#	if fire:
+#		var distance_to_fire = global_position.distance_to(fire.global_position)
+#		if fire.has_method("get_light_radius"):
+#			var heat_radius = fire.get_light_radius()
+#			is_in_heat_zone = distance_to_fire <= heat_radius
+			
+#			if not is_in_heat_zone:
+#				cold -= 10
+#			else:
+#				cold = min(cold + 5, 100)
+#		else:
+#			cold -= 10
+#	else:
+#		cold -= 15
+	
+#	cold = max(cold, 0)
+	
+#	if cold <= 20:
+#		PlayerStatus.cold = true
+#		take_damage(3, "frio")
+#	else:
+#		PlayerStatus.cold = false
+#		GameSignals.hideWarning.emit("cold")
+		
+#	if GameSignals.has_user_signal("player_status_changed"):
+#		GameSignals.player_status_changed.emit(health, hunger, cold)
+
 func _on_cold_timer_timeout():
 	var fire = get_tree().get_first_node_in_group("fire")
-	if fire:
-		var distance_to_fire = global_position.distance_to(fire.global_position)
-		
-		if fire.has_method("get_light_radius"):
-			var heat_radius = fire.get_light_radius()
-			is_in_heat_zone = distance_to_fire <= heat_radius
-			
-			if not is_in_heat_zone:
-				cold -= 10
-				if cold <= 20:
-					PlayerStatus.cold = true
-					take_damage(3, "frio")
-				else:
-					PlayerStatus.cold = false
-					GameSignals.hideWarning.emit("cold")
-			else:
-				cold = min(cold + 5, 100)
-		else:
-			cold -= 10
-	else:
-		cold -= 15
+	var distance_to_fire = global_position.distance_to(fire.global_position)
+	var heat_radius = fire.get_light_radius()
 	
+	is_in_heat_zone = distance_to_fire <= heat_radius
+
+	if not is_in_heat_zone:
+		cold -= 10
+	else:
+		cold = min(cold + 5, 100)
+
 	cold = max(cold, 0)
 	
+	if cold <= 20:
+		PlayerStatus.cold = true
+		take_damage(3, "frio")
+		
+		if not is_cold_warning_set:
+			GameSignals.showWarning.emit("Hipotermia!","cold")
+			is_cold_warning_set = true
+	else:
+		PlayerStatus.cold = false
+		is_cold_warning_set = false
+		GameSignals.hideWarning.emit("cold")
+		
 	if GameSignals.has_user_signal("player_status_changed"):
 		GameSignals.player_status_changed.emit(health, hunger, cold)
 
@@ -415,8 +453,13 @@ func take_damage(amount: float, source: String = ""):
 	
 	if health <= 20:
 		PlayerStatus.hurt = true
+		if not is_health_warning_set:
+			GameSignals.showWarning.emit("Saúde Baixa!","health")
+			is_health_warning_set = true
 	else:
 		PlayerStatus.hurt = false
+		is_health_warning_set = false
+		GameSignals.hideWarning.emit("health")
 	
 	if GameSignals.has_user_signal("player_status_changed"):
 		GameSignals.player_status_changed.emit(health, hunger, cold)

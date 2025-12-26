@@ -39,7 +39,10 @@ func _ready():
 	ResourceManager.bush_seeds_changed.connect(_on_bush_seeds_changed)
 	
 	GameSignals.planting_mode_changed.connect(_on_planting_mode_changed)
+	
+	GameSignals.player_status_changed.connect(update_player_status)
 	GameSignals.hideWarning.connect(hide_warning)
+	GameSignals.showWarning.connect(show_warning)
 	
 func _on_build_button_pressed():
 	GameSignals.build_menu_toggled.emit()
