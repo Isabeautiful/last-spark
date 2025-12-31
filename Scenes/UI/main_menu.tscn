@@ -61,21 +61,21 @@ layout_mode = 2
 size_flags_vertical = 3
 theme = SubResource("Theme_i2xx2")
 theme_override_colors/font_color = Color(0.74509805, 0.74509805, 0.74509805, 1)
-text = "START"
+text = "Novo Jogo"
 
 [node name="Credits" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 theme = SubResource("Theme_o14dv")
 theme_override_colors/font_color = Color(0.74509805, 0.74509805, 0.74509805, 1)
-text = "CREDITS"
+text = "Créditos"
 
 [node name="Quit" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 theme = SubResource("Theme_mrfpk")
 theme_override_colors/font_color = Color(0.74509805, 0.74509805, 0.74509805, 1)
-text = "QUIT"
+text = "Sair"
 
 [node name="Label" type="Label" parent="."]
 layout_mode = 0

@@ -68,7 +68,7 @@ func create_extra_object() -> Node2D:
 func return_object(obj: Node2D) -> void:
 	if not obj or not is_instance_valid(obj):
 		return
-	
+
 	obj.hide()
 	obj.process_mode = Node.PROCESS_MODE_DISABLED
 	obj.set_meta("in_pool", true)
@@ -93,3 +93,9 @@ func clear_extra_objects() -> void:
 		if is_instance_valid(obj):
 			obj.queue_free()
 		lista_objetos.erase(obj)
+
+func clear_all_objects():
+	for i in lista_objetos:
+		parent.remove_child(i)
+		
+	lista_objetos.clear()

@@ -54,6 +54,8 @@ func _ready():
 	place_resources()
 	place_central_path()
 	
+	#GameSignals.clear_all_pools.connect(clear_loaded_elements)
+	
 	print("=== MAPA GERADO ===")
 	print("Árvores: ", placed_trees.size())
 	print("Arbustos: ", placed_food.size())
@@ -415,3 +417,11 @@ func get_tree_count() -> int:
 
 func get_food_count() -> int:
 	return placed_food.size()
+
+func clear_loaded_elements():
+	for i in range(len(placed_trees)):
+		placed_trees.erase(i)
+		
+	clear_placed_resources(placed_trees,"tree")
+	placed_food.clear()
+	placed_trees.clear()

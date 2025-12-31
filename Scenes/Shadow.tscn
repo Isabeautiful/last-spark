@@ -7,7 +7,7 @@
 size = Vector2(123, 120)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8pobm"]
-size = Vector2(123.684235, 57.324837)
+size = Vector2(123.684235, 114.64967)
 
 [node name="Shadow" type="CharacterBody2D"]
 z_index = 2
@@ -30,5 +30,5 @@ collision_layer = 8
 collision_mask = 16
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-position = Vector2(1.3157897, 2.8662426)
+position = Vector2(1.3157897, -1.025048e-06)
 shape = SubResource("RectangleShape2D_8pobm")

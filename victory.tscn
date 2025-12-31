@@ -1,0 +1,88 @@
+[gd_scene load_steps=11 format=3 uid="uid://cb0s3wsy3t66e"]
+
+[ext_resource type="FontFile" uid="uid://bsgyysdfm6yd3" path="res://Assets/Fonts/Aurusenthial Gothic Soft.ttf" id="1_15ee3"]
+[ext_resource type="Script" uid="uid://bhsiljas14678" path="res://victory.gd" id="2_msd2c"]
+[ext_resource type="Texture2D" uid="uid://bvd05emj5gtva" path="res://Assets/Background/victory_screen.png" id="2_u1yty"]
+[ext_resource type="AudioStream" uid="uid://cl2a2hh0kjam5" path="res://Assets/audio/menu/UrbanInterlude - Mourning After.wav" id="3_msd2c"]
+[ext_resource type="AudioStream" uid="uid://cktqfw4v0jb6w" path="res://Assets/audio/hover/video-game-gui-hovering-sound-417440 (mp3cut.net).mp3" id="4_ebtt0"]
+[ext_resource type="FontFile" uid="uid://lkjhqdl6wsh7" path="res://Assets/Fonts/Gothic_pixel_font(0S).ttf" id="5_v245v"]
+[ext_resource type="Script" uid="uid://cxw1wpq8kh45v" path="res://victory_reset.gd" id="6_pg2b1"]
+
+[sub_resource type="Theme" id="Theme_j3yce"]
+default_font = ExtResource("1_15ee3")
+
+[sub_resource type="Theme" id="Theme_1s7n3"]
+
+[sub_resource type="Theme" id="Theme_3is75"]
+
+[node name="Victory" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_j3yce")
+script = ExtResource("2_msd2c")
+
+[node name="ColorRect" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -21.333374
+offset_right = 26.666626
+offset_bottom = 3.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_u1yty")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_msd2c")
+autoplay = true
+
+[node name="AudioStreamPlayer2" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_ebtt0")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 254.0
+offset_top = 47.0
+offset_right = 726.0
+offset_bottom = 121.0
+theme = SubResource("Theme_1s7n3")
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("5_v245v")
+theme_override_font_sizes/font_size = 30
+text = "O inverno passou"
+
+[node name="Victory_Quit" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.44900003
+anchor_top = 0.377
+anchor_right = 0.44900003
+anchor_bottom = 0.377
+offset_left = -176.77603
+offset_top = 144.8
+offset_right = 247.22397
+offset_bottom = 223.8
+theme = SubResource("Theme_3is75")
+text = "Sair"
+
+[node name="Victory_reset" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.328
+anchor_top = 0.351
+anchor_right = 0.328
+anchor_bottom = 0.351
+offset_left = -52.87201
+offset_top = 58.399994
+offset_right = 371.128
+offset_bottom = 125.399994
+text = "Novo Jogo"
+script = ExtResource("6_pg2b1")
+
+[connection signal="pressed" from="Victory_Quit" to="." method="_on_victory_quit_pressed"]
+[connection signal="pressed" from="Victory_reset" to="." method="_on_victory_reset_pressed"]

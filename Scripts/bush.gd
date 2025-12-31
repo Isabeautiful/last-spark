@@ -12,7 +12,7 @@ var is_collectible: bool = true
 var player_in_range: bool = false
 
 signal harvested(amount: int)
-
+var health = 2
 func _ready():
 	# Conectar sinais
 	area_entered.connect(_on_self_area_entered)
@@ -104,3 +104,27 @@ func reset():
 	
 	show()
 	print("Arbusto resetado para nova plantação")
+	
+	
+func take_damage():
+	health -= 1
+	# Efeito visual
+	sprite.modulate = Color.RED
+	shake()
+	var tween = create_tween()
+	tween.tween_property(sprite, "modulate", Color.WHITE, 0.15)
+	if health == 0:
+		return await harvest()
+
+func shake():
+	var intensidade = 5
+	var duracao = 0.15
+	var original_pos = position
+	var tween = create_tween()
+	for i in range(10):
+		var offset = Vector2(
+			randf_range(-intensidade, intensidade),
+			randf_range(-intensidade, intensidade)
+		)
+		tween.tween_property(self, "position", original_pos + offset, duracao / 10)
+	tween.tween_property(self, "position", original_pos, duracao / 10)

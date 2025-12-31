@@ -6,6 +6,8 @@ extends CharacterBody2D
 @onready var action_area: Area2D = $ActionArea
 @onready var action_shape: CollisionShape2D = $ActionArea/CollisionShape2D
 @onready var sprite: Sprite2D = $Sprite2D
+@onready var Player_Audio: AudioStreamPlayer2D = $AudioStreamPlayer2D
+
 
 # Status do jogador
 var current_speed: float = 250.0
@@ -21,6 +23,7 @@ var PlayerStatus = {hungry=false,hurt = false, cold = false}
 #Váriaveis de controle de dano de inimigos
 var damage_cooldown = 0.5
 var is_on_damage_cooldown = false
+var hit_mp3_path = "res://Assets/audio/hit/hit.mp3"
 
 #variáveis para controle dos avisos 
 @export var is_hunger_warning_set = false
@@ -414,7 +417,7 @@ func harvest_resource():
 	
 	if closest_resource:
 		if closest_resource.has_method("harvest"):
-			var harvested = await closest_resource.harvest()
+			var harvested = await closest_resource.take_damage() #await closest_resource.harvest()
 			
 			if harvested:
 				if objects_in_range["resources"].has(closest_resource):
@@ -442,6 +445,10 @@ func interact_with_fire():
 func take_damage(amount: float, source: String = ""):
 	health -= amount
 	health = max(health, 0)
+	
+	var hit_=load("res://Assets/audio/hit/hit.mp3")
+	Player_Audio.stream = hit_
+	Player_Audio.play()
 	
 	# Efeito visual
 	sprite.modulate = Color.RED

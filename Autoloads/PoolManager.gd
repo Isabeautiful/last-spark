@@ -12,6 +12,7 @@ var pool_configs = {
 
 func _ready():
 	print("PoolManager inicializado")
+	GameSignals.clear_all_pools.connect(clear_pools)
 	# As pools serão criadas sob demanda
 
 # Cria uma pool se não existir
@@ -60,3 +61,8 @@ func get_pool_status() -> Dictionary:
 			"available": pool.get_available_count()
 		}
 	return status
+
+func clear_pools():
+	for k in pools.keys():
+		pools[k].clear_all_objects()
+	pools = {}

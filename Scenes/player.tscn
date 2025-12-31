@@ -36,3 +36,5 @@ wait_time = 5.0
 wait_time = 3.0
 
 [node name="PlantCheckTimer" type="Timer" parent="."]
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]

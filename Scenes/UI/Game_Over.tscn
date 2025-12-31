@@ -1,0 +1,80 @@
+[gd_scene load_steps=10 format=3 uid="uid://dal72faxixfnx"]
+
+[ext_resource type="Script" uid="uid://cs0vuwvfji63" path="res://Scripts/game_over.gd" id="1_4toak"]
+[ext_resource type="Texture2D" uid="uid://b37w5jwut2bqt" path="res://Assets/Background/game_over_fire_out.png" id="2_6v7nw"]
+[ext_resource type="FontFile" uid="uid://lkjhqdl6wsh7" path="res://Assets/Fonts/Gothic_pixel_font(0S).ttf" id="3_6hnqx"]
+[ext_resource type="AudioStream" uid="uid://cl2a2hh0kjam5" path="res://Assets/audio/menu/UrbanInterlude - Mourning After.wav" id="4_3dc1a"]
+[ext_resource type="AudioStream" uid="uid://cktqfw4v0jb6w" path="res://Assets/audio/hover/video-game-gui-hovering-sound-417440 (mp3cut.net).mp3" id="5_u1wv3"]
+
+[sub_resource type="Theme" id="Theme_4toak"]
+default_font = ExtResource("3_6hnqx")
+
+[sub_resource type="Theme" id="Theme_eq73w"]
+
+[sub_resource type="Theme" id="Theme_6v7nw"]
+
+[sub_resource type="Theme" id="Theme_6hnqx"]
+
+[node name="Game_Over" type="Control"]
+clip_contents = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_4toak")
+script = ExtResource("1_4toak")
+
+[node name="ColorRect" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -21.333374
+offset_right = 26.666626
+offset_bottom = 3.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_6v7nw")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_3dc1a")
+autoplay = true
+
+[node name="AudioStreamPlayer2" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_u1wv3")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 213.0
+offset_top = 55.0
+offset_right = 775.0
+offset_bottom = 129.0
+theme = SubResource("Theme_eq73w")
+theme_override_fonts/font = ExtResource("3_6hnqx")
+theme_override_font_sizes/font_size = 30
+text = "A fogueira se apagou"
+
+[node name="Game_Over_Quit" type="Button" parent="."]
+layout_mode = 0
+offset_left = 280.0
+offset_top = 333.0
+offset_right = 704.0
+offset_bottom = 412.0
+theme = SubResource("Theme_6v7nw")
+text = "Sair"
+
+[node name="Game_Over_Retry" type="Button" parent="."]
+layout_mode = 0
+offset_left = 279.0
+offset_top = 213.0
+offset_right = 703.0
+offset_bottom = 298.0
+theme = SubResource("Theme_6hnqx")
+text = "Recomeçar"
+
+[connection signal="mouse_entered" from="Game_Over_Quit" to="." method="_on_game_over_quit_mouse_entered"]
+[connection signal="pressed" from="Game_Over_Quit" to="." method="_on_game_over_quit_pressed"]
+[connection signal="mouse_entered" from="Game_Over_Retry" to="." method="_on_game_over_retry_mouse_entered"]
+[connection signal="pressed" from="Game_Over_Retry" to="." method="_on_game_over_retry_pressed"]

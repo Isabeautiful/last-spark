@@ -418,7 +418,10 @@ func _on_game_over(reason: String):
 	print("GAME OVER: ", reason)
 	get_tree().paused = true
 	print("FIM DE JOGO: ", reason)
-
+	GameSignals.clear_all_pools.emit()
+	GameSignals.show_game_over_screen.emit(reason)
+	get_tree().change_scene_to_file("res://Scenes/UI/Game_Over.tscn")
+	
 func _on_victory(reason: String):
 	print("VITÓRIA: ", reason)
 	get_tree().paused = true

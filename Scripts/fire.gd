@@ -5,7 +5,7 @@ class_name Fire
 @export var base_consumption_rate: float = 0.5
 @export var min_energy_percentage: float = 0.25
 
-var current_energy: float = 100.0
+var current_energy: float
 var current_consumption_rate: float = 0.5
 var fire_level: int = 1
 var is_fire_lit: bool = true

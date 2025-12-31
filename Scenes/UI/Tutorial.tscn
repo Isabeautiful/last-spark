@@ -1,14 +1,64 @@
-[gd_scene load_steps=6 format=3 uid="uid://g848k6tel4vc"]
+[gd_scene load_steps=9 format=3 uid="uid://g848k6tel4vc"]
 
 [ext_resource type="FontFile" uid="uid://lkjhqdl6wsh7" path="res://Assets/Fonts/Gothic_pixel_font(0S).ttf" id="1_vdf06"]
 [ext_resource type="FontFile" uid="uid://bsgyysdfm6yd3" path="res://Assets/Fonts/Aurusenthial Gothic Soft.ttf" id="2_41bw0"]
-[ext_resource type="Texture2D" uid="uid://btset6a2jaty5" path="res://Assets/Background/Background_tutorial.png" id="2_xg1yc"]
+[ext_resource type="Script" uid="uid://bkwpli65xlbyh" path="res://Scenes/UI/tutorial.gd" id="2_u7wec"]
+[ext_resource type="Texture2D" uid="uid://c2a2gkqodqwue" path="res://Assets/Background/Background_tutorial.png" id="2_xg1yc"]
 
 [sub_resource type="Theme" id="Theme_xg1yc"]
 default_font = ExtResource("1_vdf06")
 
 [sub_resource type="Theme" id="Theme_u7wec"]
 default_font = ExtResource("2_41bw0")
+
+[sub_resource type="Theme" id="Theme_ro48b"]
+
+[sub_resource type="FontFile" id="FontFile_pjjuc"]
+cache/0/12/0/ascent = 0.0
+cache/0/12/0/descent = 0.0
+cache/0/12/0/underline_position = 0.0
+cache/0/12/0/underline_thickness = 0.0
+cache/0/12/0/scale = 1.0
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/13/0/ascent = 0.0
+cache/0/13/0/descent = 0.0
+cache/0/13/0/underline_position = 0.0
+cache/0/13/0/underline_thickness = 0.0
+cache/0/13/0/scale = 1.0
+cache/0/14/0/ascent = 0.0
+cache/0/14/0/descent = 0.0
+cache/0/14/0/underline_position = 0.0
+cache/0/14/0/underline_thickness = 0.0
+cache/0/14/0/scale = 1.0
+cache/0/15/0/ascent = 0.0
+cache/0/15/0/descent = 0.0
+cache/0/15/0/underline_position = 0.0
+cache/0/15/0/underline_thickness = 0.0
+cache/0/15/0/scale = 1.0
+cache/0/17/0/ascent = 0.0
+cache/0/17/0/descent = 0.0
+cache/0/17/0/underline_position = 0.0
+cache/0/17/0/underline_thickness = 0.0
+cache/0/17/0/scale = 1.0
+cache/0/18/0/ascent = 0.0
+cache/0/18/0/descent = 0.0
+cache/0/18/0/underline_position = 0.0
+cache/0/18/0/underline_thickness = 0.0
+cache/0/18/0/scale = 1.0
+cache/0/19/0/ascent = 0.0
+cache/0/19/0/descent = 0.0
+cache/0/19/0/underline_position = 0.0
+cache/0/19/0/underline_thickness = 0.0
+cache/0/19/0/scale = 1.0
+cache/0/20/0/ascent = 0.0
+cache/0/20/0/descent = 0.0
+cache/0/20/0/underline_position = 0.0
+cache/0/20/0/underline_thickness = 0.0
+cache/0/20/0/scale = 1.0
 
 [node name="Tutorial" type="Control"]
 layout_mode = 3
@@ -18,6 +68,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = SubResource("Theme_xg1yc")
+script = ExtResource("2_u7wec")
 
 [node name="TextureRect" type="TextureRect" parent="."]
 layout_mode = 0
@@ -27,18 +78,18 @@ texture = ExtResource("2_xg1yc")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 layout_mode = 0
-offset_left = 368.0
-offset_top = 90.0
-offset_right = 1021.0
-offset_bottom = 495.0
-color = Color(0.74509805, 0.74509805, 0.74509805, 1)
+offset_left = 384.0
+offset_top = 65.0
+offset_right = 1025.0
+offset_bottom = 470.0
+color = Color(0.34509805, 0, 0.6431373, 1)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 0
-offset_left = 386.0
-offset_top = 97.0
-offset_right = 1045.0
-offset_bottom = 505.0
+offset_left = 402.0
+offset_top = 38.0
+offset_right = 1030.0
+offset_bottom = 490.0
 theme = SubResource("Theme_u7wec")
 alignment = 1
 
@@ -56,8 +107,60 @@ Menu de colheita: V"
 
 [node name="Label" type="Label" parent="."]
 layout_mode = 0
-offset_left = 369.0
-offset_top = 35.0
-offset_right = 516.0
-offset_bottom = 73.0
+offset_left = 663.0
+offset_top = 18.0
+offset_right = 810.0
+offset_bottom = 56.0
 text = "Controles"
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 0
+offset_left = 446.0
+offset_top = 545.0
+offset_right = 568.0
+offset_bottom = 591.0
+text = "Entendi"
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 73.0
+offset_right = 352.0
+offset_bottom = 574.0
+
+[node name="ColorRect2" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 11.0
+offset_top = 67.0
+offset_right = 366.0
+offset_bottom = 465.0
+color = Color(0.34615093, 0, 0.6437191, 1)
+
+[node name="Label2" type="Label" parent="."]
+layout_mode = 0
+offset_left = 69.0
+offset_top = 81.0
+offset_right = 307.0
+offset_bottom = 119.0
+text = "Sobreviva ao frio"
+
+[node name="Label3" type="Label" parent="."]
+layout_mode = 0
+offset_left = 17.0
+offset_top = 130.0
+offset_right = 365.0
+offset_bottom = 487.0
+theme = SubResource("Theme_ro48b")
+theme_override_fonts/font = SubResource("FontFile_pjjuc")
+theme_override_font_sizes/font_size = 20
+text = "O mundo está  congelando em um evento 
+glacial de 15 dias e o melhor que 
+podemos fazer é proteger a fogueira a 
+todo custo para salvar nossas vidas,
+contudo sombras terríveis enviadas pela 
+escuridão tentarão apagar nossa última luz
+sobreviva ao fim desse inverno terrível e 
+construa a civilização que perdurará além
+dele"
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

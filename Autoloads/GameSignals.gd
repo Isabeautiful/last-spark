@@ -26,6 +26,9 @@ signal player_died()
 signal player_hit(damage : float)
 signal hideWarning(type: String)
 signal showWarning(message:String,type:String)
+signal clear_all_pools()
+signal show_game_over_screen(reason:String)
+
 signal player_attacked(damage: int)
 signal shadow_damaged(damage: int)
 signal wood_used(amount: int)
@@ -37,6 +40,7 @@ signal temperature_changed(temperature: float)
 signal planting_mode_changed(is_active: bool)
 signal seed_type_changed(seed_type: String)
 signal seed_planted(seed_type: String, position: Vector2)
+
 
 #Adiciona os sinais ao grupo de usuário para evitar erro
 func _ready() -> void:
