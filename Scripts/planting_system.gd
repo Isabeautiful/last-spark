@@ -205,7 +205,7 @@ func can_place_seed(position: Vector2) -> bool:
 	if player and position.distance_to(player.global_position) < 50:
 		return false
 	
-	# Verificar colisões com outros recursos
+	# Verificar colisoes com outros recursos
 	var space_state = get_world_2d().direct_space_state
 	var query = PhysicsShapeQueryParameters2D.new()
 	
@@ -221,7 +221,6 @@ func can_place_seed(position: Vector2) -> bool:
 	var results = space_state.intersect_shape(query, 1)  # Limitar a 1 resultado
 	
 	if not results.is_empty():
-		print("Colisão detectada com outro recurso!")
 		return false
 	
 	# Verificar com MapManager se a posição é válida
@@ -301,7 +300,7 @@ func snap_to_grid(position: Vector2) -> Vector2:
 	var grid_size = 16
 	return Vector2(
 		floor(position.x / grid_size) * grid_size + grid_size/2.0,
-		floor(position.x / grid_size) * grid_size + grid_size/2.0
+		floor(position.y / grid_size) * grid_size + grid_size/2.0
 	)
 
 func _get_global_mouse_position() -> Vector2:
