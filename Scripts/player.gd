@@ -66,8 +66,6 @@ func _ready():
 	action_area.body_exited.connect(_on_action_area_body_exited)
 	
 	GameSignals.player_hit.connect(take_damage)
-	# Configurar entrada
-	_setup_input_actions()
 
 func setup_area():
 	# Adicionar grupos para identificação
@@ -94,55 +92,6 @@ func setup_timers():
 	# Timer de frio
 	cold_timer.timeout.connect(_on_cold_timer_timeout)
 	cold_timer.start()
-
-func _setup_input_actions():
-	
-	# Ação de correr (Shift)
-	if not InputMap.has_action("run"):
-		InputMap.add_action("run")
-		var event_shift = InputEventKey.new()
-		event_shift.keycode = KEY_SHIFT
-		InputMap.action_add_event("run", event_shift)
-	
-	# Ação de atacar (Barra de Espaço ou Botão Esquerdo do Mouse)
-	if not InputMap.has_action("attack"):
-		InputMap.add_action("attack")
-		# Barra de espaço
-		var event_space = InputEventKey.new()
-		event_space.keycode = KEY_SPACE
-		InputMap.action_add_event("attack", event_space)
-		
-		# Botão esquerdo do mouse (para clicar nas sombras)
-		var event_mouse_left = InputEventMouseButton.new()
-		event_mouse_left.button_index = MOUSE_BUTTON_LEFT
-		InputMap.action_add_event("attack", event_mouse_left)
-	
-	# Ação de interagir (F ou Clique em recursos/fogo)
-	if not InputMap.has_action("interact"):
-		InputMap.add_action("interact")
-		# Tecla F
-		var event_f = InputEventKey.new()
-		event_f.keycode = KEY_F
-		InputMap.action_add_event("interact", event_f)
-		
-		# Botão direito do mouse (para coletar recursos)
-		var event_mouse_right = InputEventMouseButton.new()
-		event_mouse_right.button_index = MOUSE_BUTTON_RIGHT
-		InputMap.action_add_event("interact", event_mouse_right)
-	
-	# Ação de comer (Q)
-	if not InputMap.has_action("eat"):
-		InputMap.add_action("eat")
-		var event_q = InputEventKey.new()
-		event_q.keycode = KEY_Q
-		InputMap.action_add_event("eat", event_q)
-	
-	# Ação de construção (B) - agora será gerenciada pelo Game.gd
-	if not InputMap.has_action("build_menu"):
-		InputMap.add_action("build_menu")
-		var event_b = InputEventKey.new()
-		event_b.keycode = KEY_B
-		InputMap.action_add_event("build_menu", event_b)
 
 func _physics_process(delta):	
 	if not can_process_input:
@@ -214,6 +163,7 @@ func Get_heal_factor():
 	elif not PlayerStatus.hungry: sum += 0.2
 	
 	return sum
+
 func _input(event):
 	if not can_process_input or not can_action:
 		return
@@ -228,7 +178,7 @@ func _input(event):
 			if not objects_in_range["resources"].is_empty():
 				harvest_resource()
 	
-	elif event.is_action_pressed("interact"):
+	elif event.is_action_pressed("Interact"):
 		# Interage com fogueira se disponível
 		if objects_in_range["fire"] != null:
 			interact_with_fire()

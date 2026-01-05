@@ -5,6 +5,9 @@ class_name Fire
 @export var base_consumption_rate: float = 0.5
 @export var min_energy_percentage: float = 0.25
 
+# Adicionar uma referência para o Timer que será colocado na cena
+@onready var consumption_timer: Timer = $ConsumptionTimer
+
 var current_energy: float
 var current_consumption_rate: float = 0.5
 var fire_level: int = 1
@@ -51,12 +54,11 @@ func _ready():
 		light_area.area_entered.connect(_on_light_area_area_entered)
 		light_area.add_to_group("fire_light")
 	
-	# Timer de consumo
-	var consumption_timer = Timer.new()
-	consumption_timer.wait_time = 1.0
-	consumption_timer.timeout.connect(_on_consumption_timer_timeout)
-	add_child(consumption_timer)
-	consumption_timer.start()
+	# O timer já está na cena, então não precisamos criá-lo aqui.
+	# Certifique-se de que o timer está conectado ao método _on_consumption_timer_timeout.
+	# Isso pode ser feito no editor ou aqui. Vamos conectar via código se não estiver conectado.
+	if not consumption_timer.timeout.is_connected(_on_consumption_timer_timeout):
+		consumption_timer.timeout.connect(_on_consumption_timer_timeout)
 	
 func set_warning_status(status,cond):
 	match cond:

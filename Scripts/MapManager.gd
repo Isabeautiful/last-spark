@@ -291,16 +291,10 @@ func plant_seed(seed_type: String, position: Vector2) -> bool:
 		if seed_type == "tree":
 			placed_trees.append(resource)
 			resource.harvested.connect(_on_tree_harvested.bind(resource, position))
-			
-			# Efeito visual de crescimento
-			_create_growth_effect(position)
 			return true
 		else:
 			placed_food.append(resource)
 			resource.harvested.connect(_on_bush_harvested.bind(resource, position))
-			
-			# Efeito visual de crescimento
-			_create_growth_effect(position)
 			return true
 	
 	return false
@@ -311,42 +305,6 @@ func plant_seed_manual(seed_type: String, position: Vector2) -> bool:
 	if planting_system:
 		return planting_system.plant_seed_at_position(position)
 	return false
-
-# Efeito visual de crescimento
-func _create_growth_effect(position: Vector2):
-	# Efeito visual simples de crescimento
-	var effect = Sprite2D.new()
-	var image = Image.create(32, 32, false, Image.FORMAT_RGBA8)
-	image.fill(Color(0, 1, 0, 0.5))
-	var texture = ImageTexture.create_from_image(image)
-	effect.texture = texture
-	effect.global_position = position
-	effect.z_index = 99
-	
-	add_child(effect)
-	
-	var tween = effect.create_tween()
-	tween.tween_property(effect, "modulate:a", 0.0, 1.0)
-	tween.tween_property(effect, "scale", Vector2(2, 2), 1.0)
-	tween.tween_callback(effect.queue_free)
-
-# Efeito visual de plantio (pode ser diferente do crescimento)
-func _create_planting_effect(position: Vector2):
-	# Efeito visual de plantio
-	var effect = Sprite2D.new()
-	var image = Image.create(24, 24, false, Image.FORMAT_RGBA8)
-	image.fill(Color(0.5, 0.3, 0.1, 0.7))  # Cor marrom para terra
-	var texture = ImageTexture.create_from_image(image)
-	effect.texture = texture
-	effect.global_position = position
-	effect.z_index = 98
-	
-	add_child(effect)
-	
-	var tween = effect.create_tween()
-	tween.tween_property(effect, "modulate:a", 0.0, 0.8)
-	tween.tween_property(effect, "scale", Vector2(0.5, 0.5), 0.8)
-	tween.tween_callback(effect.queue_free)
 
 func clear_placed_resources(resource_list: Array, pool_type: String):
 	for resource in resource_list:

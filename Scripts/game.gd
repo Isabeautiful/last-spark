@@ -36,8 +36,6 @@ func _ready():
 		GameSignals.fire_low_warning.connect(_on_fire_low_warning)
 	if GameSignals.has_user_signal("fire_critical"):
 		GameSignals.fire_critical.connect(_on_fire_critical)
-#	if GameSignals.has_user_signal("player_status_changed"):
-#		GameSignals.player_status_changed.connect(_on_player_status_changed)
 	if GameSignals.has_user_signal("player_died"):
 		GameSignals.player_died.connect(_on_player_died)
 	
@@ -46,9 +44,6 @@ func _ready():
 		shadow_spawner.set_active(false)
 		if shadow_spawner.has_method("set_day"):
 			shadow_spawner.set_day(current_day)
-	
-	# Configurar entrada
-	_setup_inputs()
 	
 	# Conectar sistema de construção
 	if building_system:
@@ -61,32 +56,6 @@ func _ready():
 	# Inicialmente esconder menu
 	if build_menu:
 		build_menu.hide()
-
-func _setup_inputs():
-	# Ação para construção (B)
-	if not InputMap.has_action("build_menu"):
-		InputMap.add_action("build_menu")
-		var event_b = InputEventKey.new()
-		event_b.keycode = KEY_B
-		InputMap.action_add_event("build_menu", event_b)
-		
-		var event_mouse = InputEventMouseButton.new()
-		event_mouse.button_index = MOUSE_BUTTON_RIGHT
-		InputMap.action_add_event("build_menu", event_mouse)
-	
-	# Ação para comer (Q)
-	if not InputMap.has_action("eat"):
-		InputMap.add_action("eat")
-		var event_q = InputEventKey.new()
-		event_q.keycode = KEY_Q
-		InputMap.action_add_event("eat", event_q)
-	
-	# Ação para ativar sistema de plantio (V)
-	if not InputMap.has_action("planting_system"):
-		InputMap.add_action("planting_system")
-		var event_v = InputEventKey.new()
-		event_v.keycode = KEY_V
-		InputMap.action_add_event("planting_system", event_v)
 
 func _input(event):
 	# Abrir/fechar menu de construção (B)

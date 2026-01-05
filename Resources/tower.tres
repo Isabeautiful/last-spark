@@ -8,7 +8,7 @@
 script = ExtResource("1_sxgs3")
 building_name = "Torre"
 building_type = "tower"
-cost_wood = 80
+cost_wood = 300
 cost_food = 30
 construction_time = 10.0
 health = 200
