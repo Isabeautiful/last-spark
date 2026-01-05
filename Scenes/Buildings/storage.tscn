@@ -11,4 +11,5 @@ position = Vector2(3.499998, -1)
 texture = ExtResource("2_47213")
 
 [node name="Collision" parent="." index="1"]
+position = Vector2(6.5, 0)
 debug_color = Color(0.67058825, 1, 0, 0.41960785)

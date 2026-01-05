@@ -154,7 +154,7 @@ func place_trees():
 	var target_count = int(base_tree_count * tree_density)
 	
 	for i in range(target_count):
-		var pos = find_valid_position(15, 25, false)
+		var pos = find_valid_position(30, 25, false)
 		if pos != Vector2.ZERO:
 			var tree = PoolManager.get_object("tree", pos)
 			if tree:

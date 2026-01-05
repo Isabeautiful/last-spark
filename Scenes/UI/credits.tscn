@@ -93,22 +93,6 @@ layout_mode = 2
 text = "CREDITOS"
 horizontal_alignment = 1
 
-[node name="Asset1" type="HBoxContainer" parent="VBoxContainer/AssetsContainer"]
-visible = false
-layout_mode = 2
-
-[node name="Link" type="Label" parent="VBoxContainer/AssetsContainer/Asset1"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "https://cainos.itch.io/pixel-art-top-down-basic"
-horizontal_alignment = 1
-
-[node name="Link2" type="Label" parent="VBoxContainer/AssetsContainer/Asset1"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "https://alexti-dev.itch.io/houses"
-horizontal_alignment = 1
-
 [node name="Asset2" type="HBoxContainer" parent="VBoxContainer/AssetsContainer"]
 layout_mode = 2
 
@@ -162,14 +146,14 @@ layout_mode = 2
 [node name="Titulo" type="Label" parent="VBoxContainer/AssetsContainer/Asset5"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Pixel Art Top Down - Basic By Cainos"
+text = "ROHHSADOTCOM on pixaby"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Titulo2" type="Label" parent="VBoxContainer/AssetsContainer/Asset5"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Houses by alexti-dev"
+text = "6 Wood Hit Sound Effects on Youtube"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -179,14 +163,14 @@ layout_mode = 2
 [node name="Titulo" type="Label" parent="VBoxContainer/AssetsContainer/Asset6"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Pixel Art Top Down - Basic By Cainos"
+text = "Hit Tree 01 on pixaby"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Titulo2" type="Label" parent="VBoxContainer/AssetsContainer/Asset6"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Houses by alexti-dev"
+text = "Combat - swift punch on uppbeat"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -196,20 +180,13 @@ layout_mode = 2
 [node name="Titulo" type="Label" parent="VBoxContainer/AssetsContainer/Asset7"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Pixel Art Top Down - Basic By Cainos"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Titulo2" type="Label" parent="VBoxContainer/AssetsContainer/Asset7"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Houses by alexti-dev"
+text = "Cold Summer Night by Urban Interlude"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Label" type="Label" parent="VBoxContainer/AssetsContainer"]
 layout_mode = 2
-text = "COLOCAR SPREADSHEET COM LINKS AQUI"
+text = "Confira os links em: https://bit.ly/creditosspritessoundtracks"
 horizontal_alignment = 1
 
 [node name="BotoesContainer" type="HBoxContainer" parent="VBoxContainer"]
