@@ -122,7 +122,7 @@ vertical_alignment = 1
 [node name="Titulo2" type="Label" parent="VBoxContainer/AssetsContainer/Asset2"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Houses by alexti-dev"
+text = "Viking Village RPG Tileset by carbonova"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -132,13 +132,13 @@ layout_mode = 2
 [node name="Titulo" type="Label" parent="VBoxContainer/AssetsContainer/Asset3"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Pixel Art Top Down - Basic By Cainos"
+text = "Gothic Pixel by osadam"
 horizontal_alignment = 1
 
 [node name="Titulo2" type="Label" parent="VBoxContainer/AssetsContainer/Asset3"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Houses by alexti-dev"
+text = "Aurusenthial Gothic Soft"
 horizontal_alignment = 1
 
 [node name="Asset4" type="HBoxContainer" parent="VBoxContainer/AssetsContainer"]
@@ -147,13 +147,13 @@ layout_mode = 2
 [node name="Titulo" type="Label" parent="VBoxContainer/AssetsContainer/Asset4"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Pixel Art Top Down - Basic By Cainos"
+text = "Side View Assets by alexs-assets"
 horizontal_alignment = 1
 
 [node name="Titulo2" type="Label" parent="VBoxContainer/AssetsContainer/Asset4"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Houses by alexti-dev"
+text = "Pixel Art Bush by manicpixeldreamgirl"
 horizontal_alignment = 1
 
 [node name="Asset5" type="HBoxContainer" parent="VBoxContainer/AssetsContainer"]
