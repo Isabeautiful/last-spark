@@ -11,7 +11,7 @@ var building_resource: BuildingResource = null
 
 var is_constructed: bool = false
 var is_highlighted: bool = false
-var health: int = 100  # Adicione esta linha
+var health: int = 100  
 
 signal construction_completed
 signal building_destroyed

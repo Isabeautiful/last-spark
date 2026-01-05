@@ -1,4 +1,4 @@
-extends CanvasLayer  # Mude de Control para CanvasLayer
+extends CanvasLayer 
 
 @onready var buttons = [
 	$Panel/VBoxContainer/HutButton,

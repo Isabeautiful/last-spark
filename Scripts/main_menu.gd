@@ -11,7 +11,7 @@ var duracao = 0.5
 @onready var audio_stream_player_2: AudioStreamPlayer = $AudioStreamPlayer2
 var num_Play = 0
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	btn_hover(start)
 	btn_hover(credits)
 	btn_hover(quit)
@@ -46,3 +46,8 @@ func _on_credits_mouse_entered() -> void:
 	
 func _on_quit_mouse_entered() -> void:
 	audio_stream_player_2.play()
+
+
+func _on_credits_pressed() -> void:
+	# load cena creditos
+	pass # Replace with function body.

@@ -205,7 +205,6 @@ func _input(event):
 	if not can_process_input or not can_action:
 		return
 	
-	# REMOVIDO: Sistema de plantio - agora é gerenciado pelo PlantingSystem
 	# Sistema de ações inteligente original
 	if event.is_action_pressed("attack"):
 		# Primeiro tenta atacar inimigos

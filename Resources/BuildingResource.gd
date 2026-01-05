@@ -11,5 +11,5 @@ extends Resource
 @export var size: Vector2 = Vector2(64, 64)
 @export var color: Color = Color(0.6, 0.4, 0.2, 0.5)
 
-# ADICIONE ESTA LINHA
-@export var texture: Texture2D  # Textura para o ghost building
+
+@export var texture: Texture2D  

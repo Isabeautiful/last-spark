@@ -169,25 +169,25 @@ func place_building(position: Vector2):
 	
 	var config = building_resources[current_building_index]
 	
-	# Consumir recursos
+	
 	if not ResourceManager.use_wood(config.cost_wood) or not ResourceManager.use_food(config.cost_food):
 		print("Erro: Recursos insuficientes para construir!")
 		return
 	
-	# Instanciar edifício
+	
 	if config.scene:
 		var building = config.scene.instantiate()
 		building.global_position = position
 		
-		# PASSO CRÍTICO: Passar o resource para o building
-		building.building_resource = config  # ← LINHA ADICIONADA
+		
+		building.building_resource = config  
 		
 		if game:
 			game.add_child(building)
 		else:
 			get_tree().current_scene.add_child(building)
 		
-		building_placed.emit(config, position)  # Passa o Resource, não o índice
+		building_placed.emit(config, position)  
 		print(config.building_name, " construída em ", position)
 	else:
 		push_error("Cena não configurada para: ", config.building_name)
@@ -223,7 +223,7 @@ func _create_debug_texture(size: Vector2, color: Color) -> Texture2D:
 	var image = Image.create(int(size.x), int(size.y), false, Image.FORMAT_RGBA8)
 	image.fill(color)
 	
-	# Adicionar borda para melhor visualização
+	
 	for x in range(int(size.x)):
 		if x == 0 or x == int(size.x) - 1:
 			for y in range(int(size.y)):

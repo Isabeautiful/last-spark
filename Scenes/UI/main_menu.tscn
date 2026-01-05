@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://ddk2ne03y2vda" path="res://Scripts/main_menu.gd" id="1_5wsvm"]
 [ext_resource type="FontFile" uid="uid://lkjhqdl6wsh7" path="res://Assets/Fonts/Gothic_pixel_font(0S).ttf" id="2_i2xx2"]
 [ext_resource type="Texture2D" uid="uid://cbsq0hbkfoalx" path="res://Assets/Background/orig.png" id="2_o14dv"]
+[ext_resource type="Theme" uid="uid://dtgrkvhpis27j" path="res://Scenes/UI/main_menu.theme" id="4_4pqbp"]
 [ext_resource type="AudioStream" uid="uid://cl2a2hh0kjam5" path="res://Assets/audio/menu/UrbanInterlude - Mourning After.wav" id="4_u7lva"]
 [ext_resource type="AudioStream" uid="uid://cktqfw4v0jb6w" path="res://Assets/audio/hover/video-game-gui-hovering-sound-417440 (mp3cut.net).mp3" id="5_mrfpk"]
 
@@ -10,9 +11,6 @@
 default_font = ExtResource("2_i2xx2")
 
 [sub_resource type="Theme" id="Theme_o14dv"]
-default_font = ExtResource("2_i2xx2")
-
-[sub_resource type="Theme" id="Theme_mrfpk"]
 default_font = ExtResource("2_i2xx2")
 
 [sub_resource type="Theme" id="Theme_u7lva"]
@@ -73,7 +71,7 @@ text = "Créditos"
 [node name="Quit" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-theme = SubResource("Theme_mrfpk")
+theme = ExtResource("4_4pqbp")
 theme_override_colors/font_color = Color(0.74509805, 0.74509805, 0.74509805, 1)
 text = "Sair"
 
@@ -104,5 +102,6 @@ stream = ExtResource("5_mrfpk")
 [connection signal="mouse_exited" from="VBoxContainer/Start" to="." method="_on_start_mouse_exited"]
 [connection signal="pressed" from="VBoxContainer/Start" to="." method="_on_start_pressed"]
 [connection signal="mouse_entered" from="VBoxContainer/Credits" to="." method="_on_credits_mouse_entered"]
+[connection signal="pressed" from="VBoxContainer/Credits" to="." method="_on_credits_pressed"]
 [connection signal="mouse_entered" from="VBoxContainer/Quit" to="." method="_on_quit_mouse_entered"]
 [connection signal="pressed" from="VBoxContainer/Quit" to="." method="_on_quit_pressed"]
