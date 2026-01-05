@@ -18,6 +18,8 @@ var event_manager: Node
 var active_events: Array = []
 
 func _ready():
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	get_tree().paused = false
 	# Conectar sinais de recursos
 	ResourceManager.wood_changed.connect(_on_wood_changed)
 	ResourceManager.food_changed.connect(_on_food_changed)
