@@ -1,8 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://bk716e8jbwk7u"]
+[gd_scene load_steps=4 format=3 uid="uid://bk716e8jbwk7u"]
 
 [ext_resource type="Texture2D" uid="uid://cbsq0hbkfoalx" path="res://Assets/Background/orig.png" id="1_h87vg"]
 [ext_resource type="Script" uid="uid://84f1s0bnev2p" path="res://Scenes/UI/credits.gd" id="1_q4iv0"]
-[ext_resource type="Theme" uid="uid://dtgrkvhpis27j" path="res://Scenes/UI/main_menu.theme" id="3_lm48m"]
 [ext_resource type="AudioStream" uid="uid://cktqfw4v0jb6w" path="res://Assets/audio/hover/video-game-gui-hovering-sound-417440 (mp3cut.net).mp3" id="5_1g7ho"]
 
 [node name="Credits" type="Control"]
@@ -24,11 +23,18 @@ grow_vertical = 2
 texture = ExtResource("1_h87vg")
 
 [node name="ColorRect2" type="ColorRect" parent="."]
-layout_mode = 0
-offset_left = 106.0
-offset_top = 133.0
-offset_right = 942.0
-offset_bottom = 473.0
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -396.0
+offset_top = -179.0
+offset_right = 396.0
+offset_bottom = 183.0
+grow_horizontal = 2
+grow_vertical = 2
 size_flags_vertical = 3
 color = Color(0.19793725, 0.19793722, 0.19793722, 1)
 
@@ -39,13 +45,12 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -597.0
-offset_top = -141.0
-offset_right = 607.0
-offset_bottom = 273.0
+offset_left = -387.375
+offset_top = -153.0
+offset_right = 387.375
+offset_bottom = 153.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("3_lm48m")
 theme_override_constants/separation = 20
 
 [node name="GrupoContainer" type="VBoxContainer" parent="VBoxContainer"]
@@ -89,52 +94,118 @@ text = "CREDITOS"
 horizontal_alignment = 1
 
 [node name="Asset1" type="HBoxContainer" parent="VBoxContainer/AssetsContainer"]
+visible = false
 layout_mode = 2
-size_flags_horizontal = 4
-
-[node name="Titulo" type="Label" parent="VBoxContainer/AssetsContainer/Asset1"]
-layout_mode = 2
-text = "Pixel Art Top Down - Basic By Cainos"
 
 [node name="Link" type="Label" parent="VBoxContainer/AssetsContainer/Asset1"]
 layout_mode = 2
+size_flags_horizontal = 3
 text = "https://cainos.itch.io/pixel-art-top-down-basic"
+horizontal_alignment = 1
+
+[node name="Link2" type="Label" parent="VBoxContainer/AssetsContainer/Asset1"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "https://alexti-dev.itch.io/houses"
+horizontal_alignment = 1
 
 [node name="Asset2" type="HBoxContainer" parent="VBoxContainer/AssetsContainer"]
 layout_mode = 2
-size_flags_horizontal = 4
 
 [node name="Titulo" type="Label" parent="VBoxContainer/AssetsContainer/Asset2"]
 layout_mode = 2
-text = "Houses by alexti-dev"
+size_flags_horizontal = 3
+text = "Pixel Art Top Down - Basic By Cainos"
+horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="Link" type="Label" parent="VBoxContainer/AssetsContainer/Asset2"]
+[node name="Titulo2" type="Label" parent="VBoxContainer/AssetsContainer/Asset2"]
 layout_mode = 2
-text = "https://alexti-dev.itch.io/houses"
+size_flags_horizontal = 3
+text = "Houses by alexti-dev"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Asset3" type="HBoxContainer" parent="VBoxContainer/AssetsContainer"]
 layout_mode = 2
-size_flags_horizontal = 4
 
 [node name="Titulo" type="Label" parent="VBoxContainer/AssetsContainer/Asset3"]
 layout_mode = 2
+size_flags_horizontal = 3
 text = "Pixel Art Top Down - Basic By Cainos"
+horizontal_alignment = 1
 
-[node name="Link" type="Label" parent="VBoxContainer/AssetsContainer/Asset3"]
+[node name="Titulo2" type="Label" parent="VBoxContainer/AssetsContainer/Asset3"]
 layout_mode = 2
-text = "https://cainos.itch.io/pixel-art-top-down-basic"
+size_flags_horizontal = 3
+text = "Houses by alexti-dev"
+horizontal_alignment = 1
 
 [node name="Asset4" type="HBoxContainer" parent="VBoxContainer/AssetsContainer"]
 layout_mode = 2
-size_flags_horizontal = 4
 
 [node name="Titulo" type="Label" parent="VBoxContainer/AssetsContainer/Asset4"]
 layout_mode = 2
+size_flags_horizontal = 3
 text = "Pixel Art Top Down - Basic By Cainos"
+horizontal_alignment = 1
 
-[node name="Link" type="Label" parent="VBoxContainer/AssetsContainer/Asset4"]
+[node name="Titulo2" type="Label" parent="VBoxContainer/AssetsContainer/Asset4"]
 layout_mode = 2
-text = "https://cainos.itch.io/pixel-art-top-down-basic"
+size_flags_horizontal = 3
+text = "Houses by alexti-dev"
+horizontal_alignment = 1
+
+[node name="Asset5" type="HBoxContainer" parent="VBoxContainer/AssetsContainer"]
+layout_mode = 2
+
+[node name="Titulo" type="Label" parent="VBoxContainer/AssetsContainer/Asset5"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Pixel Art Top Down - Basic By Cainos"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Titulo2" type="Label" parent="VBoxContainer/AssetsContainer/Asset5"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Houses by alexti-dev"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Asset6" type="HBoxContainer" parent="VBoxContainer/AssetsContainer"]
+layout_mode = 2
+
+[node name="Titulo" type="Label" parent="VBoxContainer/AssetsContainer/Asset6"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Pixel Art Top Down - Basic By Cainos"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Titulo2" type="Label" parent="VBoxContainer/AssetsContainer/Asset6"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Houses by alexti-dev"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Asset7" type="HBoxContainer" parent="VBoxContainer/AssetsContainer"]
+layout_mode = 2
+
+[node name="Titulo" type="Label" parent="VBoxContainer/AssetsContainer/Asset7"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Pixel Art Top Down - Basic By Cainos"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Titulo2" type="Label" parent="VBoxContainer/AssetsContainer/Asset7"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Houses by alexti-dev"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="BotoesContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
