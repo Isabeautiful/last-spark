@@ -99,7 +99,7 @@ func update_bar_color(bar, value: float):
 
 func show_warning(message: String,child_meta:String):
 	var warning_label = Label.new()
-	warning_label.text = "⚠️ " + message
+	warning_label.text = message
 	warning_label.set_meta("tipo",child_meta)
 	# Efeito de piscar
 	var tween = create_tween()

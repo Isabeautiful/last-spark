@@ -22,21 +22,8 @@ var max_coord: int
 var path_length: int
 var diagonal_length: int
 
-# Variáveis para o sistema de plantio
-var planting_configs = {
-	"tree": {
-		"name": "Árvore",
-		"cost_seed": 1
-	},
-	"bush": {
-		"name": "Arbusto",
-		"cost_seed": 1
-	}
-}
-var current_seed_type: String = "tree"
-
-# Sinal para quando uma semente é plantada
-signal seed_planted(seed_type: String, position: Vector2)
+# Referência ao PlantingSystem
+@onready var planting_system: PlantingSystem
 
 func _ready():
 	if not tilemap_layer:
@@ -44,6 +31,14 @@ func _ready():
 	
 	if not tree_container:
 		return
+	
+	# Obter referência ao PlantingSystem
+	planting_system = get_tree().get_first_node_in_group("planting_system")
+	
+	if not planting_system:
+		planting_system = PlantingSystem.new()
+		planting_system.add_to_group("planting_system")
+		get_tree().root.add_child(planting_system)
 	
 	PoolManager.ensure_pool("tree")
 	PoolManager.ensure_pool("bush")
@@ -55,7 +50,7 @@ func _ready():
 	place_central_path()
 
 func calculate_derived_variables():
-	map_size = 2* map_radius + 1
+	map_size = 2 * map_radius + 1
 	max_coord = map_radius - 2
 	path_length = int(map_radius * path_length_percentage)
 	diagonal_length = int(map_radius * diagonal_path_percentage)
@@ -73,7 +68,6 @@ func generate_ground_layer():
 func generate_map_borders():
 	var borders = []
 	var collision_shapes = []
-	var sum = 0
 	
 	for i in range(4):
 		var staticBody = StaticBody2D.new()
@@ -87,21 +81,21 @@ func generate_map_borders():
 		borders.push_back(staticBody)
 		collision_shapes.push_back(shapeInstance)
 		
-		borders.get(i).add_child(collision_shapes.get(i))
-		
-	borders[0].position = Vector2(0,map_radius*16)
-	borders[1].position = Vector2(map_radius*16,0)
-	borders[2].position = Vector2(0,-map_radius*16)
-	borders[3].position = Vector2(-map_radius*16,0)
+		borders[i].add_child(collision_shapes[i])
 	
-	collision_shapes[0].scale = Vector2(map_radius*16,1.0)
-	collision_shapes[1].scale = Vector2(1.0,map_radius*16)
-	collision_shapes[2].scale = Vector2(map_radius*16,1.0)
-	collision_shapes[3].scale = Vector2(1.0,map_radius*16)
+	borders[0].position = Vector2(0, map_radius * 16)
+	borders[1].position = Vector2(map_radius * 16, 0)
+	borders[2].position = Vector2(0, -map_radius * 16)
+	borders[3].position = Vector2(-map_radius * 16, 0)
+	
+	collision_shapes[0].scale = Vector2(map_radius * 16, 1.0)
+	collision_shapes[1].scale = Vector2(1.0, map_radius * 16)
+	collision_shapes[2].scale = Vector2(map_radius * 16, 1.0)
+	collision_shapes[3].scale = Vector2(1.0, map_radius * 16)
 	
 	for i in range(4):
 		add_child(borders[i])
-		
+
 func place_central_path():
 	if not tilemap_layer:
 		return
@@ -220,7 +214,7 @@ func find_valid_position(min_distance_from_center: int, min_spacing: int, is_foo
 	return Vector2.ZERO
 
 func is_position_on_path(position: Vector2i) -> bool:
-	var atlas_coords = tilemap_layer.get_cell_atlas_coords(Vector2i(position.x,position.y))
+	var atlas_coords = tilemap_layer.get_cell_atlas_coords(Vector2i(position.x, position.y))
 	return atlas_coords == Vector2i(0, 8)
 
 func _on_tree_harvested(amount: int, tree_node: Node, tree_pos: Vector2):
@@ -280,7 +274,7 @@ func is_planting_position_valid(position: Vector2, is_food: bool) -> bool:
 func can_plant_seed(seed_type: String, position: Vector2) -> bool:
 	return is_planting_position_valid(position, seed_type == "bush")
 
-# Função principal para plantar uma semente (mantida para compatibilidade)
+# Função para o plantio inicial (não consome sementes)
 func plant_seed(seed_type: String, position: Vector2) -> bool:
 	# Verificar se é uma posição válida para plantar
 	if not can_plant_seed(seed_type, position):
@@ -313,38 +307,10 @@ func plant_seed(seed_type: String, position: Vector2) -> bool:
 
 # Função para plantar semente manualmente (com gerenciamento de recursos)
 func plant_seed_manual(seed_type: String, position: Vector2) -> bool:
-	return plant_seed_at_position(seed_type, position)
-
-# Nova função integrada para plantio de sementes
-func plant_seed_at_position(seed_type: String, position: Vector2) -> bool:
-	if not planting_configs.has(seed_type):
-		return false
-	
-	var config = planting_configs[seed_type]
-	
-	# Consumir semente
-	var seed_consumed = false
-	if seed_type == "tree":
-		seed_consumed = ResourceManager.use_tree_seed(config["cost_seed"])
-	elif seed_type == "bush":
-		seed_consumed = ResourceManager.use_bush_seed(config["cost_seed"])
-	
-	if not seed_consumed:
-		return false
-	
-	# Usar o método de plantio existente
-	var planted = plant_seed(seed_type, position)
-	if planted:
-		seed_planted.emit(seed_type, position)
-		_create_planting_effect(position)
-		return true
-	else:
-		# Devolver a semente se não conseguiu plantar
-		if seed_type == "tree":
-			ResourceManager.add_tree_seed(config["cost_seed"])
-		elif seed_type == "bush":
-			ResourceManager.add_bush_seed(config["cost_seed"])
-		return false
+	# Usar o PlantingSystem para o plantio manual
+	if planting_system:
+		return planting_system.plant_seed_at_position(position)
+	return false
 
 # Efeito visual de crescimento
 func _create_growth_effect(position: Vector2):
@@ -382,11 +348,6 @@ func _create_planting_effect(position: Vector2):
 	tween.tween_property(effect, "scale", Vector2(0.5, 0.5), 0.8)
 	tween.tween_callback(effect.queue_free)
 
-# Define o tipo de semente atual
-func set_current_seed_type(seed_type: String):
-	if planting_configs.has(seed_type):
-		current_seed_type = seed_type
-
 func clear_placed_resources(resource_list: Array, pool_type: String):
 	for resource in resource_list:
 		if is_instance_valid(resource):
@@ -399,9 +360,7 @@ func get_food_count() -> int:
 	return placed_food.size()
 
 func clear_loaded_elements():
-	for i in range(len(placed_trees)):
-		placed_trees.erase(i)
-		
-	clear_placed_resources(placed_trees,"tree")
+	clear_placed_resources(placed_trees, "tree")
+	clear_placed_resources(placed_food, "bush")
 	placed_food.clear()
 	placed_trees.clear()

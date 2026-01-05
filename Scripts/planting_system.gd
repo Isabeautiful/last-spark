@@ -5,30 +5,11 @@ var current_seed_type: String = "tree"
 var ghost_plant: Sprite2D = null
 var is_planting_mode: bool = false
 var can_place: bool = false
-var planting_configs: Dictionary = {
-	"tree": {
-		"name": "Árvore",
-		"cost_seed": 1,
-		"scene": preload("res://Scenes/Tree.tscn"),
-		"size": Vector2(32, 32),
-		"color": Color(0.6, 0.4, 0.2, 0.5),
-		"drop_seed_chance": 0.5,
-		"seed_drop_amount": 1,
-		"can_drop_seeds": true
-	},
-	"bush": {
-		"name": "Arbusto",
-		"cost_seed": 1,
-		"scene": preload("res://Scenes/Bush.tscn"), 
-		"size": Vector2(24, 24),
-		"color": Color(0.2, 0.8, 0.2, 0.5),
-		"drop_seed_chance": 0.6,
-		"seed_drop_amount": 1,
-		"can_drop_seeds": true
-	}
-}
 
-@onready var game = get_tree().root.get_child(0)  # Alternativa mais segura
+# Configurações que serão preenchidas automaticamente das cenas
+var planting_configs: Dictionary = {}
+
+@onready var game = get_tree().root.get_child(0)
 @onready var tilemap: TileMapLayer
 @onready var camera: Camera2D
 
@@ -53,6 +34,9 @@ func _ready():
 			game.add_child(camera)
 			camera.make_current()
 	
+	# Carregar configurações das cenas
+	load_planting_configs()
+	
 	# Criar sprite fantasma SOMENTE quando necessário
 	_create_ghost_plant()
 	
@@ -61,6 +45,60 @@ func _ready():
 	
 	# Inicialmente não processar entrada
 	set_process_input(false)
+
+func load_planting_configs():
+	# Configurações base para cada tipo de planta
+	var base_configs = {
+		"tree": {
+			"name": "Árvore",
+			"cost_seed": 1,
+			"scene": preload("res://Scenes/Tree.tscn"),
+			"drop_seed_chance": 0.5,
+			"seed_drop_amount": 1,
+			"can_drop_seeds": true,
+			"color": Color(0.6, 0.4, 0.2, 0.5),
+			"size": Vector2(32, 32)
+		},
+		"bush": {
+			"name": "Arbusto",
+			"cost_seed": 1,
+			"scene": preload("res://Scenes/Bush.tscn"), 
+			"drop_seed_chance": 0.9,
+			"seed_drop_amount": 2,
+			"can_drop_seeds": true,
+			"color": Color(0.2, 0.8, 0.2, 0.5),
+			"size": Vector2(24, 24)
+		}
+	}
+	
+	# Para cada tipo, instanciar a cena temporariamente para ler suas propriedades
+	for seed_type in base_configs:
+		var config = base_configs[seed_type].duplicate(true)  # Cópia profunda
+		var scene = config["scene"]
+		
+		if scene:
+			# Instanciar temporariamente para ler propriedades
+			var plant_instance = scene.instantiate()
+			
+			# Ler propriedades da instância (se existirem)
+			if plant_instance.has_method("get_planting_config"):
+				# Se a planta tem um método para fornecer configurações
+				var plant_config = plant_instance.get_planting_config()
+				for key in plant_config:
+					config[key] = plant_config[key]
+			else:
+				# Tentar ler propriedades exportadas diretamente
+				if plant_instance.has_meta("drop_seed_chance"):
+					config["drop_seed_chance"] = plant_instance.get_meta("drop_seed_chance")
+				if plant_instance.has_meta("seed_drop_amount"):
+					config["seed_drop_amount"] = plant_instance.get_meta("seed_drop_amount")
+				if plant_instance.has_meta("can_drop_seeds"):
+					config["can_drop_seeds"] = plant_instance.get_meta("can_drop_seeds")
+			
+			# Liberar a instância temporária
+			plant_instance.queue_free()
+			
+			planting_configs[seed_type] = config
 
 func _create_ghost_plant():
 	# Destruir ghost existente se houver
@@ -131,7 +169,7 @@ func start_planting(seed_type: String = "tree"):
 	# Configurar ghost
 	var config = planting_configs[current_seed_type]
 	
-	# Usar textura de debug (substitua por texturas reais depois)
+	# Usar textura de debug
 	ghost_plant.texture = _create_debug_texture(config["size"], config["color"])
 	ghost_plant.scale = Vector2(0.8, 0.8)
 	
@@ -144,7 +182,6 @@ func start_planting(seed_type: String = "tree"):
 	planting_mode_changed.emit(true)
 
 func cancel_planting():
-	
 	if not is_planting_mode:
 		return
 	
@@ -184,10 +221,15 @@ func toggle_seed_type():
 		print("Nenhum tipo de semente disponível!")
 
 func has_enough_seeds(seed_type: String) -> bool:
+	if not planting_configs.has(seed_type):
+		return false
+	
+	var cost = planting_configs[seed_type]["cost_seed"]
+	
 	if seed_type == "tree":
-		return ResourceManager.tree_seeds >= planting_configs[seed_type]["cost_seed"]
+		return ResourceManager.tree_seeds >= cost
 	elif seed_type == "bush":
-		return ResourceManager.bush_seeds >= planting_configs[seed_type]["cost_seed"]
+		return ResourceManager.bush_seeds >= cost
 	return false
 
 func can_place_seed(position: Vector2) -> bool:
@@ -205,7 +247,7 @@ func can_place_seed(position: Vector2) -> bool:
 	if player and position.distance_to(player.global_position) < 50:
 		return false
 	
-	# Verificar colisoes com outros recursos
+	# Verificar colisões com outros recursos
 	var space_state = get_world_2d().direct_space_state
 	var query = PhysicsShapeQueryParameters2D.new()
 	
@@ -245,7 +287,6 @@ func plant_seed_at_position(position: Vector2):
 		seed_consumed = ResourceManager.use_bush_seed(config["cost_seed"])
 	
 	if not seed_consumed:
-		print("Erro ao consumir semente!")
 		return
 	
 	# Instanciar recurso
@@ -253,16 +294,8 @@ func plant_seed_at_position(position: Vector2):
 		var plant = config["scene"].instantiate()
 		plant.global_position = position
 		
-		# CONFIGURAR DROPS PARA A PLANTA (ÁRVORE OU ARBUSTO)
-		# Isso garante que árvores plantadas também droparão sementes
-		if current_seed_type == "tree":
-			plant.drop_seed_chance = config["drop_seed_chance"]
-			plant.seed_drop_amount = config["seed_drop_amount"]
-			plant.can_drop_seeds = config["can_drop_seeds"]
-		elif current_seed_type == "bush":
-			plant.drop_seed_chance = config["drop_seed_chance"]
-			plant.seed_drop_amount = config["seed_drop_amount"]
-			plant.can_drop_seeds = config["can_drop_seeds"]
+		# As propriedades já estão configuradas nas cenas (drop_seed_chance, etc.)
+		# Não precisamos mais configurar aqui, pois as cenas já têm os valores corretos
 		
 		# Adicionar à cena atual
 		var current_scene = get_tree().current_scene
@@ -346,3 +379,8 @@ func _notification(what):
 
 func get_current_seed_type() -> String:
 	return current_seed_type
+
+# Método para atualizar configurações manualmente se necessário
+func update_plant_config(seed_type: String, key: String, value):
+	if planting_configs.has(seed_type):
+		planting_configs[seed_type][key] = value

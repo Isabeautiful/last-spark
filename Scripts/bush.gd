@@ -1,4 +1,5 @@
 extends Area2D
+class_name Bush
 
 @export var food_amount: int = 1
 @export var drop_seed_chance: float = 0.9  # 90% chance
@@ -14,6 +15,7 @@ var player_in_range: bool = false
 
 signal harvested(amount: int)
 var health = 2
+
 func _ready():
 	# Conectar sinais
 	area_entered.connect(_on_self_area_entered)
@@ -44,6 +46,8 @@ func highlight(active: bool):
 	
 	if active:
 		sprite.modulate = Color(1.0, 1.0, 0.8, 1.0)
+	else:
+		sprite.modulate = Color.WHITE
 
 func harvest() -> bool:
 	if not is_collectible:
@@ -60,8 +64,6 @@ func harvest() -> bool:
 	# SISTEMA DE DROP DIRETO NO ARBUSTO
 	if can_drop_seeds and randf() < drop_seed_chance:
 		ResourceManager.add_bush_seed(seed_drop_amount)
-	else:
-		print("✗ Nenhuma semente dropada desta vez")
 	
 	# Efeito visual
 	if sprite:
@@ -89,8 +91,7 @@ func reset():
 		collision.disabled = false
 	
 	show()
-	
-	
+
 func take_damage():
 	health -= 1
 	audio_stream_player_2d.play()
@@ -114,3 +115,13 @@ func shake():
 		)
 		tween.tween_property(self, "position", original_pos + offset, duracao / 10)
 	tween.tween_property(self, "position", original_pos, duracao / 10)
+
+# Método para fornecer configurações ao sistema de plantio
+func get_planting_config() -> Dictionary:
+	return {
+		"drop_seed_chance": drop_seed_chance,
+		"seed_drop_amount": seed_drop_amount,
+		"can_drop_seeds": can_drop_seeds,
+		"size": Vector2(24, 24),  # Tamanho padrão do arbusto
+		"color": Color(0.2, 0.8, 0.2, 0.5)  # Cor verde para ghost
+	}
