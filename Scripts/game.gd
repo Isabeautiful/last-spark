@@ -399,14 +399,6 @@ func _on_fire_critical():
 		hud.show_warning("FOGUEIRA CRÍTICA!","critical")
 		fire.set_warning_status(true,"critical")
 		
-#func _on_player_status_changed(health: float, hunger: float, cold: float):
-#	if hud and hud.has_method("update_player_status"):
-#		hud.update_player_status(health, hunger, cold)
-	
-	#set_hud_status(hud,player.PlayerStatus.hurt,"health","Saúde Baixa!")
-	#set_hud_status(hud,player.PlayerStatus.hungry,"hunger","Fome Extrema!")
-	#set_hud_status(hud,player.PlayerStatus.cold,"cold","Hipotermia!")
-
 func _on_player_died():
 	print("O jogador morreu!")
 	if ResourceManager.current_population > 0:
@@ -426,3 +418,6 @@ func _on_victory(reason: String):
 	print("VITÓRIA: ", reason)
 	get_tree().paused = true
 	print("VENCEU!")
+	GameSignals.clear_all_pools.emit()
+	GameSignals.show_game_over_screen.emit(reason)
+	get_tree().change_scene_to_file("res://Scenes/UI/victory.tscn")

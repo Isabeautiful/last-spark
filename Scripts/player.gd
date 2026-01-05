@@ -179,8 +179,21 @@ func _physics_process(delta):
 			update_area_position(current_direction)
 		
 		# Animação simples
-		sprite.rotation = current_direction.angle()
-	
+		#sprite.rotation = current_direction.angle()
+		match input_dir:
+			Vector2.LEFT:
+				sprite.frame = 2
+				sprite.flip_h = false
+			Vector2.RIGHT:
+				sprite.frame = 2
+				sprite.flip_h = true
+			Vector2.UP:
+				sprite.frame = 1
+				sprite.flip_v = false
+			Vector2.DOWN:
+				sprite.frame = 0
+				sprite.flip_v = false
+			
 	velocity = input_dir * current_speed * delta
 	move_and_collide(velocity)
 
@@ -257,38 +270,7 @@ func _on_hunger_timer_timeout():
 	
 	if GameSignals.has_user_signal("player_status_changed"):
 		GameSignals.player_status_changed.emit(health, hunger, cold)
-
-#função para verificação do status de frio
-#func _on_cold_timer_timeout():
-#	var fire = get_tree().get_first_node_in_group("fire")
-	
-#	if fire:
-#		var distance_to_fire = global_position.distance_to(fire.global_position)
-#		if fire.has_method("get_light_radius"):
-#			var heat_radius = fire.get_light_radius()
-#			is_in_heat_zone = distance_to_fire <= heat_radius
-			
-#			if not is_in_heat_zone:
-#				cold -= 10
-#			else:
-#				cold = min(cold + 5, 100)
-#		else:
-#			cold -= 10
-#	else:
-#		cold -= 15
-	
-#	cold = max(cold, 0)
-	
-#	if cold <= 20:
-#		PlayerStatus.cold = true
-#		take_damage(3, "frio")
-#	else:
-#		PlayerStatus.cold = false
-#		GameSignals.hideWarning.emit("cold")
 		
-#	if GameSignals.has_user_signal("player_status_changed"):
-#		GameSignals.player_status_changed.emit(health, hunger, cold)
-
 func _on_cold_timer_timeout():
 	var fire = get_tree().get_first_node_in_group("fire")
 	var distance_to_fire = global_position.distance_to(fire.global_position)
@@ -299,7 +281,7 @@ func _on_cold_timer_timeout():
 	if not is_in_heat_zone:
 		cold -= 10
 	else:
-		cold = min(cold + 5, 100)
+		cold = min(cold + 15, 100)
 
 	cold = max(cold, 0)
 	

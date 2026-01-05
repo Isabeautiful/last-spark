@@ -1,13 +1,50 @@
-[gd_scene load_steps=5 format=3 uid="uid://i5sna1aqpm2q"]
+[gd_scene load_steps=11 format=3 uid="uid://i5sna1aqpm2q"]
 
 [ext_resource type="Script" uid="uid://cb6brvoh5onx0" path="res://Scripts/shadow.gd" id="1_8pobm"]
-[ext_resource type="Texture2D" uid="uid://be11vpuqrf33l" path="res://Assets/icon.svg" id="1_wjdoq"]
+[ext_resource type="Texture2D" uid="uid://dkudib7xqesfh" path="res://Assets/shadow/shadow.png" id="2_2nopm"]
+[ext_resource type="AudioStream" uid="uid://b7hyj4rxrsa8s" path="res://Assets/audio/hit/shadow_hit.mp3" id="3_8m2cg"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8m2cg"]
+atlas = ExtResource("2_2nopm")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qbr6t"]
+atlas = ExtResource("2_2nopm")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_n7ltx"]
+atlas = ExtResource("2_2nopm")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ra5hl"]
+atlas = ExtResource("2_2nopm")
+region = Rect2(144, 0, 48, 48)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_7ylwa"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8m2cg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qbr6t")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_n7ltx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ra5hl")
+}],
+"loop": true,
+"name": &"move",
+"speed": 5.0
+}]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wjdoq"]
-size = Vector2(123, 120)
+size = Vector2(150.00003, 289.49042)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8pobm"]
-size = Vector2(123.684235, 114.64967)
+size = Vector2(150.00003, 289.49042)
 
 [node name="Shadow" type="CharacterBody2D"]
 z_index = 2
@@ -16,12 +53,16 @@ collision_layer = 4
 collision_mask = 9
 script = ExtResource("1_8pobm")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Sprite2D" type="AnimatedSprite2D" parent="."]
 modulate = Color(0, 0, 0.20115927, 1)
-texture = ExtResource("1_wjdoq")
+position = Vector2(89.47369, -89.47368)
+scale = Vector2(6.1403513, 6.1403513)
+sprite_frames = SubResource("SpriteFrames_7ylwa")
+animation = &"move"
+autoplay = "move"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(1.5, 0)
+position = Vector2(101.3158, -87.42038)
 shape = SubResource("RectangleShape2D_wjdoq")
 debug_color = Color(0.26069757, 0.34239906, 0, 0.41960785)
 
@@ -30,5 +71,8 @@ collision_layer = 8
 collision_mask = 16
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-position = Vector2(1.3157897, -1.025048e-06)
+position = Vector2(101.3158, -87.42038)
 shape = SubResource("RectangleShape2D_8pobm")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3_8m2cg")

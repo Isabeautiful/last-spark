@@ -1,10 +1,10 @@
 [gd_scene load_steps=5 format=3 uid="uid://coqvrycmqjk2n"]
 
 [ext_resource type="Script" uid="uid://dblrxa2uchapy" path="res://Scripts/player.gd" id="1_cvnsp"]
-[ext_resource type="Texture2D" uid="uid://be11vpuqrf33l" path="res://Assets/icon.svg" id="1_v0iea"]
+[ext_resource type="Texture2D" uid="uid://75mt3xp2023q" path="res://Assets/Pixel Art Top Down - Basic v1.1.2/Texture/TX Player.png" id="2_cvnsp"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_cvnsp"]
-size = Vector2(36, 36)
+size = Vector2(31, 53)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6t5aa"]
 size = Vector2(58, 35)
@@ -14,10 +14,13 @@ collision_mask = 82
 script = ExtResource("1_cvnsp")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-scale = Vector2(0.3, 0.3)
-texture = ExtResource("1_v0iea")
+position = Vector2(2.000002, 26.999992)
+scale = Vector2(1.2636718, 1.2636718)
+texture = ExtResource("2_cvnsp")
+hframes = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(3, -9)
 shape = SubResource("RectangleShape2D_cvnsp")
 
 [node name="ActionArea" type="Area2D" parent="."]
@@ -25,7 +28,7 @@ collision_layer = 384
 collision_mask = 46
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ActionArea"]
-position = Vector2(49, 0.5)
+position = Vector2(50, 1.5)
 shape = SubResource("RectangleShape2D_6t5aa")
 debug_color = Color(0.9590114, 0, 0.5266545, 0.41960785)
 
@@ -33,7 +36,7 @@ debug_color = Color(0.9590114, 0, 0.5266545, 0.41960785)
 wait_time = 5.0
 
 [node name="ColdTimer" type="Timer" parent="."]
-wait_time = 3.0
+wait_time = 7.0
 
 [node name="PlantCheckTimer" type="Timer" parent="."]
 

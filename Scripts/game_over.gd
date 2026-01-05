@@ -22,14 +22,6 @@ func _process(delta: float) -> void:
 	if !audio_stream_player.playing:
 		audio_stream_player.play(0.0)
 
-#TODO: backgrounds diferentes para morte por fogueira e por dano
-func choose_bakcground(type:String):
-	var TextureR = TextureRect.new()
-	match type:
-		"fire_out":
-			pass
-		"death":
-			pass
 
 func hover(Obj:Object,property:String,value:Variant,duration:float):
 	var tween = create_tween()

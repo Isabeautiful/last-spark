@@ -7,6 +7,7 @@ extends Area2D
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var collision: CollisionShape2D = $CollisionShape2D
+@onready var audio_stream_player_2d: AudioStreamPlayer2D = $AudioStreamPlayer2D
 
 var is_collectible: bool = true
 var player_in_range: bool = false
@@ -119,6 +120,7 @@ func reset():
 
 func take_damage():
 	health -= 1
+	audio_stream_player_2d.play()
 	# Efeito visual
 	sprite.modulate = Color.RED
 	shake()
