@@ -1,4 +1,8 @@
-[gd_scene format=3 uid="uid://bk716e8jbwk7u"]
+[gd_scene load_steps=4 format=3 uid="uid://bk716e8jbwk7u"]
+
+[ext_resource type="Texture2D" uid="uid://cbsq0hbkfoalx" path="res://Assets/Background/orig.png" id="1_h87vg"]
+[ext_resource type="Script" uid="uid://84f1s0bnev2p" path="res://Scenes/UI/credits.gd" id="1_q4iv0"]
+[ext_resource type="Theme" uid="uid://dtgrkvhpis27j" path="res://Scenes/UI/main_menu.theme" id="3_lm48m"]
 
 [node name="Credits" type="Control"]
 layout_mode = 3
@@ -7,15 +11,25 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_q4iv0")
 
-[node name="ColorRect" type="ColorRect" parent="."]
+[node name="ColorRect" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.30323282, 0.30323282, 0.30323282, 1)
+texture = ExtResource("1_h87vg")
+
+[node name="ColorRect2" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 106.0
+offset_top = 133.0
+offset_right = 942.0
+offset_bottom = 473.0
+size_flags_vertical = 3
+color = Color(0.19793725, 0.19793722, 0.19793722, 1)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -24,12 +38,14 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -319.0
-offset_top = -65.5
-offset_right = 319.0
-offset_bottom = 65.5
+offset_left = -597.0
+offset_top = -141.0
+offset_right = 607.0
+offset_bottom = 273.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("3_lm48m")
+theme_override_constants/separation = 20
 
 [node name="GrupoContainer" type="VBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
@@ -57,11 +73,11 @@ size_flags_horizontal = 4
 
 [node name="Nome" type="Label" parent="VBoxContainer/GrupoContainer/Integrante2"]
 layout_mode = 2
-text = "ISABELA COELHO OLIVEIRA"
+text = "IGOR CORREA TRIFILIO CAMPOS"
 
 [node name="Matricula" type="Label" parent="VBoxContainer/GrupoContainer/Integrante2"]
 layout_mode = 2
-text = "202365006AB"
+text = "202365092AB"
 
 [node name="AssetsContainer" type="VBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
@@ -118,3 +134,24 @@ text = "Pixel Art Top Down - Basic By Cainos"
 [node name="Link" type="Label" parent="VBoxContainer/AssetsContainer/Asset4"]
 layout_mode = 2
 text = "https://cainos.itch.io/pixel-art-top-down-basic"
+
+[node name="BotoesContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+
+[node name="Voltar ao menu" type="Button" parent="VBoxContainer/BotoesContainer"]
+layout_mode = 2
+text = "BACK TO MENU"
+
+[node name="Start Game" type="Button" parent="VBoxContainer/BotoesContainer"]
+layout_mode = 2
+text = "START GAME"
+
+[node name="Quit" type="Button" parent="VBoxContainer/BotoesContainer"]
+layout_mode = 2
+text = "SAIR"
+
+[connection signal="pressed" from="VBoxContainer/BotoesContainer/Voltar ao menu" to="." method="_on_voltar_ao_menu_pressed"]
+[connection signal="pressed" from="VBoxContainer/BotoesContainer/Start Game" to="." method="_on_start_game_pressed"]
+[connection signal="pressed" from="VBoxContainer/BotoesContainer/Quit" to="." method="_on_quit_pressed"]
