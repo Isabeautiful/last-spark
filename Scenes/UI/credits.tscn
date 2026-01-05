@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://bk716e8jbwk7u"]
+[gd_scene load_steps=5 format=3 uid="uid://bk716e8jbwk7u"]
 
 [ext_resource type="Texture2D" uid="uid://cbsq0hbkfoalx" path="res://Assets/Background/orig.png" id="1_h87vg"]
 [ext_resource type="Script" uid="uid://84f1s0bnev2p" path="res://Scenes/UI/credits.gd" id="1_q4iv0"]
 [ext_resource type="Theme" uid="uid://dtgrkvhpis27j" path="res://Scenes/UI/main_menu.theme" id="3_lm48m"]
+[ext_resource type="AudioStream" uid="uid://cktqfw4v0jb6w" path="res://Assets/audio/hover/video-game-gui-hovering-sound-417440 (mp3cut.net).mp3" id="5_1g7ho"]
 
 [node name="Credits" type="Control"]
 layout_mode = 3
@@ -152,6 +153,12 @@ text = "START GAME"
 layout_mode = 2
 text = "SAIR"
 
+[node name="AudioStreamPlayer2" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_1g7ho")
+
+[connection signal="mouse_entered" from="VBoxContainer/BotoesContainer/Voltar ao menu" to="." method="_on_voltar_ao_menu_mouse_entered"]
 [connection signal="pressed" from="VBoxContainer/BotoesContainer/Voltar ao menu" to="." method="_on_voltar_ao_menu_pressed"]
+[connection signal="mouse_entered" from="VBoxContainer/BotoesContainer/Start Game" to="." method="_on_start_game_mouse_entered"]
 [connection signal="pressed" from="VBoxContainer/BotoesContainer/Start Game" to="." method="_on_start_game_pressed"]
+[connection signal="mouse_entered" from="VBoxContainer/BotoesContainer/Quit" to="." method="_on_quit_mouse_entered"]
 [connection signal="pressed" from="VBoxContainer/BotoesContainer/Quit" to="." method="_on_quit_pressed"]

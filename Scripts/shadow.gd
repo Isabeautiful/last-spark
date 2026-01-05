@@ -168,7 +168,6 @@ func destroy():
 	if sprite:
 		var tween = create_tween()
 		tween.tween_property(sprite, "modulate:a", 0.0, 0.3)
-		tween.parallel().tween_property(sprite, "scale", Vector2(1.5, 1.5), 0.3)
 		await tween.finished
 	
 	destroyed.emit()
