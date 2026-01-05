@@ -13,10 +13,6 @@ var current_day: int = 1
 var game_state: String = "playing"  # "playing", "building", "planting", "menu"
 var time_of_day: String = "day"     # "day", "evening", "night"
 
-# Sistema de eventos
-var event_manager: Node
-var active_events: Array = []
-
 func _ready():
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	get_tree().paused = false
@@ -65,9 +61,6 @@ func _ready():
 	# Inicialmente esconder menu
 	if build_menu:
 		build_menu.hide()
-	
-	# Inicializar eventos
-	initialize_events()
 
 func _setup_inputs():
 	# Ação para construção (B)
@@ -263,53 +256,6 @@ func _on_planting_mode_changed(active: bool):
 		if player:
 			player.set_can_process_input(true)
 
-func initialize_events():
-	# Criar sistema básico de eventos
-	event_manager = Node.new()
-	event_manager.name = "EventManager"
-	
-	# Timer para verificar eventos a cada minuto
-	var event_timer = Timer.new()
-	event_timer.name = "EventTimer"
-	event_timer.wait_time = 60.0
-	event_timer.timeout.connect(_check_events)
-	event_manager.add_child(event_timer)
-	
-	add_child(event_manager)
-	
-	event_timer.start()
-
-func _check_events():
-	if current_day >= 3:
-		if randf() < 0.3:
-			trigger_random_event()
-
-func trigger_random_event():
-	var events = [
-		"storm", "merchant", "earthquake", "regrowth"
-	]
-	
-	var random_event = events[randi() % events.size()]
-	handle_event(random_event)
-	
-func handle_event(event_type: String):
-	match event_type:
-		"storm":
-			if hud.has_method("show_warning"):
-				hud.show_warning("Tempestade de neve!","storm")
-		"merchant":
-			if hud.has_method("show_notification"):
-				hud.show_notification("Mercante chegou!","merchant")
-		"earthquake":
-			if hud.has_method("show_warning"):
-				hud.show_warning("Terremoto!","earthquake")
-		"regrowth":
-			if hud.has_method("show_notification"):
-				hud.show_notification("Floresta renasceu!","regrowth")
-				
-	await get_tree().create_timer(5.0)
-	hud.hide_warning(event_type)
-	
 func _on_day_started(day_number: int):
 	current_day = day_number
 	time_of_day = "day"
