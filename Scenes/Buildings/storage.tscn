@@ -1,20 +1,13 @@
 [gd_scene load_steps=3 format=3 uid="uid://vvvkk1jvaewx"]
 
 [ext_resource type="PackedScene" uid="uid://bdhkjp71pmugw" path="res://Scenes/Buildings/building.tscn" id="1_ift20"]
-[ext_resource type="Texture2D" uid="uid://be11vpuqrf33l" path="res://Assets/icon.svg" id="2_47213"]
+[ext_resource type="Texture2D" uid="uid://dvteqij4exdxb" path="res://Assets/Buildings/storage.png" id="2_47213"]
 
 [node name="Storage" instance=ExtResource("1_ift20")]
-building_name = "Deposito"
-building_type = "storage"
-cost_wood = 40
-cost_food = 0
-construction_time = 6.0
-health = 150
 
 [node name="Sprite2D" parent="." index="0"]
 modulate = Color(1, 1, 0, 1)
 position = Vector2(3.499998, -1)
-scale = Vector2(0.6640625, 0.1953125)
 texture = ExtResource("2_47213")
 
 [node name="Collision" parent="." index="1"]

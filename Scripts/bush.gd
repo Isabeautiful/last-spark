@@ -5,8 +5,9 @@ extends Area2D
 @export var seed_drop_amount: int = 1
 @export var can_drop_seeds: bool = true
 
-@onready var sprite: Sprite2D = $Sprite2D
+@onready var sprite = $Sprite2D
 @onready var collision: CollisionShape2D = $CollisionShape2D
+@onready var audio_stream_player_2d: AudioStreamPlayer2D = $AudioStreamPlayer2D
 
 var is_collectible: bool = true
 var player_in_range: bool = false
@@ -108,6 +109,7 @@ func reset():
 	
 func take_damage():
 	health -= 1
+	audio_stream_player_2d.play()
 	# Efeito visual
 	sprite.modulate = Color.RED
 	shake()

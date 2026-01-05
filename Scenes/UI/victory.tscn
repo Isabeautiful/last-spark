@@ -1,12 +1,12 @@
 [gd_scene load_steps=11 format=3 uid="uid://cb0s3wsy3t66e"]
 
 [ext_resource type="FontFile" uid="uid://bsgyysdfm6yd3" path="res://Assets/Fonts/Aurusenthial Gothic Soft.ttf" id="1_15ee3"]
-[ext_resource type="Script" uid="uid://bhsiljas14678" path="res://victory.gd" id="2_msd2c"]
+[ext_resource type="Script" uid="uid://bhsiljas14678" path="res://Scripts/victory.gd" id="2_msd2c"]
 [ext_resource type="Texture2D" uid="uid://bvd05emj5gtva" path="res://Assets/Background/victory_screen.png" id="2_u1yty"]
 [ext_resource type="AudioStream" uid="uid://cl2a2hh0kjam5" path="res://Assets/audio/menu/UrbanInterlude - Mourning After.wav" id="3_msd2c"]
 [ext_resource type="AudioStream" uid="uid://cktqfw4v0jb6w" path="res://Assets/audio/hover/video-game-gui-hovering-sound-417440 (mp3cut.net).mp3" id="4_ebtt0"]
 [ext_resource type="FontFile" uid="uid://lkjhqdl6wsh7" path="res://Assets/Fonts/Gothic_pixel_font(0S).ttf" id="5_v245v"]
-[ext_resource type="Script" uid="uid://cxw1wpq8kh45v" path="res://victory_reset.gd" id="6_pg2b1"]
+[ext_resource type="Script" uid="uid://cxw1wpq8kh45v" path="res://Scripts/victory_reset.gd" id="6_pg2b1"]
 
 [sub_resource type="Theme" id="Theme_j3yce"]
 default_font = ExtResource("1_15ee3")
@@ -84,5 +84,7 @@ offset_bottom = 125.399994
 text = "Novo Jogo"
 script = ExtResource("6_pg2b1")
 
+[connection signal="mouse_entered" from="Victory_Quit" to="." method="_on_victory_quit_mouse_entered"]
 [connection signal="pressed" from="Victory_Quit" to="." method="_on_victory_quit_pressed"]
+[connection signal="mouse_entered" from="Victory_reset" to="." method="_on_victory_reset_mouse_entered"]
 [connection signal="pressed" from="Victory_reset" to="." method="_on_victory_reset_pressed"]

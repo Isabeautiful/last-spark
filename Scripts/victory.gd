@@ -39,3 +39,11 @@ func _on_victory_quit_pressed() -> void:
 
 func _on_victory_reset_pressed() -> void:
 	get_tree().change_scene_to_file("res://Scenes/game.tscn")
+
+
+func _on_victory_quit_mouse_entered() -> void:
+	audio_stream_player_2.play()
+
+
+func _on_victory_reset_mouse_entered() -> void:
+	audio_stream_player_2.play()

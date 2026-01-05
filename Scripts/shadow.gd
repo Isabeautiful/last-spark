@@ -8,6 +8,7 @@ enum ShadowType {
 
 @export var shadow_type: ShadowType = ShadowType.COMMON
 @export var base_speed: float = 50.0
+@onready var audio_stream_player_2d: AudioStreamPlayer2D = $AudioStreamPlayer2D
 
 @onready var sprite = $Sprite2D
 
@@ -152,7 +153,7 @@ func _on_reached_fire():
 func take_damage(amount: int):
 	took_damage.emit(amount)
 	health -= amount
-	
+	audio_stream_player_2d.play()
 	# Efeito visual
 	sprite.modulate = Color.RED
 	var tween = create_tween()

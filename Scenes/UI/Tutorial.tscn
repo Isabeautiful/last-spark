@@ -2,7 +2,7 @@
 
 [ext_resource type="FontFile" uid="uid://lkjhqdl6wsh7" path="res://Assets/Fonts/Gothic_pixel_font(0S).ttf" id="1_vdf06"]
 [ext_resource type="FontFile" uid="uid://bsgyysdfm6yd3" path="res://Assets/Fonts/Aurusenthial Gothic Soft.ttf" id="2_41bw0"]
-[ext_resource type="Script" uid="uid://bkwpli65xlbyh" path="res://Scenes/UI/tutorial.gd" id="2_u7wec"]
+[ext_resource type="Script" uid="uid://bkwpli65xlbyh" path="res://Scripts/tutorial.gd" id="2_u7wec"]
 [ext_resource type="Texture2D" uid="uid://c2a2gkqodqwue" path="res://Assets/Background/Background_tutorial.png" id="2_xg1yc"]
 
 [sub_resource type="Theme" id="Theme_xg1yc"]

@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://b55uaokhumir6"]
+[gd_scene load_steps=5 format=3 uid="uid://b55uaokhumir6"]
 
 [ext_resource type="Script" uid="uid://c2sq1jhfam5mo" path="res://Scripts/tree.gd" id="1_itkj8"]
 [ext_resource type="Texture2D" uid="uid://dvtlu47rwrdt2" path="res://Assets/Pixel Art Top Down - Basic v1.1.2/Texture/Arvore.png" id="2_0suky"]
+[ext_resource type="AudioStream" uid="uid://dayrix88x0xls" path="res://Assets/audio/hit/wood_hit.mp3" id="3_0suky"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jb3vm"]
 size = Vector2(8, 42)
@@ -11,7 +12,6 @@ z_index = 2
 collision_layer = 2
 collision_mask = 129
 script = ExtResource("1_itkj8")
-wood_amount = null
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_0suky")
@@ -19,3 +19,6 @@ texture = ExtResource("2_0suky")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(1, 39)
 shape = SubResource("RectangleShape2D_jb3vm")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3_0suky")
