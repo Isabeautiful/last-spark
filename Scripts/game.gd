@@ -23,7 +23,6 @@ func _ready():
 	# Conectar sinais de recursos
 	ResourceManager.wood_changed.connect(_on_wood_changed)
 	ResourceManager.food_changed.connect(_on_food_changed)
-	ResourceManager.population_changed.connect(_on_population_changed)
 	
 	# Configurar HUD inicial
 	hud.update_day(current_day)
@@ -69,11 +68,6 @@ func _ready():
 	
 	# Inicializar eventos
 	initialize_events()
-	
-	print("=== JOGO INICIADO ===")
-	print("Dia ", current_day)
-	print("População: ", ResourceManager.current_population)
-	print("Recursos: Madeira=", ResourceManager.wood, " Comida=", ResourceManager.food)
 
 func _setup_inputs():
 	# Ação para construção (B)
@@ -170,8 +164,6 @@ func _return_from_planting_mode():
 	if player:
 		player.set_can_process_input(true)
 	
-	print("Saiu do modo plantio")
-	
 
 func _handle_cancel():
 	match game_state:
@@ -200,16 +192,12 @@ func _enter_build_menu_mode():
 	
 	if player:
 		player.set_can_process_input(false)
-	
-	print("Entrou no menu de construção")
 
 func _enter_building_mode():
 	game_state = "building"
 	
 	if build_menu and build_menu.visible:
 		build_menu.hide()
-	
-	print("Entrou no modo construção")
 
 func _enter_planting_mode():
 	# Verificar se já está no modo plantio
@@ -217,13 +205,11 @@ func _enter_planting_mode():
 		return
 	
 	if not planting_system:
-		print("PlantingSystem não encontrado!")
 		return
 	
 	# Verificar se tem sementes
 	var has_seeds = ResourceManager.tree_seeds > 0 or ResourceManager.bush_seeds > 0
 	if not has_seeds:
-		print("Sem sementes disponíveis!")
 		return
 	
 	game_state = "planting"
@@ -238,8 +224,6 @@ func _enter_planting_mode():
 		seed_type = status.get("seed_type", "tree")
 	
 	planting_system.start_planting(seed_type)
-	
-	print("Entrou no modo plantio")
 
 func _return_to_playing_mode():
 	if game_state == "playing":
@@ -256,11 +240,8 @@ func _return_to_playing_mode():
 	
 	if player:
 		player.set_can_process_input(true)
-	
-	print("Retornou ao modo jogo")
 
 func _on_build_mode_changed(active: bool):
-	print("Build mode changed: ", active)
 	if active:
 		_enter_building_mode()
 	else:
@@ -271,7 +252,6 @@ func _on_build_mode_changed(active: bool):
 			player.set_can_process_input(true)
 
 func _on_planting_mode_changed(active: bool):
-	print("Planting mode changed: ", active)
 	if active:
 		# Modo plantio ativado
 		game_state = "planting"
@@ -298,7 +278,6 @@ func initialize_events():
 	add_child(event_manager)
 	
 	event_timer.start()
-	print("Sistema de eventos inicializado")
 
 func _check_events():
 	if current_day >= 3:
@@ -316,19 +295,15 @@ func trigger_random_event():
 func handle_event(event_type: String):
 	match event_type:
 		"storm":
-			print("=== TEMPESTADE DE NEVE ===")
 			if hud.has_method("show_warning"):
 				hud.show_warning("Tempestade de neve!","storm")
 		"merchant":
-			print("=== MERCADO VISITANTE ===")
 			if hud.has_method("show_notification"):
 				hud.show_notification("Mercante chegou!","merchant")
 		"earthquake":
-			print("=== ATIVIDADE SÍSMICA ===")
 			if hud.has_method("show_warning"):
 				hud.show_warning("Terremoto!","earthquake")
 		"regrowth":
-			print("=== RENASCIMENTO ===")
 			if hud.has_method("show_notification"):
 				hud.show_notification("Floresta renasceu!","regrowth")
 				
@@ -336,7 +311,6 @@ func handle_event(event_type: String):
 	hud.hide_warning(event_type)
 	
 func _on_day_started(day_number: int):
-	print("=== DIA ", day_number, " INICIADO ===")
 	current_day = day_number
 	time_of_day = "day"
 	
@@ -355,7 +329,6 @@ func _on_day_started(day_number: int):
 	update_difficulty(day_number)
 
 func _on_night_started():
-	print("=== NOITE INICIADA ===")
 	time_of_day = "night"
 	
 	if hud.has_method("update_time_of_day"):
@@ -363,15 +336,11 @@ func _on_night_started():
 	
 	if shadow_spawner:
 		shadow_spawner.set_active(true)
-	
-	print("NPCs se recolhendo para a noite...")
 
 func update_difficulty(day: int):
 	if fire and fire.has_method("set_base_consumption_rate"):
 		var new_rate = 0.5 + (day * 0.05)
 		fire.base_consumption_rate = new_rate
-	
-	print("Dificuldade aumentada para o dia ", day)
 
 func _on_wood_changed(_amount):
 	if hud:
@@ -381,19 +350,12 @@ func _on_food_changed(_amount):
 	if hud:
 		hud.update_resources()
 
-func _on_population_changed(_amount):
-	if hud:
-		hud.update_resources()
-
 func _on_fire_low_warning(energy_percent: float):
-	print("ALERTA: Fogueira fraca! (", int(energy_percent * 100), "%)")
-	
 	if hud and hud.has_method("show_warning") and not fire.is_critical_warning_set and not fire.is_low_warning_set:
 		hud.show_warning("Fogueira fraca!","low")
 		fire.set_warning_status(true,"low")
 
 func _on_fire_critical():
-	print("ALERTA CRÍTICO: Fogueira prestes a apagar!")
 	if fire.is_low_warning_set:
 		hud.hide_warning("low")
 		
@@ -402,24 +364,16 @@ func _on_fire_critical():
 		fire.set_warning_status(true,"critical")
 		
 func _on_player_died():
-	print("O jogador morreu!")
-	if ResourceManager.current_population > 0:
-		print("NPCs ainda vivem. O jogo continua...")
-	else:
-		GameSignals.game_over.emit("Todos morreram!")
+	GameSignals.game_over.emit("Todos morreram!")
 
 func _on_game_over(reason: String):
-	print("GAME OVER: ", reason)
 	get_tree().paused = true
-	print("FIM DE JOGO: ", reason)
 	GameSignals.clear_all_pools.emit()
 	GameSignals.show_game_over_screen.emit(reason)
 	get_tree().change_scene_to_file("res://Scenes/UI/Game_Over.tscn")
 	
 func _on_victory(reason: String):
-	print("VITÓRIA: ", reason)
 	get_tree().paused = true
-	print("VENCEU!")
 	GameSignals.clear_all_pools.emit()
 	GameSignals.show_game_over_screen.emit(reason)
 	get_tree().change_scene_to_file("res://Scenes/UI/victory.tscn")

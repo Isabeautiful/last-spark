@@ -53,12 +53,6 @@ func _ready():
 	generate_map_borders()
 	place_resources()
 	place_central_path()
-	
-	#GameSignals.clear_all_pools.connect(clear_loaded_elements)
-	
-	print("=== MAPA GERADO ===")
-	print("Árvores: ", placed_trees.size())
-	print("Arbustos: ", placed_food.size())
 
 func calculate_derived_variables():
 	map_size = 2* map_radius + 1
@@ -236,9 +230,6 @@ func _on_tree_harvested(amount: int, tree_node: Node, tree_pos: Vector2):
 	
 	GameSignals.resource_collected.emit("wood", amount, tree_pos)
 	placed_trees.erase(tree_node)
-	
-	# NOTA: O drop de semente agora é feito pela própria árvore!
-	print("Árvore removida do mapa. Drops foram processados pela árvore.")
 
 func _on_bush_harvested(amount: int, bush_node: Node, bush_pos: Vector2):
 	# Desconectar sinais
@@ -247,9 +238,6 @@ func _on_bush_harvested(amount: int, bush_node: Node, bush_pos: Vector2):
 	
 	GameSignals.resource_collected.emit("food", amount, bush_pos)
 	placed_food.erase(bush_node)
-	
-	# NOTA: O drop de semente agora é feito pelo próprio arbusto!
-	print("Arbusto removido do mapa. Drops foram processados pelo arbusto.")
 
 # Função para verificar se uma posição é válida para plantar
 func is_planting_position_valid(position: Vector2, is_food: bool) -> bool:
@@ -296,7 +284,6 @@ func can_plant_seed(seed_type: String, position: Vector2) -> bool:
 func plant_seed(seed_type: String, position: Vector2) -> bool:
 	# Verificar se é uma posição válida para plantar
 	if not can_plant_seed(seed_type, position):
-		print("Posição inválida para plantar")
 		return false
 	
 	var resource = PoolManager.get_object(seed_type, position)
@@ -310,7 +297,6 @@ func plant_seed(seed_type: String, position: Vector2) -> bool:
 		if seed_type == "tree":
 			placed_trees.append(resource)
 			resource.harvested.connect(_on_tree_harvested.bind(resource, position))
-			print("Árvore plantada em ", position)
 			
 			# Efeito visual de crescimento
 			_create_growth_effect(position)
@@ -318,7 +304,6 @@ func plant_seed(seed_type: String, position: Vector2) -> bool:
 		else:
 			placed_food.append(resource)
 			resource.harvested.connect(_on_bush_harvested.bind(resource, position))
-			print("Arbusto plantado em ", position)
 			
 			# Efeito visual de crescimento
 			_create_growth_effect(position)
@@ -333,7 +318,6 @@ func plant_seed_manual(seed_type: String, position: Vector2) -> bool:
 # Nova função integrada para plantio de sementes
 func plant_seed_at_position(seed_type: String, position: Vector2) -> bool:
 	if not planting_configs.has(seed_type):
-		print("Tipo de semente desconhecido: ", seed_type)
 		return false
 	
 	var config = planting_configs[seed_type]
@@ -346,19 +330,16 @@ func plant_seed_at_position(seed_type: String, position: Vector2) -> bool:
 		seed_consumed = ResourceManager.use_bush_seed(config["cost_seed"])
 	
 	if not seed_consumed:
-		print("Erro ao consumir semente! Sem sementes suficientes.")
 		return false
 	
 	# Usar o método de plantio existente
 	var planted = plant_seed(seed_type, position)
 	if planted:
 		seed_planted.emit(seed_type, position)
-		print(config["name"], " plantado em ", position)
 		_create_planting_effect(position)
 		return true
 	else:
 		# Devolver a semente se não conseguiu plantar
-		print("Falha ao plantar. Devolvendo semente...")
 		if seed_type == "tree":
 			ResourceManager.add_tree_seed(config["cost_seed"])
 		elif seed_type == "bush":
@@ -405,7 +386,6 @@ func _create_planting_effect(position: Vector2):
 func set_current_seed_type(seed_type: String):
 	if planting_configs.has(seed_type):
 		current_seed_type = seed_type
-		print("Tipo de semente alterado para: ", planting_configs[seed_type]["name"])
 
 func clear_placed_resources(resource_list: Array, pool_type: String):
 	for resource in resource_list:

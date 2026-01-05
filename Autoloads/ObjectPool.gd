@@ -29,8 +29,6 @@ func instancia_objetos() -> void:
 		
 		parent.add_child(obj)
 		lista_objetos[i] = obj
-	
-	print("Pool ", nome, " criada com ", lista_objetos.size(), " objetos")
 
 # Verifica se objeto está disponível na pool
 func esta_disponivel(obj: Node2D) -> bool:
@@ -48,9 +46,6 @@ func get_from_pool() -> Node2D:
 			obj.process_mode = Node.PROCESS_MODE_ALWAYS
 			obj.set_meta("in_pool", false)
 			return obj
-	
-	# Se não há objetos disponíveis, criar um extra dinamicamente
-	print("Pool ", nome, " esgotada! Criando objeto extra.")
 	return create_extra_object()
 
 # Cria objeto extra (expansão dinâmica da pool)

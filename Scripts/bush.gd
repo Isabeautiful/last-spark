@@ -2,7 +2,7 @@ extends Area2D
 
 @export var food_amount: int = 1
 @export var drop_seed_chance: float = 0.9  # 90% chance
-@export var seed_drop_amount: int = 1
+@export var seed_drop_amount: int = 2
 @export var can_drop_seeds: bool = true
 
 @onready var sprite = $Sprite2D
@@ -23,9 +23,6 @@ func _ready():
 	add_to_group("bush")
 	add_to_group("collectible")
 	add_to_group("resource")
-	
-	print("Arbusto pronto. Posição: ", global_position)
-	print("Configuração de drop: ", drop_seed_chance * 100, "% chance, ", seed_drop_amount, " semente(s)")
 
 func _on_self_area_entered(area: Area2D):
 	# Verificar se é a área do jogador
@@ -38,7 +35,6 @@ func _on_self_area_entered(area: Area2D):
 func _on_self_area_exited(area: Area2D):
 	# Verificar se é a área do jogador
 	if area.is_in_group("player_area") or area.is_in_group("player_harvest"):
-		print("Arbusto: Player saiu da área")
 		player_in_range = false
 		highlight(false)
 
@@ -48,17 +44,8 @@ func highlight(active: bool):
 	
 	if active:
 		sprite.modulate = Color(1.0, 1.0, 0.8, 1.0)
-	else:
-		sprite.modulate = Color.GREEN
 
 func harvest() -> bool:
-	print("\n=== COLHENDO ARBUSTO ===")
-	print("Posição: ", global_position)
-	print("É coletável: ", is_collectible)
-	print("Player na área: ", player_in_range)
-	print("Chance de drop: ", drop_seed_chance * 100, "%")
-	print("Pode dropar: ", can_drop_seeds)
-	
 	if not is_collectible:
 		return false
 	
@@ -73,8 +60,6 @@ func harvest() -> bool:
 	# SISTEMA DE DROP DIRETO NO ARBUSTO
 	if can_drop_seeds and randf() < drop_seed_chance:
 		ResourceManager.add_bush_seed(seed_drop_amount)
-		print("✓ DROP CONFIRMADO: ", seed_drop_amount, " semente(s) de arbusto!")
-		print("Total de sementes agora: ", ResourceManager.bush_seeds)
 	else:
 		print("✗ Nenhuma semente dropada desta vez")
 	
@@ -104,7 +89,6 @@ func reset():
 		collision.disabled = false
 	
 	show()
-	print("Arbusto resetado para nova plantação")
 	
 	
 func take_damage():

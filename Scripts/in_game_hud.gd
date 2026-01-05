@@ -5,7 +5,6 @@ extends Control
 @onready var day_label = $CanvasLayer/MarginContainer2/HBoxContainer/VBoxContainer/VBoxContainer_day/DayLabel
 @onready var wood_label = $CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer/WoodLabel
 @onready var food_label = $CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer/FoodLabel
-@onready var pop_label = $CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer2/PopulationLabel
 @onready var time_indicator: Label = $CanvasLayer/MarginContainer2/HBoxContainer/VBoxContainer/VBoxContainer_day/TimeIndicator
 @onready var build_button = $CanvasLayer/MarginContainer/VBoxContainer/BuildButton
 @onready var player_status = $CanvasLayer/MarginContainer3/VBoxContainer/PlayerStatus
@@ -58,7 +57,6 @@ func update_day(day: int):
 func update_resources():
 	wood_label.text = "Lenha: " + str(ResourceManager.wood) + "/" + str(ResourceManager.max_wood)
 	food_label.text = "Comida: " + str(ResourceManager.food) + "/" + str(ResourceManager.max_food)
-	pop_label.text = "Pop: " + str(ResourceManager.current_population) + "/" + str(ResourceManager.max_population)
 	# Atualizar sementes
 	tree_seeds_label.text = "Semente Árvore: " + str(ResourceManager.tree_seeds)
 	bush_seeds_label.text = "Semente Comida: " + str(ResourceManager.bush_seeds)
@@ -112,9 +110,7 @@ func show_warning(message: String,child_meta:String):
 	warning_label_Cont.add_child(warning_label)
 	
 func hide_warning(child_meta:String):
-	print("RODOU, removendo: ",child_meta)
 	for child in warning_label_Cont.get_children():
-		print("lista: ",child.get_meta("tipo"),"busca: ", child_meta)
 		if child.get_meta("tipo") == child_meta:
 			warning_label_Cont.remove_child(child)
 			child.queue_free()

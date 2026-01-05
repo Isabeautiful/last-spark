@@ -11,7 +11,6 @@ var pool_configs = {
 }
 
 func _ready():
-	print("PoolManager inicializado")
 	GameSignals.clear_all_pools.connect(clear_pools)
 	# As pools serão criadas sob demanda
 
@@ -23,7 +22,6 @@ func ensure_pool(pool_type: String) -> ObjectPool:
 			var scene = load(config.scene_path) as PackedScene
 			if scene:
 				pools[pool_type] = ObjectPool.new(scene, config.size, pool_type, self)
-				print("Pool criada: ", pool_type, " (tamanho: ", config.size, ")")
 			else:
 				printerr("Cena não encontrada: ", config.scene_path)
 		else:

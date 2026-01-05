@@ -86,11 +86,8 @@ func start_building(index: int):
 		
 		if loaded_texture:
 			ghost_building.texture = loaded_texture
-			print("Usando textura carregada do caminho: ", texture_path)
-		else:
-			# Fallback: Criar textura de debug
+		else: ##textura de debug
 			ghost_building.texture = _create_debug_texture(config.size, config.color)
-			print("Usando textura de debug para: ", config.building_name)
 	else:
 		ghost_building.texture = use_texture
 	
@@ -103,7 +100,6 @@ func start_building(index: int):
 	can_place = can_place_building(ghost_building.global_position)
 	
 	build_mode_changed.emit(true)
-	print("Modo construção: ", config.building_name)
 
 func cancel_building():
 	is_building_mode = false
@@ -113,7 +109,6 @@ func cancel_building():
 	
 	ghost_building.hide()
 	build_mode_changed.emit(false)
-	print("Modo construção cancelado")
 
 func can_place_building(position: Vector2) -> bool:
 	if current_building_index == -1:
@@ -123,14 +118,11 @@ func can_place_building(position: Vector2) -> bool:
 	
 	# Verificar recursos
 	if ResourceManager.wood < config.cost_wood or ResourceManager.food < config.cost_food:
-		print("Recursos insuficientes! Madeira: ", ResourceManager.wood, "/", config.cost_wood, 
-			" Comida: ", ResourceManager.food, "/", config.cost_food)
 		return false
 	
 	# Verificar distância da fogueira (não muito longe)
 	var fire = get_tree().get_first_node_in_group("fire")
 	if fire and position.distance_to(fire.global_position) > 300:
-		print("Muito longe da fogueira!")
 		return false
 	
 	# Verificar se está no chão
@@ -139,7 +131,6 @@ func can_place_building(position: Vector2) -> bool:
 		var atlas_coords = tilemap.get_cell_atlas_coords(tile_pos)
 		
 		if atlas_coords == Vector2i(-1, -1):
-			print("Não pode construir em tile vazio!")
 			return false
 	
 	# Verificar colisões com outros edifícios
@@ -158,7 +149,6 @@ func can_place_building(position: Vector2) -> bool:
 	var results = space_state.intersect_shape(query)
 	
 	if not results.is_empty():
-		print("Colisão detectada com outro objeto!")
 		return false
 	
 	return true
@@ -171,7 +161,6 @@ func place_building(position: Vector2):
 	
 	
 	if not ResourceManager.use_wood(config.cost_wood) or not ResourceManager.use_food(config.cost_food):
-		print("Erro: Recursos insuficientes para construir!")
 		return
 	
 	
@@ -188,7 +177,6 @@ func place_building(position: Vector2):
 			get_tree().current_scene.add_child(building)
 		
 		building_placed.emit(config, position)  
-		print(config.building_name, " construída em ", position)
 	else:
 		push_error("Cena não configurada para: ", config.building_name)
 	

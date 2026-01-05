@@ -24,18 +24,10 @@ func _ready():
 	add_to_group("tree")
 	add_to_group("collectible")
 	add_to_group("resource")
-	
-	print("Árvore pronta. Layers: ", collision_layer, " Mask: ", collision_mask)
-	print("Posição: ", global_position)
-	print("Configuração de drop: ", drop_seed_chance * 100, "% chance, ", seed_drop_amount, " semente(s)")
 
 func _on_self_area_entered(area: Area2D):
-	print("\nrvore: Área entrou - ", area.name)
-	print("Grupos da área: ", area.get_groups())
-	
 	# Verificar se é a área do jogador
 	if area.is_in_group("player_area") or area.is_in_group("player_harvest"):
-		print("Árvore: Player entrou na área!")
 		player_in_range = true
 		highlight(true)
 	else:
@@ -44,7 +36,6 @@ func _on_self_area_entered(area: Area2D):
 func _on_self_area_exited(area: Area2D):
 	# Verificar se é a área do jogador
 	if area.is_in_group("player_area") or area.is_in_group("player_harvest"):
-		print("Árvore: Player saiu da área")
 		player_in_range = false
 		highlight(false)
 
@@ -58,35 +49,21 @@ func highlight(active: bool):
 		sprite.modulate = Color.WHITE
 
 func harvest() -> bool:
-	print("\n=== COLHENDO ÁRVORE ===")
-	print("Posição: ", global_position)
-	print("É coletável: ", is_collectible)
-	print("Player na área: ", player_in_range)
-	print("Chance de drop: ", drop_seed_chance * 100, "%")
-	print("Pode dropar: ", can_drop_seeds)
-	print("Quantidade de sementes por drop: ", seed_drop_amount)
-	
 	if not is_collectible:
-		print("Árvore já foi coletada!")
 		return false
 	
 	if not player_in_range:
-		print("Jogador não está na área da árvore!")
 		return false
 	
 	is_collectible = false
-	print("Emitindo sinal harvested com ", wood_amount, " madeira")
-	
 	# Emitir sinal ANTES do efeito visual
 	harvested.emit(wood_amount)
 	
 	# SISTEMA DE DROP DIRETO NA ÁRVORE
 	if can_drop_seeds and randf() < drop_seed_chance:
 		ResourceManager.add_tree_seed(seed_drop_amount)
-		print("✓ DROP CONFIRMADO: ", seed_drop_amount, " semente(s) de árvore!")
-		print("Total de sementes agora: ", ResourceManager.tree_seeds)
 	else:
-		print("✗ Nenhuma semente dropada desta vez")
+		print("Nenhuma semente dropada desta vez")
 	
 	# Efeito visual
 	if sprite:
@@ -99,7 +76,6 @@ func harvest() -> bool:
 	return true
 
 func return_to_pool():
-	print("Arvore retornando à pool...")
 	PoolManager.return_object(self, "tree")
 
 func reset():
@@ -115,7 +91,6 @@ func reset():
 		collision.disabled = false
 	
 	show()
-	print("Árvore resetada para nova plantação")
 	
 
 func take_damage():

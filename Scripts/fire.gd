@@ -68,10 +68,6 @@ func set_warning_status(status,cond):
 func _on_consumption_timer_timeout():
 	current_consumption_rate = base_consumption_rate * fire_level
 	
-	if ResourceManager:
-		var npc_count = ResourceManager.current_population
-		current_consumption_rate += npc_count * 0.1
-	
 	current_energy -= current_consumption_rate
 	current_energy = max(current_energy, 0)
 	

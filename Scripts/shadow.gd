@@ -102,7 +102,6 @@ func check_light_exposure(delta):
 		var dissolve_time = get_dissolve_time()
 		
 		if light_timer >= dissolve_time:
-			print("Sombra ", shadow_type, " dissipada pela luz!")
 			destroy()
 		else:
 			# Efeito visual de estar na luz
@@ -131,7 +130,6 @@ func get_max_health() -> int:
 func _on_area_entered(area: Area2D):
 	if area.is_in_group("fire_light"):
 		is_in_light = true
-		print("Sombra entrou na luz!")
 		
 	elif area.is_in_group("fire_core"):
 		_on_reached_fire()
@@ -140,13 +138,11 @@ func _on_area_exited(area: Area2D):
 	if area.is_in_group("fire_light"):
 		is_in_light = false
 		light_timer = 0.0
-		print("Sombra saiu da luz!")
 
 func _on_reached_fire():
 	var fire = get_tree().get_first_node_in_group("fire")
 	if fire and fire.has_method("take_damage"):
 		fire.take_damage(damage_amount)
-		print("Sombra ", shadow_type, " atingiu o fogo! Dano: ", damage_amount)
 	
 	destroy()
 

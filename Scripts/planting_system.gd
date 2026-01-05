@@ -61,8 +61,6 @@ func _ready():
 	
 	# Inicialmente não processar entrada
 	set_process_input(false)
-	
-	print("PlantingSystem inicializado")
 
 func _create_ghost_plant():
 	# Destruir ghost existente se houver
@@ -107,8 +105,6 @@ func _input(event):
 			toggle_seed_type()
 
 func start_planting(seed_type: String = "tree"):
-	print("PlantingSystem.start_planting() chamado com seed_type:", seed_type)
-	
 	# Se já estiver no modo de plantio, cancelar
 	if is_planting_mode:
 		cancel_planting()
@@ -120,7 +116,6 @@ func start_planting(seed_type: String = "tree"):
 	
 	# Verificar recursos
 	if not has_enough_seeds(seed_type):
-		print("Sem sementes suficientes do tipo: ", seed_type)
 		return
 	
 	# Garantir que o ghost existe
@@ -147,10 +142,8 @@ func start_planting(seed_type: String = "tree"):
 	can_place = can_place_seed(ghost_plant.global_position)
 	
 	planting_mode_changed.emit(true)
-	print("Modo plantio ativado: ", config["name"])
 
 func cancel_planting():
-	print("PlantingSystem.cancel_planting() chamado")
 	
 	if not is_planting_mode:
 		return
@@ -162,7 +155,6 @@ func cancel_planting():
 		ghost_plant.hide()
 	
 	planting_mode_changed.emit(false)
-	print("Modo plantio cancelado")
 
 func toggle_seed_type():
 	# Alternar entre tipos de semente
@@ -188,8 +180,6 @@ func toggle_seed_type():
 		
 		# Verificar posição atual
 		can_place = can_place_seed(ghost_plant.global_position)
-		
-		print("Tipo de semente alterado para: ", config["name"])
 	else:
 		print("Nenhum tipo de semente disponível!")
 
@@ -208,13 +198,11 @@ func can_place_seed(position: Vector2) -> bool:
 	
 	# Verificar recursos
 	if not has_enough_seeds(current_seed_type):
-		print("Sem sementes suficientes!")
 		return false
 	
 	# Verificar se está muito perto do jogador
 	var player = get_tree().get_first_node_in_group("player")
 	if player and position.distance_to(player.global_position) < 50:
-		print("Muito perto do jogador!")
 		return false
 	
 	# Verificar colisões com outros recursos
@@ -272,12 +260,10 @@ func plant_seed_at_position(position: Vector2):
 			plant.drop_seed_chance = config["drop_seed_chance"]
 			plant.seed_drop_amount = config["seed_drop_amount"]
 			plant.can_drop_seeds = config["can_drop_seeds"]
-			print("Árvore configurada para dropar sementes com ", config["drop_seed_chance"] * 100, "% chance")
 		elif current_seed_type == "bush":
 			plant.drop_seed_chance = config["drop_seed_chance"]
 			plant.seed_drop_amount = config["seed_drop_amount"]
 			plant.can_drop_seeds = config["can_drop_seeds"]
-			print("Arbusto configurado para dropar sementes com ", config["drop_seed_chance"] * 100, "% chance")
 		
 		# Adicionar à cena atual
 		var current_scene = get_tree().current_scene
@@ -285,7 +271,6 @@ func plant_seed_at_position(position: Vector2):
 			current_scene.add_child(plant)
 		
 		seed_planted.emit(current_seed_type, position)
-		print(config["name"], " plantado em ", position)
 		
 		# Efeito visual simples
 		_create_planting_effect(position)
