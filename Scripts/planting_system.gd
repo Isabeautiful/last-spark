@@ -16,30 +16,30 @@ signal planting_mode_changed(active: bool)
 signal seed_planted(seed_type: String, position: Vector2)
 
 func _ready():
-	# Obter referências de forma segura
+	# Obter referencias de forma segura
 	var map_manager = get_tree().get_first_node_in_group("map_manager")
 	if map_manager:
 		tilemap = map_manager.get_node("GroundLayer") if map_manager.has_node("GroundLayer") else null
 	
-	# Tentar obter a câmera do jogador
+	# Tentar obter a camera do jogador
 	var player = get_tree().get_first_node_in_group("player")
 	if player and player.has_node("Camera2D"):
 		camera = player.get_node("Camera2D")
 	else:
-		# Fallback: pegar a câmera ativa do viewport
+		# Fallback: pegar a camera ativa do viewport
 		camera = get_viewport().get_camera_2d()
 		if not camera:
 			camera = Camera2D.new()
 			game.add_child(camera)
 			camera.make_current()
 	
-	# Carregar configurações das cenas
+	# Carregar configuraçoes das cenas
 	load_planting_configs()
 	
-	# Criar sprite fantasma SOMENTE quando necessário
+	# Criar sprite fantasma SOMENTE quando necessario
 	_create_ghost_plant()
 	
-	# Adicionar ao grupo para fácil acesso
+	# Adicionar ao grupo para facil acesso
 	add_to_group("planting_system")
 	
 	# Inicialmente não processar entrada
@@ -74,16 +74,16 @@ func load_planting_configs():
 	
 	# Para cada tipo, instanciar a cena temporariamente para ler suas propriedades
 	for seed_type in base_configs:
-		var config = base_configs[seed_type].duplicate(true)  # Cópia profunda
+		var config = base_configs[seed_type].duplicate(true)  # Copia profunda
 		var scene = config["scene"]
 		
 		if scene:
 			# Instanciar temporariamente para ler propriedades
 			var plant_instance = scene.instantiate()
 			
-			# Ler propriedades da instância (se existirem)
+			# Ler propriedades da instancia (se existirem)
 			if plant_instance.has_method("get_planting_config"):
-				# Se a planta tem um método para fornecer configurações
+				# Se a planta tem um metodo para fornecer configuracoes
 				var plant_config = plant_instance.get_planting_config()
 				for key in plant_config:
 					config[key] = plant_config[key]
@@ -96,7 +96,7 @@ func load_planting_configs():
 				if plant_instance.has_meta("can_drop_seeds"):
 					config["can_drop_seeds"] = plant_instance.get_meta("can_drop_seeds")
 			
-			# Ler propriedades específicas para recursos
+			# Ler propriedades especificas para recursos
 			if plant_instance.has_method("get_wood_amount"):
 				config["wood_amount"] = plant_instance.get_wood_amount()
 			elif plant_instance.has_meta("wood_amount"):
@@ -107,7 +107,7 @@ func load_planting_configs():
 			elif plant_instance.has_meta("food_amount"):
 				config["food_amount"] = plant_instance.get_meta("food_amount")
 			
-			# Liberar a instância temporária
+			# Liberar a instancia temporária
 			plant_instance.queue_free()
 			
 			planting_configs[seed_type] = config
@@ -123,8 +123,7 @@ func _create_ghost_plant():
 	ghost_plant.centered = true
 	ghost_plant.scale = Vector2(0.8, 0.8)
 	ghost_plant.z_index = 100  # Garantir que fique na frente
-	
-	# Adicionar à cena do jogo
+
 	game.call_deferred("add_child", ghost_plant)
 	
 	# Esconder inicialmente
@@ -213,7 +212,6 @@ func toggle_seed_type():
 	
 	var next_seed_type = seed_types[next_index]
 	
-	# Verificar se tem sementes do próximo tipo
 	var attempts = 0
 	while not has_enough_seeds(next_seed_type) and attempts < seed_types.size():
 		next_index = (next_index + 1) % seed_types.size()
@@ -254,12 +252,11 @@ func can_place_seed(position: Vector2) -> bool:
 	if not has_enough_seeds(current_seed_type):
 		return false
 	
-	# Verificar se está muito perto do jogador
+	# Verificar perto do jogador
 	var player = get_tree().get_first_node_in_group("player")
 	if player and position.distance_to(player.global_position) < 50:
 		return false
 	
-	# Verificar colisões com outros recursos
 	var space_state = get_world_2d().direct_space_state
 	var query = PhysicsShapeQueryParameters2D.new()
 	
@@ -318,7 +315,6 @@ func plant_seed_at_position(position: Vector2):
 				plant.harvested.disconnect(_on_bush_harvested)
 			plant.harvested.connect(_on_bush_harvested.bind(plant, position, config.get("food_amount", 1)))
 		
-		# Adicionar à cena atual
 		var current_scene = get_tree().current_scene
 		if current_scene:
 			current_scene.add_child(plant)
@@ -364,17 +360,17 @@ func _get_global_mouse_position() -> Vector2:
 	# Obter o viewport
 	var viewport = get_viewport()
 	
-	# Se temos uma câmera, usar seu método
+	# Se temos uma camera, usar seu método
 	if camera:
 		return camera.get_global_mouse_position()
 	
-	# Se não temos câmera, tentar obter do viewport
+	# Se não temos camera, tentar obter do viewport
 	var viewport_camera = viewport.get_camera_2d()
 	if viewport_camera:
 		camera = viewport_camera
 		return camera.get_global_mouse_position()
 	
-	# Último recurso: retornar posição do mouse no viewport
+	# Último recurso: retornar posiçao do mouse no viewport
 	return viewport.get_mouse_position()
 
 func _create_debug_texture(size: Vector2, color: Color) -> Texture2D:
@@ -417,7 +413,7 @@ func _on_tree_harvested(amount: int, tree_node: Node, tree_pos: Vector2, wood_am
 		ResourceManager.add_tree_seed(seed_drop)
 		print("Sementes de árvore dropadas: ", seed_drop)
 	
-	# Quarto: Desconectar o sinal para evitar chamadas múltiplas
+	# Quarto: Desconectar o sinal para evitar chamadas multiplas
 	if tree_node.harvested.is_connected(_on_tree_harvested):
 		tree_node.harvested.disconnect(_on_tree_harvested)
 

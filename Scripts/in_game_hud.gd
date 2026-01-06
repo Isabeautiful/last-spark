@@ -124,7 +124,7 @@ func _on_planting_mode_changed(is_active: bool):
 		planting_mode_label.modulate = Color.GREEN
 		planting_mode_label.show()
 		
-		# Mostrar qual semente está selecionada
+		# Mostrar qual semente foi selecionada
 		var planting_system = get_tree().get_first_node_in_group("planting_system")
 		if planting_system and planting_system.has_method("get_current_seed_type"):
 			var seed_type = planting_system.get_current_seed_type()

@@ -27,7 +27,7 @@ func _ready():
 	add_to_group("resource")
 
 func _on_self_area_entered(area: Area2D):
-	# Verificar se é a área do jogador
+	# Verificar se a área do jogador
 	if area.is_in_group("player_area") or area.is_in_group("player_harvest"):
 		player_in_range = true
 		highlight(true)
@@ -35,7 +35,7 @@ func _on_self_area_entered(area: Area2D):
 		print("Arbusto: Área não identificada como player_area")
 
 func _on_self_area_exited(area: Area2D):
-	# Verificar se é a área do jogador
+	# Verificar se a área do jogador
 	if area.is_in_group("player_area") or area.is_in_group("player_harvest"):
 		player_in_range = false
 		highlight(false)
@@ -116,12 +116,12 @@ func shake():
 		tween.tween_property(self, "position", original_pos + offset, duracao / 10)
 	tween.tween_property(self, "position", original_pos, duracao / 10)
 
-# Método para fornecer configurações ao sistema de plantio
+# Método para fornecer configuraçoes ao sistema de plantio
 func get_planting_config() -> Dictionary:
 	return {
 		"drop_seed_chance": drop_seed_chance,
 		"seed_drop_amount": seed_drop_amount,
 		"can_drop_seeds": can_drop_seeds,
-		"size": Vector2(24, 24),  # Tamanho padrão do arbusto
+		"size": Vector2(24, 24),  # Tamanho padrao do arbusto
 		"color": Color(0.2, 0.8, 0.2, 0.5)  # Cor verde para ghost
 	}

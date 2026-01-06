@@ -20,25 +20,24 @@ var is_in_heat_zone: bool = true
 #enum pra gerenciar os status do player mais fácil
 var PlayerStatus = {hungry=false,hurt = false, cold = false}
 
-#Váriaveis de controle de dano de inimigos
+#controle de dano de inimigos
 var damage_cooldown = 0.5
 var is_on_damage_cooldown = false
 var hit_mp3_path = "res://Assets/audio/hit/hit.mp3"
 
-#variáveis para controle dos avisos 
+#controle dos avisos 
 @export var is_hunger_warning_set = false
 @export var is_cold_warning_set = false
 @export var is_health_warning_set = false
 
-# Variável para semente atual (apenas para referência, será gerenciado pelo PlantingSystem)
+#semente atual (apenas para referência, será gerenciado pelo PlantingSystem)
 var current_seed_type: String = "tree"
 
-# Direção do jogador
 var current_direction: Vector2 = Vector2.DOWN
 
-# Objetos na área
+# Objetos
 var objects_in_range: Dictionary = {
-	"resources": [],   # Árvores, arbustos
+	"resources": [],   # arvores, arbustos
 	"enemies": [],     # Sombras
 	"fire": null,      # Fogueira (apenas uma)
 }
@@ -58,8 +57,7 @@ func _ready():
 	setup_area()
 	setup_timers()
 	set_meta("CharacterType","Player")
-	
-	# Conectar sinais da área
+
 	action_area.area_entered.connect(_on_action_area_entered)
 	action_area.area_exited.connect(_on_action_area_exited)
 	action_area.body_entered.connect(_on_action_area_body_entered)
@@ -68,11 +66,9 @@ func _ready():
 	GameSignals.player_hit.connect(take_damage)
 
 func setup_area():
-	# Adicionar grupos para identificação
 	action_area.add_to_group("player_area")
 	action_area.add_to_group("player_harvest")
 	
-	# Posicionar a área na frente do jogador
 	update_area_position(Vector2.DOWN)
 
 func set_warning_status(status,cond):
@@ -116,13 +112,11 @@ func _physics_process(delta):
 	else:
 		is_running = false
 	
-	# Movimentação
 	var input_dir = Input.get_vector("Left", "Right", "Up", "Down")
 	
 	if input_dir.length() > 0.1:
 		var new_direction = input_dir.normalized()
 		
-		# Atualizar direção apenas se mudou significativamente
 		if new_direction.distance_to(current_direction) > 0.1:
 			current_direction = new_direction
 			update_area_position(current_direction)
@@ -149,7 +143,6 @@ func _physics_process(delta):
 	
 	GameSignals.player_status_changed.emit(health,hunger,cold)
 
-#Retorna o valor de cura do jogador de acordo com o status
 func Get_heal_factor():
 	if PlayerStatus.hungry: return 0
 	var sum  = 0.0
@@ -166,25 +159,19 @@ func _input(event):
 	if not can_process_input or not can_action:
 		return
 	
-	# Sistema de ações inteligente original
 	if event.is_action_pressed("attack"):
-		# Primeiro tenta atacar inimigos
 		if not objects_in_range["enemies"].is_empty():
 			attack_enemy()
 		else:
-			# Se não tem inimigos, tenta coletar recursos
 			if not objects_in_range["resources"].is_empty():
 				harvest_resource()
 	
 	elif event.is_action_pressed("Interact"):
-		# Interage com fogueira se disponível
 		if objects_in_range["fire"] != null:
 			interact_with_fire()
-		# Senão, tenta coletar recursos
 		elif not objects_in_range["resources"].is_empty():
 			harvest_resource()
 	
-	# Comer comida (tecla Q)
 	elif event.is_action_pressed("eat"):
 		eat_food()
 
@@ -300,7 +287,6 @@ func attack_enemy():
 	
 	can_action = false
 	
-	# Pega o inimigo mais próximo
 	var closest_enemy = null
 	var closest_distance = INF
 	
@@ -312,7 +298,6 @@ func attack_enemy():
 				closest_enemy = enemy
 	
 	if closest_enemy and closest_enemy.has_method("take_damage"):
-		# Animação de ataque
 		var original_scale = sprite.scale
 		var tween = create_tween()
 		tween.tween_property(sprite, "scale", original_scale * 1.2, 0.1)

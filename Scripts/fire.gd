@@ -35,12 +35,10 @@ func _ready():
 	
 	add_to_group("fire")
 	
-	# Obter valores iniciais da luz
 	if point_light:
 		base_light_energy = point_light.energy
 		base_light_texture_scale = point_light.texture_scale
 	
-	# Criar área de interação
 	interaction_area.add_to_group("fire_interaction")
 	
 	# Conectar sinais
@@ -69,7 +67,7 @@ func _on_consumption_timer_timeout():
 	
 	update_fire_level()
 	update_energy_bar()
-	update_light()  # Adicionar chamada para atualizar a luz
+	update_light()
 	
 	if current_energy <= 0:
 		game_over()
@@ -100,7 +98,7 @@ func update_fire_level():
 	if light_area_collision:
 		var shape = light_area_collision.shape as CircleShape2D
 		if shape:
-			# Usando uma função de interpolação suave para o raio
+			# Usando uma função de interpolacao suave para o raio
 			shape.radius = base_light_area_radius * clamp(energy_percent, 0.3, 1.0)
 	
 	update_light()
@@ -108,32 +106,25 @@ func update_fire_level():
 func update_light():
 	var energy_percent = current_energy / max_energy
 	if point_light:
-		# Ajustar intensidade da luz com um mínimo para não apagar completamente
 		point_light.energy = base_light_energy * clamp(energy_percent, 0.2, 1.0)
 		
-		# Ajustar o texture_scale para controlar o tamanho da luz
-		# Usando uma interpolação suave com um mínimo
 		var scale_factor = clamp(energy_percent, 0.3, 1.0)
 		point_light.texture_scale = base_light_texture_scale * scale_factor
 		
-		# Ajustar a cor da luz conforme a energia
 		if energy_percent < 0.25:
-			point_light.color = Color(1.0, 0.6, 0.4)  # Laranja avermelhado mais suave
+			point_light.color = Color(1.0, 0.6, 0.4) 
 		elif energy_percent < 0.75:
-			point_light.color = Color(1.0, 0.85, 0.7)  # Laranja claro mais suave
+			point_light.color = Color(1.0, 0.85, 0.7)  
 		else:
-			point_light.color = Color(1.0, 0.95, 0.9)  # Quase branco, levemente amarelado
+			point_light.color = Color(1.0, 0.95, 0.9) 
 		
-		# Ajustar sombra baseado na energia
 		point_light.shadow_enabled = energy_percent > 0.15
-		
-		# Ajustar opacidade da luz (não diretamente suportado, mas podemos usar modulate)
 		point_light.visible = energy_percent > 0.05
 
 func take_damage(amount: float):
 	current_energy = max(current_energy - amount, 0)
 	update_energy_bar()
-	update_light()  # Adicionar para atualizar luz quando tomar dano
+	update_light() 
 	
 	if sprite:
 		sprite.modulate = Color.RED
@@ -153,19 +144,19 @@ func take_damage(amount: float):
 func add_fuel(amount: float):
 	current_energy = min(current_energy + amount, max_energy)
 	update_energy_bar()
-	update_light()  # Adicionar para atualizar luz quando adicionar combustível
+	update_light() 
 	
-	# Efeito visual ao adicionar combustível
+	# Efeito visual ao adicionar fuel
 	if sprite:
 		var original_modulate = sprite.modulate
-		sprite.modulate = Color(0.5, 1.0, 0.5)  # Verde claro
+		sprite.modulate = Color(0.5, 1.0, 0.5)
 		var tween = create_tween()
 		tween.tween_property(sprite, "modulate", original_modulate, 0.5)
 	
-	# Efeito de piscar na luz ao adicionar combustível
+	# Efeito de piscar na luz ao adicionar fuel
 	if point_light:
 		var original_energy = point_light.energy
-		point_light.energy = original_energy * 1.2  # Aumenta temporariamente
+		point_light.energy = original_energy * 1.2  
 		var tween = create_tween()
 		tween.tween_property(point_light, "energy", original_energy, 0.5)
 

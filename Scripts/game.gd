@@ -42,7 +42,7 @@ func _ready():
 		if shadow_spawner.has_method("set_day"):
 			shadow_spawner.set_day(current_day)
 	
-	# Conectar sistema de construção
+	# Conectar sistema de construcao
 	if building_system:
 		building_system.build_mode_changed.connect(_on_build_mode_changed)
 	
@@ -55,26 +55,26 @@ func _ready():
 		build_menu.hide()
 
 func _input(event):
-	# Abrir/fechar menu de construção (B)
+	#  (B)
 	if event.is_action_pressed("build_menu"):
 		_handle_build_menu_toggle()
 		get_viewport().set_input_as_handled()
 		return
 	
-	# Ativar sistema de plantio (V)
+	#  (V)
 	if event.is_action_pressed("planting_system"):
 		_handle_planting_toggle()
 		get_viewport().set_input_as_handled()
 		return
 	
-	# Comer comida (Q)
+	# (Q)
 	if event.is_action_pressed("eat"):
 		if player and player.has_method("eat_food"):
 			player.eat_food()
 		get_viewport().set_input_as_handled()
 		return
 	
-	# Cancelar com ESC
+	# ESC
 	if event.is_action_pressed("ui_cancel"):
 		_handle_cancel()
 		get_viewport().set_input_as_handled()
@@ -91,10 +91,9 @@ func _handle_build_menu_toggle():
 				building_system.cancel_building()
 			_return_to_playing_mode()
 		"planting":
-			# Primeiro sair do modo plantio
+			# sair do modo plantio
 			if planting_system:
 				planting_system.cancel_planting()
-			# Depois abrir menu construção
 			_enter_build_menu_mode()
 
 func _handle_planting_toggle():
@@ -104,15 +103,12 @@ func _handle_planting_toggle():
 		"planting":
 			_return_from_planting_mode() 
 		"building":
-			# Primeiro sair do modo construção
 			if building_system:
 				building_system.cancel_building()
-			# Depois entrar no modo plantio
+			# entrar no modo plantio
 			_enter_planting_mode()
 		"menu":
-			# Fechar menu primeiro
 			_return_to_playing_mode()
-			# Depois entrar no modo plantio
 			_enter_planting_mode()
 
 func _return_from_planting_mode():
@@ -140,7 +136,7 @@ func _handle_cancel():
 			_return_to_playing_mode()
 
 func _enter_build_menu_mode():
-	# Verificar se já está no menu
+	# Verificar se esta no menu
 	if game_state == "menu":
 		return
 	
@@ -159,14 +155,12 @@ func _enter_building_mode():
 		build_menu.hide()
 
 func _enter_planting_mode():
-	# Verificar se já está no modo plantio
 	if game_state == "planting":
 		return
 	
 	if not planting_system:
 		return
 	
-	# Verificar se tem sementes
 	var has_seeds = ResourceManager.tree_seeds > 0 or ResourceManager.bush_seeds > 0
 	if not has_seeds:
 		return
@@ -176,7 +170,6 @@ func _enter_planting_mode():
 	if player:
 		player.set_can_process_input(false)
 	
-	# Iniciar sistema de plantio com a semente atual do jogador
 	var seed_type = "tree"
 	if player and player.has_method("get_status"):
 		var status = player.get_status()

@@ -16,17 +16,14 @@ signal harvested(amount: int)
 var health = 3
 
 func _ready():
-	# Conectar sinais
 	area_entered.connect(_on_self_area_entered)
 	area_exited.connect(_on_self_area_exited)
 	
-	# Adicionar grupos
 	add_to_group("tree")
 	add_to_group("collectible")
 	add_to_group("resource")
 
 func _on_self_area_entered(area: Area2D):
-	# Verificar se é a área do jogador
 	if area.is_in_group("player_area") or area.is_in_group("player_harvest"):
 		player_in_range = true
 		highlight(true)
@@ -34,7 +31,6 @@ func _on_self_area_entered(area: Area2D):
 		print("Árvore: Área não identificada como player_area")
 
 func _on_self_area_exited(area: Area2D):
-	# Verificar se é a área do jogador
 	if area.is_in_group("player_area") or area.is_in_group("player_harvest"):
 		player_in_range = false
 		highlight(false)
@@ -56,14 +52,11 @@ func harvest() -> bool:
 		return false
 	
 	is_collectible = false
-	# Emitir sinal ANTES do efeito visual
 	harvested.emit(wood_amount)
-	
-	# SISTEMA DE DROP DIRETO NA ÁRVORE
+
 	if can_drop_seeds and randf() < drop_seed_chance:
 		ResourceManager.add_tree_seed(seed_drop_amount)
-	
-	# Efeito visual
+
 	if sprite:
 		var tween = create_tween()
 		tween.tween_property(sprite, "modulate:a", 0.0, 0.5)
@@ -93,7 +86,6 @@ func reset():
 func take_damage():
 	health -= 1
 	audio_stream_player_2d.play()
-	# Efeito visual
 	sprite.modulate = Color.RED
 	shake()
 	var tween = create_tween()
@@ -114,12 +106,11 @@ func shake():
 		tween.tween_property(self, "position", original_pos + offset, duracao / 10)
 	tween.tween_property(self, "position", original_pos, duracao / 10)
 
-# Método para fornecer configurações ao sistema de plantio
 func get_planting_config() -> Dictionary:
 	return {
 		"drop_seed_chance": drop_seed_chance,
 		"seed_drop_amount": seed_drop_amount,
 		"can_drop_seeds": can_drop_seeds,
-		"size": Vector2(32, 32),  # Tamanho padrão da árvore
-		"color": Color(0.6, 0.4, 0.2, 0.5)  # Cor marrom para ghost
+		"size": Vector2(32, 32), 
+		"color": Color(0.6, 0.4, 0.2, 0.5) 
 	}

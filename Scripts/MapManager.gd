@@ -230,28 +230,27 @@ func _on_bush_harvested(amount: int, bush_node: Node, bush_pos: Vector2):
 	GameSignals.resource_collected.emit("food", amount, bush_pos)
 	placed_food.erase(bush_node)
 
-# Função para verificar se uma posição é válida para plantar
+# Função para verificar se uma posicao e valida
 func is_planting_position_valid(position: Vector2, is_food: bool) -> bool:
 	# Converter para coordenadas de tile
 	var tile_x = int(round(position.x / 15))
 	var tile_y = int(round(position.y / 15))
 	var tile_pos = Vector2i(tile_x, tile_y)
 	
-	# Verificar se não está no caminho
 	if is_position_on_path(tile_pos):
 		return false
 	
-	# Verificar distância mínima da fogueira
+	# Verificar distancia min da fogueira
 	if position.distance_to(Vector2.ZERO) < 100:
 		return false
 	
-	# Verificar distância mínima de outros recursos
+	# Verificar distancia min de outros recursos
 	if is_food:
 		for bush in placed_food:
 			if bush.global_position.distance_to(position) < 25:
 				return false
 		
-		# Distância de árvores também
+		# Distância de arvores também
 		for tree in placed_trees:
 			if tree.global_position.distance_to(position) < 30:
 				return false
@@ -273,13 +272,13 @@ func can_plant_seed(seed_type: String, position: Vector2) -> bool:
 
 # Função para o plantio inicial
 func plant_seed(seed_type: String, position: Vector2) -> bool:
-	# Verificar se é uma posição válida para plantar
+	# Verificar se e uma posição válida para plantar
 	if not can_plant_seed(seed_type, position):
 		return false
 	
 	var resource = PoolManager.get_object(seed_type, position)
 	if resource:
-		# Desconectar qualquer conexão existente
+		# Desconectar qualquer conexao existente
 		if resource.harvested.is_connected(_on_tree_harvested):
 			resource.harvested.disconnect(_on_tree_harvested)
 		if resource.harvested.is_connected(_on_bush_harvested):
@@ -323,7 +322,6 @@ func add_plant_to_list(seed_type: String, plant: Node, position: Vector2):
 		"tree":
 			if not plant in placed_trees:
 				placed_trees.append(plant)
-				# Conectar o sinal
 				if plant.harvested.is_connected(_on_tree_harvested):
 					plant.harvested.disconnect(_on_tree_harvested)
 				plant.harvested.connect(_on_tree_harvested.bind(plant, position))
@@ -331,7 +329,6 @@ func add_plant_to_list(seed_type: String, plant: Node, position: Vector2):
 		"bush":
 			if not plant in placed_food:
 				placed_food.append(plant)
-				# Conectar o sinal
 				if plant.harvested.is_connected(_on_bush_harvested):
 					plant.harvested.disconnect(_on_bush_harvested)
 				plant.harvested.connect(_on_bush_harvested.bind(plant, position))

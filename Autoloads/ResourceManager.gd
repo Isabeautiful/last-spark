@@ -1,6 +1,6 @@
 extends Node
 
-# Variáveis de recursos expandidas
+# ecursos expandidas
 var wood: int = 200
 var food: int = 90
 
@@ -55,7 +55,7 @@ func use_bush_seed(amount: int) -> bool:
 		return true
 	return false
 
-# Funções de recursos originais
+# recursos originais
 func add_wood(amount: int):
 	wood = min(wood + amount, max_wood)
 	wood_changed.emit(wood)

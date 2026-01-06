@@ -10,14 +10,14 @@ extends CanvasLayer
 var building_system: BuildingSystem
 
 func _ready():
-	# Obter referência ao BuildingSystem
+	# Obter ref ao BuildingSystem
 	building_system = get_tree().root.get_node("Game/BuildingSystem")
 	
 	if building_system == null:
 		print("ERRO: BuildingSystem não encontrado!")
 		return
 	
-	# Configurar botões
+	# Configurar button
 	_update_button_texts()
 	
 	# Posicionar no centro da tela

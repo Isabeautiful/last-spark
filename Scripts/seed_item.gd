@@ -9,11 +9,9 @@ var is_collectible: bool = true
 
 func _ready():
 	add_to_group("seed")
-	
-	# Conectar sinais
+
 	area_entered.connect(_on_area_entered)
 	
-	# Timer para crescimento automático
 	var growth_timer = Timer.new()
 	growth_timer.wait_time = growth_time
 	growth_timer.timeout.connect(_on_growth_timer_timeout)
@@ -27,7 +25,7 @@ func _on_area_entered(area: Area2D):
 func collect():
 	is_collectible = false
 	
-	# Adicionar semente ao inventário
+	# Adicionar semente
 	if ResourceManager.has_method("add_seed"):
 		ResourceManager.add_seed(resource_type, 1)
 	
@@ -38,11 +36,9 @@ func collect():
 
 func _on_growth_timer_timeout():
 	if is_collectible:
-		# Crescer no local atual
 		grow_at_position(global_position)
 
 func grow_at_position(position: Vector2):
-	# Spawnar a árvore/arbusto no local
 	var map_manager = get_tree().get_first_node_in_group("map_manager")
 	if map_manager and map_manager.has_method("spawn_resource_from_seed"):
 		map_manager.spawn_resource_from_seed(resource_type, position)

@@ -16,12 +16,12 @@ signal build_mode_changed(active: bool)
 signal building_placed(building_resource: BuildingResource, position: Vector2) 
 
 func _ready():
-	# Obter referências
+	# Obter ref
 	var map_manager = game.get_node("MapManager") if game.has_node("MapManager") else null
 	if map_manager:
 		tilemap = map_manager.get_node("GroundLayer") if map_manager.has_node("GroundLayer") else null
 	
-	# obter a câmera
+	# obter a camera
 	var player = game.get_node("Player") if game.has_node("Player") else null
 	if player and player.has_node("Camera2D"):
 		camera = player.get_node("Camera2D")
@@ -34,10 +34,10 @@ func _ready():
 	ghost_building.centered = true
 	game.add_child.call_deferred(ghost_building)
 	
-	# Inicialmente não processar entrada
+	# Inicialmente nao processar entrada
 	set_process_input(false)
 	
-	# Esconder após ser adicionado
+	# Esconder apos ser adicionado
 	await get_tree().process_frame
 	ghost_building.hide()
 
@@ -120,12 +120,12 @@ func can_place_building(position: Vector2) -> bool:
 	if ResourceManager.wood < config.cost_wood or ResourceManager.food < config.cost_food:
 		return false
 	
-	# Verificar distância da fogueira (não muito longe)
+	# Verificar distancia da fogueira (não muito longe)
 	var fire = get_tree().get_first_node_in_group("fire")
 	if fire and position.distance_to(fire.global_position) > 300:
 		return false
 	
-	# Verificar se está no chão
+	# Verificar se ta no chão
 	if tilemap:
 		var tile_pos = tilemap.local_to_map(position)
 		var atlas_coords = tilemap.get_cell_atlas_coords(tile_pos)
@@ -133,7 +133,7 @@ func can_place_building(position: Vector2) -> bool:
 		if atlas_coords == Vector2i(-1, -1):
 			return false
 	
-	# Verificar colisões com outros edifícios
+	# Verificar colision com outros edificios
 	var space_state = get_world_2d().direct_space_state
 	var query = PhysicsShapeQueryParameters2D.new()
 	
