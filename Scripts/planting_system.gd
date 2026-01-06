@@ -56,7 +56,8 @@ func load_planting_configs():
 			"seed_drop_amount": 1,
 			"can_drop_seeds": true,
 			"color": Color(0.6, 0.4, 0.2, 0.5),
-			"size": Vector2(32, 32)
+			"size": Vector2(32, 32),
+			"wood_amount": 1  # Adicionado: quantidade de madeira
 		},
 		"bush": {
 			"name": "Arbusto",
@@ -66,7 +67,8 @@ func load_planting_configs():
 			"seed_drop_amount": 2,
 			"can_drop_seeds": true,
 			"color": Color(0.2, 0.8, 0.2, 0.5),
-			"size": Vector2(24, 24)
+			"size": Vector2(24, 24),
+			"food_amount": 1  # Adicionado: quantidade de comida
 		}
 	}
 	
@@ -93,6 +95,17 @@ func load_planting_configs():
 					config["seed_drop_amount"] = plant_instance.get_meta("seed_drop_amount")
 				if plant_instance.has_meta("can_drop_seeds"):
 					config["can_drop_seeds"] = plant_instance.get_meta("can_drop_seeds")
+			
+			# Ler propriedades específicas para recursos
+			if plant_instance.has_method("get_wood_amount"):
+				config["wood_amount"] = plant_instance.get_wood_amount()
+			elif plant_instance.has_meta("wood_amount"):
+				config["wood_amount"] = plant_instance.get_meta("wood_amount")
+				
+			if plant_instance.has_method("get_food_amount"):
+				config["food_amount"] = plant_instance.get_food_amount()
+			elif plant_instance.has_meta("food_amount"):
+				config["food_amount"] = plant_instance.get_meta("food_amount")
 			
 			# Liberar a instância temporária
 			plant_instance.queue_free()
@@ -264,7 +277,7 @@ func can_place_seed(position: Vector2) -> bool:
 	if not results.is_empty():
 		return false
 	
-	# Verificar com MapManager se a posição é válida
+	# Verificar com MapManager
 	var map_manager = get_tree().get_first_node_in_group("map_manager")
 	if map_manager and map_manager.has_method("can_plant_seed"):
 		return map_manager.can_plant_seed(current_seed_type, position)
@@ -293,10 +306,25 @@ func plant_seed_at_position(position: Vector2):
 		var plant = config["scene"].instantiate()
 		plant.global_position = position
 		
+		# CONECTAR SINAIS DE COLHEITA
+		if current_seed_type == "tree":
+			# arvore
+			if plant.harvested.is_connected(_on_tree_harvested):
+				plant.harvested.disconnect(_on_tree_harvested)
+			plant.harvested.connect(_on_tree_harvested.bind(plant, position, config.get("wood_amount", 1)))
+		elif current_seed_type == "bush":
+			# arbusto
+			if plant.harvested.is_connected(_on_bush_harvested):
+				plant.harvested.disconnect(_on_bush_harvested)
+			plant.harvested.connect(_on_bush_harvested.bind(plant, position, config.get("food_amount", 1)))
+		
 		# Adicionar à cena atual
 		var current_scene = get_tree().current_scene
 		if current_scene:
 			current_scene.add_child(plant)
+		
+		# Notificar o MapManager sobre o novo plantio
+		_notify_map_manager_about_planting(current_seed_type, plant, position)
 		
 		seed_planted.emit(current_seed_type, position)
 		
@@ -376,7 +404,35 @@ func _notification(what):
 func get_current_seed_type() -> String:
 	return current_seed_type
 
-# Método para atualizar configurações manualmente se necessário
 func update_plant_config(seed_type: String, key: String, value):
 	if planting_configs.has(seed_type):
 		planting_configs[seed_type][key] = value
+
+func _on_tree_harvested(amount: int, tree_node: Node, tree_pos: Vector2, wood_amount: int = 1):
+	GameSignals.resource_collected.emit("wood", wood_amount, tree_pos)
+	
+	var config = planting_configs.get("tree", {})
+	if config.get("can_drop_seeds", true) and randf() < config.get("drop_seed_chance", 0.5):
+		var seed_drop = config.get("seed_drop_amount", 1)
+		ResourceManager.add_tree_seed(seed_drop)
+		print("Sementes de árvore dropadas: ", seed_drop)
+	
+	# Quarto: Desconectar o sinal para evitar chamadas múltiplas
+	if tree_node.harvested.is_connected(_on_tree_harvested):
+		tree_node.harvested.disconnect(_on_tree_harvested)
+
+func _on_bush_harvested(amount: int, bush_node: Node, bush_pos: Vector2, food_amount: int = 1):
+	GameSignals.resource_collected.emit("food", food_amount, bush_pos)
+	
+	var config = planting_configs.get("bush", {})
+	if config.get("can_drop_seeds", true) and randf() < config.get("drop_seed_chance", 0.9):
+		var seed_drop = config.get("seed_drop_amount", 2)
+		ResourceManager.add_bush_seed(seed_drop)
+
+	if bush_node.harvested.is_connected(_on_bush_harvested):
+		bush_node.harvested.disconnect(_on_bush_harvested)
+
+func _notify_map_manager_about_planting(seed_type: String, plant: Node, position: Vector2):
+	var map_manager = get_tree().get_first_node_in_group("map_manager")
+	if map_manager and map_manager.has_method("add_plant_to_list"):
+		map_manager.add_plant_to_list(seed_type, plant, position)

@@ -317,3 +317,21 @@ func clear_loaded_elements():
 	clear_placed_resources(placed_food, "bush")
 	placed_food.clear()
 	placed_trees.clear()
+
+func add_plant_to_list(seed_type: String, plant: Node, position: Vector2):
+	match seed_type:
+		"tree":
+			if not plant in placed_trees:
+				placed_trees.append(plant)
+				# Conectar o sinal
+				if plant.harvested.is_connected(_on_tree_harvested):
+					plant.harvested.disconnect(_on_tree_harvested)
+				plant.harvested.connect(_on_tree_harvested.bind(plant, position))
+		
+		"bush":
+			if not plant in placed_food:
+				placed_food.append(plant)
+				# Conectar o sinal
+				if plant.harvested.is_connected(_on_bush_harvested):
+					plant.harvested.disconnect(_on_bush_harvested)
+				plant.harvested.connect(_on_bush_harvested.bind(plant, position))
