@@ -103,7 +103,7 @@ Comer: Q / E
 Plantar: Enter
 Mudar semente: T
 Coletar sementes: C
-Menu de colheita: V"
+Modo de colheita: V"
 
 [node name="Label" type="Label" parent="."]
 layout_mode = 0

@@ -2,11 +2,11 @@ extends Node
 
 # ecursos expandidas
 var wood: int = 200
-var food: int = 90
+var food: int = 5
 
 # Limites de recursos
 var max_wood: int = 200
-var max_food: int = 100
+var max_food: int = 10
 
 # Sementes
 var tree_seeds: int = 5
