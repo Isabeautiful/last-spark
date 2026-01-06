@@ -6,7 +6,6 @@ var ghost_plant: Sprite2D = null
 var is_planting_mode: bool = false
 var can_place: bool = false
 
-# Configurações que serão preenchidas automaticamente das cenas
 var planting_configs: Dictionary = {}
 
 @onready var game = get_tree().root.get_child(0)
@@ -293,9 +292,6 @@ func plant_seed_at_position(position: Vector2):
 	if config["scene"]:
 		var plant = config["scene"].instantiate()
 		plant.global_position = position
-		
-		# As propriedades já estão configuradas nas cenas (drop_seed_chance, etc.)
-		# Não precisamos mais configurar aqui, pois as cenas já têm os valores corretos
 		
 		# Adicionar à cena atual
 		var current_scene = get_tree().current_scene

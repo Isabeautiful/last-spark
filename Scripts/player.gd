@@ -127,8 +127,6 @@ func _physics_process(delta):
 			current_direction = new_direction
 			update_area_position(current_direction)
 		
-		# Animação simples
-		#sprite.rotation = current_direction.angle()
 		match input_dir:
 			Vector2.LEFT:
 				sprite.frame = 2

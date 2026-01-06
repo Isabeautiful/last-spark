@@ -50,4 +50,3 @@ func _on_quit_mouse_entered() -> void:
 
 func _on_credits_pressed() -> void:
 	get_tree().change_scene_to_file("res://Scenes/UI/credits.tscn")
-	pass # Replace with function body.

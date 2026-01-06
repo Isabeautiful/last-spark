@@ -1,4 +1,3 @@
-# SeedItem.gd
 extends Area2D
 
 @export var resource_type: String = "tree"  # "tree" ou "bush"
@@ -14,7 +13,7 @@ func _ready():
 	# Conectar sinais
 	area_entered.connect(_on_area_entered)
 	
-	# Timer para crescimento automático (se não for coletada)
+	# Timer para crescimento automático
 	var growth_timer = Timer.new()
 	growth_timer.wait_time = growth_time
 	growth_timer.timeout.connect(_on_growth_timer_timeout)

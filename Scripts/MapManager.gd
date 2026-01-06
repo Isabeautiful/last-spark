@@ -22,7 +22,6 @@ var max_coord: int
 var path_length: int
 var diagonal_length: int
 
-# Referência ao PlantingSystem
 @onready var planting_system: PlantingSystem
 
 func _ready():
@@ -32,7 +31,6 @@ func _ready():
 	if not tree_container:
 		return
 	
-	# Obter referência ao PlantingSystem
 	planting_system = get_tree().get_first_node_in_group("planting_system")
 	
 	if not planting_system:
@@ -218,7 +216,6 @@ func is_position_on_path(position: Vector2i) -> bool:
 	return atlas_coords == Vector2i(0, 8)
 
 func _on_tree_harvested(amount: int, tree_node: Node, tree_pos: Vector2):
-	# Desconectar sinais
 	if tree_node.harvested.is_connected(_on_tree_harvested):
 		tree_node.harvested.disconnect(_on_tree_harvested)
 	
@@ -274,7 +271,7 @@ func is_planting_position_valid(position: Vector2, is_food: bool) -> bool:
 func can_plant_seed(seed_type: String, position: Vector2) -> bool:
 	return is_planting_position_valid(position, seed_type == "bush")
 
-# Função para o plantio inicial (não consome sementes)
+# Função para o plantio inicial
 func plant_seed(seed_type: String, position: Vector2) -> bool:
 	# Verificar se é uma posição válida para plantar
 	if not can_plant_seed(seed_type, position):
@@ -299,9 +296,7 @@ func plant_seed(seed_type: String, position: Vector2) -> bool:
 	
 	return false
 
-# Função para plantar semente manualmente (com gerenciamento de recursos)
 func plant_seed_manual(seed_type: String, position: Vector2) -> bool:
-	# Usar o PlantingSystem para o plantio manual
 	if planting_system:
 		return planting_system.plant_seed_at_position(position)
 	return false

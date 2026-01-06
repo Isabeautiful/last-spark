@@ -16,12 +16,12 @@ signal build_mode_changed(active: bool)
 signal building_placed(building_resource: BuildingResource, position: Vector2) 
 
 func _ready():
-	# Obter referências de forma segura
+	# Obter referências
 	var map_manager = game.get_node("MapManager") if game.has_node("MapManager") else null
 	if map_manager:
 		tilemap = map_manager.get_node("GroundLayer") if map_manager.has_node("GroundLayer") else null
 	
-	# Tentar obter a câmera
+	# obter a câmera
 	var player = game.get_node("Player") if game.has_node("Player") else null
 	if player and player.has_node("Camera2D"):
 		camera = player.get_node("Camera2D")

@@ -32,7 +32,7 @@ func _on_resource_collected(resource_type: String, amount: int, position: Vector
 		"food":
 			add_food(amount)
 
-# Funções para sementes (NOVO)
+# Funções para sementes
 func add_tree_seed(amount: int):
 	tree_seeds += amount
 	tree_seeds_changed.emit(tree_seeds)

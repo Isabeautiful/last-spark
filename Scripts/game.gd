@@ -20,10 +20,8 @@ func _ready():
 	ResourceManager.wood_changed.connect(_on_wood_changed)
 	ResourceManager.food_changed.connect(_on_food_changed)
 	
-	# Configurar HUD inicial
 	hud.update_day(current_day)
 	
-	# Conectar ciclo dia/noite
 	day_night_cycle.day_started.connect(_on_day_started)
 	day_night_cycle.night_started.connect(_on_night_started)
 	
@@ -31,7 +29,6 @@ func _ready():
 	GameSignals.game_over.connect(_on_game_over)
 	GameSignals.victory.connect(_on_victory)
 	
-	# Conectar novos sinais (verificar se existem)
 	if GameSignals.has_user_signal("fire_low_warning"):
 		GameSignals.fire_low_warning.connect(_on_fire_low_warning)
 	if GameSignals.has_user_signal("fire_critical"):
@@ -196,10 +193,6 @@ func _return_to_playing_mode():
 	if build_menu:
 		build_menu.hide()
 	
-	# NÃO chamar cancel_building ou cancel_planting aqui!
-	# Isso causaria recursão infinita
-	# Os sistemas já emitem sinais quando são cancelados
-	
 	if player:
 		player.set_can_process_input(true)
 
@@ -207,8 +200,6 @@ func _on_build_mode_changed(active: bool):
 	if active:
 		_enter_building_mode()
 	else:
-		# Quando o BuildingSystem é cancelado, ele emite sinal com active=false
-		# Neste ponto, já estamos saindo do modo construção
 		game_state = "playing"
 		if player:
 			player.set_can_process_input(true)
