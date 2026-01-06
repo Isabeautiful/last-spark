@@ -273,13 +273,17 @@ func _on_player_died():
 	GameSignals.game_over.emit("Todos morreram!")
 
 func _on_game_over(reason: String):
-	get_tree().paused = true
+	if is_inside_tree():
+		get_tree().paused = true
 	GameSignals.clear_all_pools.emit()
 	GameSignals.show_game_over_screen.emit(reason)
-	get_tree().change_scene_to_file("res://Scenes/UI/Game_Over.tscn")
+	if is_inside_tree():
+		get_tree().change_scene_to_file("res://Scenes/UI/Game_Over.tscn")
 	
 func _on_victory(reason: String):
-	get_tree().paused = true
+	if is_inside_tree():
+		get_tree().paused = true
 	GameSignals.clear_all_pools.emit()
 	GameSignals.show_game_over_screen.emit(reason)
-	get_tree().change_scene_to_file("res://Scenes/UI/victory.tscn")
+	if is_inside_tree():
+		get_tree().change_scene_to_file("res://Scenes/UI/victory.tscn")

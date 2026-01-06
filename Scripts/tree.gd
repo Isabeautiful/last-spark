@@ -1,6 +1,6 @@
 extends Area2D
 
-@export var wood_amount: int = 1
+@export var wood_amount: int = 3
 @export var drop_seed_chance: float = 0.5  # 50% chance
 @export var seed_drop_amount: int = 5
 @export var can_drop_seeds: bool = true

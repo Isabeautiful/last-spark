@@ -8,6 +8,7 @@ extends CharacterBody2D
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var Player_Audio: AudioStreamPlayer2D = $AudioStreamPlayer2D
 
+@onready var animation_player: AnimationPlayer = $ActionArea/AnimationPlayer
 
 # Status do jogador
 var current_speed: float = 250.0
@@ -168,6 +169,7 @@ func _input(event):
 	
 	# Sistema de ações inteligente original
 	if event.is_action_pressed("attack"):
+		animation_player.play("attack")
 		# Primeiro tenta atacar inimigos
 		if not objects_in_range["enemies"].is_empty():
 			attack_enemy()
