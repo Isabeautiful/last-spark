@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://cktqfw4v0jb6w"
+path="res://.godot/imported/video-game-gui-hovering-sound-417440 (mp3cut.net).mp3-5b051bf3398c719df78507b48a7b49fd.mp3str"
+
+[deps]
+
+source_file="res://Assets/audio/hover/video-game-gui-hovering-sound-417440 (mp3cut.net).mp3"
+dest_files=["res://.godot/imported/video-game-gui-hovering-sound-417440 (mp3cut.net).mp3-5b051bf3398c719df78507b48a7b49fd.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

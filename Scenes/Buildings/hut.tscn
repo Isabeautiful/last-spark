@@ -1,15 +1,15 @@
 [gd_scene load_steps=3 format=3 uid="uid://070frtdeng84"]
 
 [ext_resource type="PackedScene" uid="uid://bdhkjp71pmugw" path="res://Scenes/Buildings/building.tscn" id="1_qc5ke"]
-[ext_resource type="Texture2D" uid="uid://be11vpuqrf33l" path="res://Assets/icon.svg" id="2_y8yow"]
+[ext_resource type="Texture2D" uid="uid://8e0twv304pnu" path="res://Assets/Buildings/hut.png" id="2_y8yow"]
 
 [node name="Hut" instance=ExtResource("1_qc5ke")]
 
 [node name="Sprite2D" parent="." index="0"]
 modulate = Color(0.46666667, 0.28235295, 0, 1)
-position = Vector2(-0.49999952, -5.0000005)
-scale = Vector2(0.1796875, 0.23437497)
+position = Vector2(0, -5.0000005)
 texture = ExtResource("2_y8yow")
 
 [node name="Collision" parent="." index="1"]
+position = Vector2(6, 40)
 debug_color = Color(0, 0, 0, 0.41960785)

@@ -16,12 +16,12 @@ signal build_mode_changed(active: bool)
 signal building_placed(building_resource: BuildingResource, position: Vector2) 
 
 func _ready():
-	# Obter referências de forma segura
+	# Obter ref
 	var map_manager = game.get_node("MapManager") if game.has_node("MapManager") else null
 	if map_manager:
 		tilemap = map_manager.get_node("GroundLayer") if map_manager.has_node("GroundLayer") else null
 	
-	# Tentar obter a câmera
+	# obter a camera
 	var player = game.get_node("Player") if game.has_node("Player") else null
 	if player and player.has_node("Camera2D"):
 		camera = player.get_node("Camera2D")
@@ -34,10 +34,10 @@ func _ready():
 	ghost_building.centered = true
 	game.add_child.call_deferred(ghost_building)
 	
-	# Inicialmente não processar entrada
+	# Inicialmente nao processar entrada
 	set_process_input(false)
 	
-	# Esconder após ser adicionado
+	# Esconder apos ser adicionado
 	await get_tree().process_frame
 	ghost_building.hide()
 
@@ -86,11 +86,8 @@ func start_building(index: int):
 		
 		if loaded_texture:
 			ghost_building.texture = loaded_texture
-			print("Usando textura carregada do caminho: ", texture_path)
-		else:
-			# Fallback: Criar textura de debug
+		else: ##textura de debug
 			ghost_building.texture = _create_debug_texture(config.size, config.color)
-			print("Usando textura de debug para: ", config.building_name)
 	else:
 		ghost_building.texture = use_texture
 	
@@ -103,7 +100,6 @@ func start_building(index: int):
 	can_place = can_place_building(ghost_building.global_position)
 	
 	build_mode_changed.emit(true)
-	print("Modo construção: ", config.building_name)
 
 func cancel_building():
 	is_building_mode = false
@@ -113,7 +109,6 @@ func cancel_building():
 	
 	ghost_building.hide()
 	build_mode_changed.emit(false)
-	print("Modo construção cancelado")
 
 func can_place_building(position: Vector2) -> bool:
 	if current_building_index == -1:
@@ -123,26 +118,22 @@ func can_place_building(position: Vector2) -> bool:
 	
 	# Verificar recursos
 	if ResourceManager.wood < config.cost_wood or ResourceManager.food < config.cost_food:
-		print("Recursos insuficientes! Madeira: ", ResourceManager.wood, "/", config.cost_wood, 
-			" Comida: ", ResourceManager.food, "/", config.cost_food)
 		return false
 	
-	# Verificar distância da fogueira (não muito longe)
+	# Verificar distancia da fogueira (não muito longe)
 	var fire = get_tree().get_first_node_in_group("fire")
 	if fire and position.distance_to(fire.global_position) > 300:
-		print("Muito longe da fogueira!")
 		return false
 	
-	# Verificar se está no chão
+	# Verificar se ta no chão
 	if tilemap:
 		var tile_pos = tilemap.local_to_map(position)
 		var atlas_coords = tilemap.get_cell_atlas_coords(tile_pos)
 		
 		if atlas_coords == Vector2i(-1, -1):
-			print("Não pode construir em tile vazio!")
 			return false
 	
-	# Verificar colisões com outros edifícios
+	# Verificar colision com outros edificios
 	var space_state = get_world_2d().direct_space_state
 	var query = PhysicsShapeQueryParameters2D.new()
 	
@@ -158,7 +149,6 @@ func can_place_building(position: Vector2) -> bool:
 	var results = space_state.intersect_shape(query)
 	
 	if not results.is_empty():
-		print("Colisão detectada com outro objeto!")
 		return false
 	
 	return true
@@ -169,26 +159,24 @@ func place_building(position: Vector2):
 	
 	var config = building_resources[current_building_index]
 	
-	# Consumir recursos
+	
 	if not ResourceManager.use_wood(config.cost_wood) or not ResourceManager.use_food(config.cost_food):
-		print("Erro: Recursos insuficientes para construir!")
 		return
 	
-	# Instanciar edifício
+	
 	if config.scene:
 		var building = config.scene.instantiate()
 		building.global_position = position
 		
-		# PASSO CRÍTICO: Passar o resource para o building
-		building.building_resource = config  # ← LINHA ADICIONADA
+		
+		building.building_resource = config  
 		
 		if game:
 			game.add_child(building)
 		else:
 			get_tree().current_scene.add_child(building)
 		
-		building_placed.emit(config, position)  # Passa o Resource, não o índice
-		print(config.building_name, " construída em ", position)
+		building_placed.emit(config, position)  
 	else:
 		push_error("Cena não configurada para: ", config.building_name)
 	
@@ -223,7 +211,7 @@ func _create_debug_texture(size: Vector2, color: Color) -> Texture2D:
 	var image = Image.create(int(size.x), int(size.y), false, Image.FORMAT_RGBA8)
 	image.fill(color)
 	
-	# Adicionar borda para melhor visualização
+	
 	for x in range(int(size.x)):
 		if x == 0 or x == int(size.x) - 1:
 			for y in range(int(size.y)):

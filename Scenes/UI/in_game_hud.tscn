@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://briuhj8otokd8"]
+[gd_scene load_steps=3 format=3 uid="uid://briuhj8otokd8"]
 
 [ext_resource type="Script" uid="uid://bprgk3e8xri5n" path="res://Scripts/in_game_hud.gd" id="1_f01pg"]
+
+[sub_resource type="Theme" id="Theme_f01pg"]
 
 [node name="InGameHUD" type="Control"]
 layout_mode = 3
@@ -14,16 +16,10 @@ script = ExtResource("1_f01pg")
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="MarginContainer" type="MarginContainer" parent="CanvasLayer"]
-offset_right = 40.0
-offset_bottom = 40.0
+offset_right = 190.0
+offset_bottom = 318.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/MarginContainer"]
-layout_mode = 2
-
-[node name="EnergyBar" type="TextureProgressBar" parent="CanvasLayer/MarginContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="DayLabel" type="Label" parent="CanvasLayer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/MarginContainer/VBoxContainer"]
@@ -31,34 +27,132 @@ layout_mode = 2
 
 [node name="WoodLabel" type="Label" parent="CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 
 [node name="FoodLabel" type="Label" parent="CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="CanvasLayer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="TreeSeedsLabel" type="Label" parent="CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+
+[node name="BushSeedsLabel" type="Label" parent="CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="CanvasLayer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
 [node name="PopulationLabel" type="Label" parent="CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer2"]
 layout_mode = 2
-
-[node name="TimeIndicator" type="Label" parent="CanvasLayer/MarginContainer/VBoxContainer"]
-layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 
 [node name="BuildButton" type="Button" parent="CanvasLayer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "Build (B)"
 
-[node name="PlayerStatus" type="VBoxContainer" parent="CanvasLayer/MarginContainer/VBoxContainer"]
+[node name="PlantingModeLabel" type="Label" parent="CanvasLayer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+
+[node name="MarginContainer2" type="MarginContainer" parent="CanvasLayer"]
+offset_left = 1.0
+offset_top = -1.0
+offset_right = 1021.0
+offset_bottom = 52.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/MarginContainer2"]
+layout_mode = 2
+alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/MarginContainer2/HBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="VBoxContainer_day" type="VBoxContainer" parent="CanvasLayer/MarginContainer2/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="HealthBar" type="TextureProgressBar" parent="CanvasLayer/MarginContainer/VBoxContainer/PlayerStatus"]
+[node name="DayLabel" type="Label" parent="CanvasLayer/MarginContainer2/HBoxContainer/VBoxContainer/VBoxContainer_day"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "teste"
+horizontal_alignment = 1
+
+[node name="TimeIndicator" type="Label" parent="CanvasLayer/MarginContainer2/HBoxContainer/VBoxContainer/VBoxContainer_day"]
+layout_mode = 2
+size_flags_vertical = 3
+text = "☀️ DIA"
+horizontal_alignment = 1
+
+[node name="WarningLabel" type="VBoxContainer" parent="CanvasLayer/MarginContainer2/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="HungerBar" type="TextureProgressBar" parent="CanvasLayer/MarginContainer/VBoxContainer/PlayerStatus"]
+[node name="MarginContainer3" type="MarginContainer" parent="CanvasLayer"]
+offset_left = 813.0
+offset_top = 1.0
+offset_right = 1026.0
+offset_bottom = 149.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/MarginContainer3"]
 layout_mode = 2
 
-[node name="ColdBar" type="TextureProgressBar" parent="CanvasLayer/MarginContainer/VBoxContainer/PlayerStatus"]
+[node name="HBoxContainer4" type="HBoxContainer" parent="CanvasLayer/MarginContainer3/VBoxContainer"]
 layout_mode = 2
 
-[node name="WarningLabel" type="Label" parent="CanvasLayer/MarginContainer/VBoxContainer"]
+[node name="Label" type="Label" parent="CanvasLayer/MarginContainer3/VBoxContainer/HBoxContainer4"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "Fogueira: "
+
+[node name="EnergyBar" type="ProgressBar" parent="CanvasLayer/MarginContainer3/VBoxContainer/HBoxContainer4"]
+layout_mode = 2
+size_flags_horizontal = 3
+value = 100.0
+
+[node name="PlayerStatus" type="VBoxContainer" parent="CanvasLayer/MarginContainer3/VBoxContainer"]
+layout_mode = 2
+theme = SubResource("Theme_f01pg")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/MarginContainer3/VBoxContainer/PlayerStatus"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/MarginContainer3/VBoxContainer/PlayerStatus/HBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "Vida:  "
+
+[node name="HealthBar" type="ProgressBar" parent="CanvasLayer/MarginContainer3/VBoxContainer/PlayerStatus/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+value = 100.0
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="CanvasLayer/MarginContainer3/VBoxContainer/PlayerStatus"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/MarginContainer3/VBoxContainer/PlayerStatus/HBoxContainer2"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "Fome:"
+
+[node name="HungerBar" type="ProgressBar" parent="CanvasLayer/MarginContainer3/VBoxContainer/PlayerStatus/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+value = 100.0
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="CanvasLayer/MarginContainer3/VBoxContainer/PlayerStatus"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/MarginContainer3/VBoxContainer/PlayerStatus/HBoxContainer3"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "Frio:   "
+
+[node name="ColdBar" type="ProgressBar" parent="CanvasLayer/MarginContainer3/VBoxContainer/PlayerStatus/HBoxContainer3"]
+layout_mode = 2
+size_flags_horizontal = 3
+value = 100.0

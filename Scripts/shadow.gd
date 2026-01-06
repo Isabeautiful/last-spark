@@ -8,15 +8,17 @@ enum ShadowType {
 
 @export var shadow_type: ShadowType = ShadowType.COMMON
 @export var base_speed: float = 50.0
+@onready var audio_stream_player_2d: AudioStreamPlayer2D = $AudioStreamPlayer2D
 
 @onready var sprite = $Sprite2D
 
 var target_position: Vector2
 var current_speed: float = 50.0
 var health: int = 1
-var damage_amount: int = 15
+var damage_amount: int
 var is_in_light: bool = false
 var light_timer: float = 0.0
+@onready var area_2d: Area2D = $Area2D
 
 # Cor baseada no tipo
 var type_colors = {
@@ -35,8 +37,6 @@ func _ready():
 	# Configurar baseado no tipo
 	configure_by_type()
 	
-	target_position = Vector2.ZERO
-
 func reset():
 	if sprite:
 		sprite.modulate.a = 1.0
@@ -54,15 +54,15 @@ func configure_by_type():
 	match shadow_type:
 		ShadowType.COMMON:
 			current_speed = base_speed
-			damage_amount = 15
+			damage_amount = 1.5
 			health = 1
 		ShadowType.RESILIENT:
 			current_speed = base_speed * 0.7
-			damage_amount = 25
+			damage_amount = 2.5
 			health = 3
 		ShadowType.WINTER:
 			current_speed = base_speed * 1.3
-			damage_amount = 35
+			damage_amount = 3.5
 			health = 2
 	
 	if sprite:
@@ -75,12 +75,18 @@ func setup_spawn_position(spawn_center: Vector2, spawn_distance: float):
 	var fire = get_tree().get_first_node_in_group("fire")
 	if fire:
 		target_position = fire.global_position
-
+	
 func _physics_process(delta):
-	if target_position != Vector2.ZERO:
-		var direction = (target_position - global_position).normalized()
-		velocity = direction * current_speed
-		move_and_slide()
+	#if target_position != Vector2.ZERO: o fogo tá posicionado no (0.0,0.0) então ele é o Vector2.ZERO
+		var dv = (target_position-position).normalized()
+		velocity = dv * current_speed * delta
+		
+		var collision = move_and_collide(dv * current_speed * delta)
+		
+		if(collision) and collision.get_collider().get_meta("CharacterType")=="Player":
+			GameSignals.player_hit.emit(20.0,"Enemy")
+			destroyed.emit()
+			return_to_pool()
 		
 		if global_position.distance_to(target_position) < 30:
 			_on_reached_fire()
@@ -96,7 +102,6 @@ func check_light_exposure(delta):
 		var dissolve_time = get_dissolve_time()
 		
 		if light_timer >= dissolve_time:
-			print("Sombra ", shadow_type, " dissipada pela luz!")
 			destroy()
 		else:
 			# Efeito visual de estar na luz
@@ -112,6 +117,7 @@ func get_dissolve_time() -> float:
 		ShadowType.COMMON: return 1.0
 		ShadowType.RESILIENT: return 3.0
 		ShadowType.WINTER: return 2.0
+		
 	return 1.0
 
 func get_max_health() -> int:
@@ -124,7 +130,7 @@ func get_max_health() -> int:
 func _on_area_entered(area: Area2D):
 	if area.is_in_group("fire_light"):
 		is_in_light = true
-		print("Sombra entrou na luz!")
+		
 	elif area.is_in_group("fire_core"):
 		_on_reached_fire()
 
@@ -132,19 +138,18 @@ func _on_area_exited(area: Area2D):
 	if area.is_in_group("fire_light"):
 		is_in_light = false
 		light_timer = 0.0
-		print("Sombra saiu da luz!")
 
 func _on_reached_fire():
 	var fire = get_tree().get_first_node_in_group("fire")
 	if fire and fire.has_method("take_damage"):
 		fire.take_damage(damage_amount)
-		print("Sombra ", shadow_type, " atingiu o fogo! Dano: ", damage_amount)
+	
 	destroy()
 
 func take_damage(amount: int):
 	took_damage.emit(amount)
 	health -= amount
-	
+	audio_stream_player_2d.play()
 	# Efeito visual
 	sprite.modulate = Color.RED
 	var tween = create_tween()
@@ -159,7 +164,6 @@ func destroy():
 	if sprite:
 		var tween = create_tween()
 		tween.tween_property(sprite, "modulate:a", 0.0, 0.3)
-		tween.parallel().tween_property(sprite, "scale", Vector2(1.5, 1.5), 0.3)
 		await tween.finished
 	
 	destroyed.emit()

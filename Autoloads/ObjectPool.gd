@@ -29,10 +29,8 @@ func instancia_objetos() -> void:
 		
 		parent.add_child(obj)
 		lista_objetos[i] = obj
-	
-	print("Pool ", nome, " criada com ", lista_objetos.size(), " objetos")
 
-# Verifica se objeto está disponível na pool
+# Verifica se objeto esta disponivel na pool
 func esta_disponivel(obj: Node2D) -> bool:
 	return obj.is_inside_tree() and obj.process_mode == Node.PROCESS_MODE_DISABLED
 
@@ -40,7 +38,7 @@ func esta_disponivel(obj: Node2D) -> bool:
 func get_from_pool() -> Node2D:
 	for obj in lista_objetos:
 		if esta_disponivel(obj):
-			# Remover das listas antigas se necessário
+			# Remover das listas antigas se necessario
 			obj.get_parent().remove_child(obj)
 			parent.add_child(obj)
 			
@@ -48,12 +46,9 @@ func get_from_pool() -> Node2D:
 			obj.process_mode = Node.PROCESS_MODE_ALWAYS
 			obj.set_meta("in_pool", false)
 			return obj
-	
-	# Se não há objetos disponíveis, criar um extra dinamicamente
-	print("Pool ", nome, " esgotada! Criando objeto extra.")
 	return create_extra_object()
 
-# Cria objeto extra (expansão dinâmica da pool)
+# Cria objeto extra (expansão dinamica da pool)
 func create_extra_object() -> Node2D:
 	var obj = objeto.instantiate()
 	obj.name = nome + "_extra_" + str(lista_objetos.size())
@@ -65,20 +60,15 @@ func create_extra_object() -> Node2D:
 	
 	return obj
 
-# Retorna objeto à pool
 func return_object(obj: Node2D) -> void:
 	if not obj or not is_instance_valid(obj):
 		return
-	
+
 	obj.hide()
 	obj.process_mode = Node.PROCESS_MODE_DISABLED
 	obj.set_meta("in_pool", true)
-	
-	# Resetar propriedades específicas do objeto
-	if obj.has_method("reset"):
-		obj.reset()
 
-# Conta objetos disponíveis
+# Conta objetos disponiveis
 func get_available_count() -> int:
 	var count = 0
 	for obj in lista_objetos:
@@ -98,3 +88,9 @@ func clear_extra_objects() -> void:
 		if is_instance_valid(obj):
 			obj.queue_free()
 		lista_objetos.erase(obj)
+
+func clear_all_objects():
+	for i in lista_objetos:
+		parent.remove_child(i)
+		
+	lista_objetos.clear()

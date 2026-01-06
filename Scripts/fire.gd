@@ -1,46 +1,44 @@
-extends Node2D
+extends Area2D
 class_name Fire
 
 @export var max_energy: float = 100.0
 @export var base_consumption_rate: float = 0.5
 @export var min_energy_percentage: float = 0.25
 
-var current_energy: float = 100.0
+@onready var consumption_timer: Timer = $ConsumptionTimer
+
+var current_energy: float
 var current_consumption_rate: float = 0.5
 var fire_level: int = 1
 var is_fire_lit: bool = true
 
-@onready var sprite: Sprite2D = $Sprite2D
-@onready var point_light: PointLight2D = $PointLight2D
+@onready var sprite: AnimatedSprite2D = $Sprite2D
 @onready var light_area: Area2D = $LightArea
 @onready var light_area_collision: CollisionShape2D = $LightArea/CollisionShape2D
 @onready var interaction_area: Area2D = $InteractionArea
+@onready var point_light: PointLight2D = $PointLight2D
+
+var is_low_warning_set = false
+var is_critical_warning_set = false
 
 var energy_bar = null
 
 var base_light_energy: float = 1.5
-var base_light_area_radius: float = 200.0
+var base_light_area_radius: float = 172.16562
+var base_light_texture_scale: float = 1.72
 
 func _ready():
 	current_energy = max_energy
 	
-	# Obter referência da HUD
-	if get_node_or_null("/root/Game/InGameHUD/CanvasLayer/MarginContainer/VBoxContainer/EnergyBar"):
-		energy_bar = get_node("/root/Game/InGameHUD/CanvasLayer/MarginContainer/VBoxContainer/EnergyBar")
+	if get_node_or_null("/root/Game/InGameHUD/CanvasLayer/MarginContainer3/VBoxContainer/HBoxContainer4/EnergyBar"):
+		energy_bar = get_node("/root/Game/InGameHUD/CanvasLayer/MarginContainer3/VBoxContainer/HBoxContainer4/EnergyBar")
 	
 	add_to_group("fire")
 	
-	# Configurar luz
 	if point_light:
-		point_light.energy = base_light_energy
-		point_light.texture_scale = 1.0
+		base_light_energy = point_light.energy
+		base_light_texture_scale = point_light.texture_scale
 	
-	if light_area_collision:
-		var shape = light_area_collision.shape as CircleShape2D
-		if shape:
-			shape.radius = base_light_area_radius
-	
-	# Criar área de interação
 	interaction_area.add_to_group("fire_interaction")
 	
 	# Conectar sinais
@@ -48,32 +46,38 @@ func _ready():
 		light_area.area_entered.connect(_on_light_area_area_entered)
 		light_area.add_to_group("fire_light")
 	
-	# Timer de consumo
-	var consumption_timer = Timer.new()
-	consumption_timer.wait_time = 1.0
-	consumption_timer.timeout.connect(_on_consumption_timer_timeout)
-	add_child(consumption_timer)
-	consumption_timer.start()
+	if not consumption_timer.timeout.is_connected(_on_consumption_timer_timeout):
+		consumption_timer.timeout.connect(_on_consumption_timer_timeout)
+	
+	# Configurar luz inicial
+	update_light()
+
+func set_warning_status(status,cond):
+	match cond:
+		"low":
+			is_low_warning_set = status
+		"critical":
+			is_critical_warning_set = status
 
 func _on_consumption_timer_timeout():
 	current_consumption_rate = base_consumption_rate * fire_level
-	
-	if ResourceManager:
-		var npc_count = ResourceManager.current_population
-		current_consumption_rate += npc_count * 0.1
 	
 	current_energy -= current_consumption_rate
 	current_energy = max(current_energy, 0)
 	
 	update_fire_level()
-	update_light_and_area()
 	update_energy_bar()
+	update_light()
 	
 	if current_energy <= 0:
 		game_over()
 	
 	if current_energy / max_energy < min_energy_percentage:
 		emit_chama_fraca_warning()
+	elif is_low_warning_set:
+		is_low_warning_set = false
+		print("foi foi")
+		GameSignals.hideWarning.emit("low")
 
 func update_fire_level():
 	var energy_percent = current_energy / max_energy
@@ -90,29 +94,37 @@ func update_fire_level():
 		fire_level = 3
 		if sprite:
 			sprite.modulate = Color(1.0, 1.0, 0.8)
-
-func update_light_and_area():
-	var energy_percent = current_energy / max_energy
-	
-	if point_light:
-		point_light.energy = base_light_energy * energy_percent
-		point_light.texture_scale = energy_percent
-		
-		if energy_percent > 0.75:
-			point_light.color = Color(1.0, 0.9, 0.7)
-		elif energy_percent > 0.25:
-			point_light.color = Color(1.0, 0.7, 0.4)
-		else:
-			point_light.color = Color(0.8, 0.4, 0.2)
 	
 	if light_area_collision:
 		var shape = light_area_collision.shape as CircleShape2D
 		if shape:
-			shape.radius = base_light_area_radius * energy_percent
+			# Usando uma função de interpolacao suave para o raio
+			shape.radius = base_light_area_radius * clamp(energy_percent, 0.3, 1.0)
+	
+	update_light()
+
+func update_light():
+	var energy_percent = current_energy / max_energy
+	if point_light:
+		point_light.energy = base_light_energy * clamp(energy_percent, 0.2, 1.0)
+		
+		var scale_factor = clamp(energy_percent, 0.3, 1.0)
+		point_light.texture_scale = base_light_texture_scale * scale_factor
+		
+		if energy_percent < 0.25:
+			point_light.color = Color(1.0, 0.6, 0.4) 
+		elif energy_percent < 0.75:
+			point_light.color = Color(1.0, 0.85, 0.7)  
+		else:
+			point_light.color = Color(1.0, 0.95, 0.9) 
+		
+		point_light.shadow_enabled = energy_percent > 0.15
+		point_light.visible = energy_percent > 0.05
 
 func take_damage(amount: float):
 	current_energy = max(current_energy - amount, 0)
 	update_energy_bar()
+	update_light() 
 	
 	if sprite:
 		sprite.modulate = Color.RED
@@ -122,10 +134,31 @@ func take_damage(amount: float):
 	if current_energy / max_energy < 0.1:
 		if GameSignals.has_user_signal("fire_critical"):
 			GameSignals.fire_critical.emit()
+			
+	elif is_critical_warning_set:
+		is_critical_warning_set = false
+		print("foi")
+		GameSignals.hideWarning.emit("critical")
+	
 
 func add_fuel(amount: float):
 	current_energy = min(current_energy + amount, max_energy)
 	update_energy_bar()
+	update_light() 
+	
+	# Efeito visual ao adicionar fuel
+	if sprite:
+		var original_modulate = sprite.modulate
+		sprite.modulate = Color(0.5, 1.0, 0.5)
+		var tween = create_tween()
+		tween.tween_property(sprite, "modulate", original_modulate, 0.5)
+	
+	# Efeito de piscar na luz ao adicionar fuel
+	if point_light:
+		var original_energy = point_light.energy
+		point_light.energy = original_energy * 1.2  
+		var tween = create_tween()
+		tween.tween_property(point_light, "energy", original_energy, 0.5)
 
 func add_fuel_from_inventory() -> bool:
 	if ResourceManager.wood > 0:
@@ -176,13 +209,12 @@ func game_over():
 	
 	is_fire_lit = false
 	
-	if point_light:
-		var tween = create_tween()
-		tween.tween_property(point_light, "energy", 0.0, 2.0)
-	
 	if sprite:
 		var tween = create_tween()
 		tween.tween_property(sprite, "modulate:a", 0.0, 2.0)
+		if point_light:
+			tween.parallel().tween_property(point_light, "energy", 0.0, 2.0)
+			tween.parallel().tween_property(point_light, "texture_scale", 0.0, 2.0)
 		await tween.finished
 	
 	if GameSignals.has_user_signal("game_over"):

@@ -1,0 +1,217 @@
+[gd_scene load_steps=4 format=3 uid="uid://bk716e8jbwk7u"]
+
+[ext_resource type="Texture2D" uid="uid://cbsq0hbkfoalx" path="res://Assets/Background/orig.png" id="1_h87vg"]
+[ext_resource type="Script" uid="uid://84f1s0bnev2p" path="res://Scenes/UI/credits.gd" id="1_q4iv0"]
+[ext_resource type="AudioStream" uid="uid://cktqfw4v0jb6w" path="res://Assets/audio/hover/video-game-gui-hovering-sound-417440 (mp3cut.net).mp3" id="5_1g7ho"]
+
+[node name="Credits" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_q4iv0")
+
+[node name="ColorRect" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_h87vg")
+
+[node name="ColorRect2" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -396.0
+offset_top = -179.0
+offset_right = 396.0
+offset_bottom = 183.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 3
+color = Color(0.19793725, 0.19793722, 0.19793722, 1)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -387.375
+offset_top = -153.0
+offset_right = 387.375
+offset_bottom = 153.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+
+[node name="GrupoContainer" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="TituloGrupo" type="Label" parent="VBoxContainer/GrupoContainer"]
+layout_mode = 2
+text = "GRUPO"
+horizontal_alignment = 1
+
+[node name="Integrante" type="HBoxContainer" parent="VBoxContainer/GrupoContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="Nome" type="Label" parent="VBoxContainer/GrupoContainer/Integrante"]
+layout_mode = 2
+text = "ISABELA COELHO OLIVEIRA"
+
+[node name="Matricula" type="Label" parent="VBoxContainer/GrupoContainer/Integrante"]
+layout_mode = 2
+text = "202365006AB"
+
+[node name="Integrante2" type="HBoxContainer" parent="VBoxContainer/GrupoContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="Nome" type="Label" parent="VBoxContainer/GrupoContainer/Integrante2"]
+layout_mode = 2
+text = "IGOR CORREA TRIFILIO CAMPOS"
+
+[node name="Matricula" type="Label" parent="VBoxContainer/GrupoContainer/Integrante2"]
+layout_mode = 2
+text = "202365092AB"
+
+[node name="AssetsContainer" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="TituloAssets" type="Label" parent="VBoxContainer/AssetsContainer"]
+layout_mode = 2
+text = "CREDITOS"
+horizontal_alignment = 1
+
+[node name="Asset2" type="HBoxContainer" parent="VBoxContainer/AssetsContainer"]
+layout_mode = 2
+
+[node name="Titulo" type="Label" parent="VBoxContainer/AssetsContainer/Asset2"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Pixel Art Top Down - Basic By Cainos"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Titulo2" type="Label" parent="VBoxContainer/AssetsContainer/Asset2"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Viking Village RPG Tileset by carbonova"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Asset3" type="HBoxContainer" parent="VBoxContainer/AssetsContainer"]
+layout_mode = 2
+
+[node name="Titulo" type="Label" parent="VBoxContainer/AssetsContainer/Asset3"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Gothic Pixel by osadam"
+horizontal_alignment = 1
+
+[node name="Titulo2" type="Label" parent="VBoxContainer/AssetsContainer/Asset3"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Aurusenthial Gothic Soft"
+horizontal_alignment = 1
+
+[node name="Asset4" type="HBoxContainer" parent="VBoxContainer/AssetsContainer"]
+layout_mode = 2
+
+[node name="Titulo" type="Label" parent="VBoxContainer/AssetsContainer/Asset4"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Side View Assets by alexs-assets"
+horizontal_alignment = 1
+
+[node name="Titulo2" type="Label" parent="VBoxContainer/AssetsContainer/Asset4"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Pixel Art Bush by manicpixeldreamgirl"
+horizontal_alignment = 1
+
+[node name="Asset5" type="HBoxContainer" parent="VBoxContainer/AssetsContainer"]
+layout_mode = 2
+
+[node name="Titulo" type="Label" parent="VBoxContainer/AssetsContainer/Asset5"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "ROHHSADOTCOM on pixaby"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Titulo2" type="Label" parent="VBoxContainer/AssetsContainer/Asset5"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "6 Wood Hit Sound Effects on Youtube"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Asset6" type="HBoxContainer" parent="VBoxContainer/AssetsContainer"]
+layout_mode = 2
+
+[node name="Titulo" type="Label" parent="VBoxContainer/AssetsContainer/Asset6"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Hit Tree 01 on pixaby"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Titulo2" type="Label" parent="VBoxContainer/AssetsContainer/Asset6"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Combat - swift punch on uppbeat"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Asset7" type="HBoxContainer" parent="VBoxContainer/AssetsContainer"]
+layout_mode = 2
+
+[node name="Titulo" type="Label" parent="VBoxContainer/AssetsContainer/Asset7"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Cold Summer Night by Urban Interlude"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label" type="Label" parent="VBoxContainer/AssetsContainer"]
+layout_mode = 2
+text = "Confira os links em: https://bit.ly/creditosspritessoundtracks"
+horizontal_alignment = 1
+
+[node name="BotoesContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+
+[node name="Voltar ao menu" type="Button" parent="VBoxContainer/BotoesContainer"]
+layout_mode = 2
+text = "BACK TO MENU"
+
+[node name="Start Game" type="Button" parent="VBoxContainer/BotoesContainer"]
+layout_mode = 2
+text = "START GAME"
+
+[node name="Quit" type="Button" parent="VBoxContainer/BotoesContainer"]
+layout_mode = 2
+text = "SAIR"
+
+[node name="AudioStreamPlayer2" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_1g7ho")
+
+[connection signal="mouse_entered" from="VBoxContainer/BotoesContainer/Voltar ao menu" to="." method="_on_voltar_ao_menu_mouse_entered"]
+[connection signal="pressed" from="VBoxContainer/BotoesContainer/Voltar ao menu" to="." method="_on_voltar_ao_menu_pressed"]
+[connection signal="mouse_entered" from="VBoxContainer/BotoesContainer/Start Game" to="." method="_on_start_game_mouse_entered"]
+[connection signal="pressed" from="VBoxContainer/BotoesContainer/Start Game" to="." method="_on_start_game_pressed"]
+[connection signal="mouse_entered" from="VBoxContainer/BotoesContainer/Quit" to="." method="_on_quit_mouse_entered"]
+[connection signal="pressed" from="VBoxContainer/BotoesContainer/Quit" to="." method="_on_quit_pressed"]

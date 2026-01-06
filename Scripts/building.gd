@@ -11,7 +11,7 @@ var building_resource: BuildingResource = null
 
 var is_constructed: bool = false
 var is_highlighted: bool = false
-var health: int = 100  # Adicione esta linha
+var health: int = 100  
 
 signal construction_completed
 signal building_destroyed
@@ -43,13 +43,9 @@ func _on_construction_timer_timeout():
 func apply_building_effects():
 	match building_resource.building_type:
 		"hut":
-			# Aumenta população máxima E atual
-			ResourceManager.max_population += 2
-			ResourceManager.current_population += 2
-			ResourceManager.population_changed.emit(ResourceManager.current_population)
+			ResourceManager.max_wood += 20
 			GameSignals.building_constructed.emit("Cabana")
-			print("População aumentada! Máxima: ", ResourceManager.max_population, ", Atual: ", ResourceManager.current_population)
-		
+			
 		"kitchen":
 			start_food_production()
 			GameSignals.building_constructed.emit("Cozinha")
@@ -57,7 +53,6 @@ func apply_building_effects():
 		"storage":
 			ResourceManager.max_wood += 100
 			GameSignals.building_constructed.emit("Depósito")
-			print("Capacidade de madeira aumentada para: ", ResourceManager.max_wood)
 		
 		"tower":
 			GameSignals.victory.emit("Torre de Vigia construída!")
@@ -66,13 +61,11 @@ func apply_building_effects():
 func start_food_production():
 	food_timer.timeout.connect(_produce_food)
 	food_timer.start()
-	print("Cozinha iniciou produção de comida!")
 
 func _produce_food():
 	if ResourceManager.food < ResourceManager.max_food:
-		var food_to_add = 5  # Produz 5aa comida a cada wait time do food_timer
+		var food_to_add = 5  # Produz 5 comida a cada wait time do food_timer
 		ResourceManager.add_food(food_to_add)
-		print("Cozinha produziu ", food_to_add, " de comida!")
 
 func take_damage(amount: int):
 	if not is_constructed:
@@ -101,9 +94,9 @@ func destroy():
 func remove_building_effects():
 	match building_resource.building_type:
 		"hut":
-			ResourceManager.max_population -= 2
-			ResourceManager.current_population = min(ResourceManager.current_population, ResourceManager.max_population)
-			ResourceManager.population_changed.emit(ResourceManager.current_population)
+			ResourceManager.max_wood -= 20
+			ResourceManager.wood = min(ResourceManager.wood, ResourceManager.max_wood)
+			ResourceManager.wood_changed.emit(ResourceManager.wood)
 		"storage":
 			ResourceManager.max_wood -= 100
 			ResourceManager.wood = min(ResourceManager.wood, ResourceManager.max_wood)

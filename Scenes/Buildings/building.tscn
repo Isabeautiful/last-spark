@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://wbsv3bpae7cu" path="res://Scripts/building.gd" id="1_3x4vu"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ocwl4"]
+size = Vector2(103, 98.5)
 
 [node name="Building" type="Area2D"]
 collision_layer = 16

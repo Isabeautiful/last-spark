@@ -22,19 +22,15 @@ func _ready():
 	spawn_timer.wait_time = base_spawn_interval
 	spawn_timer.timeout.connect(_on_spawn_timer_timeout)
 	add_child(spawn_timer)
-	
-	print("ShadowSpawner inicializado")
 
 func set_active(active: bool):
 	is_active = active
 	
 	if active:
 		spawn_timer.start()
-		print("Spawner ativado para a noite")
 	else:
 		spawn_timer.stop()
 		clear_all_shadows()
-		print("Spawner desativado")
 
 func set_day(day: int):
 	current_day = day
@@ -49,9 +45,6 @@ func update_difficulty(day: int):
 	
 	# Diminuir intervalo de spawn
 	spawn_timer.wait_time = max(0.3, base_spawn_interval - (day * 0.1))
-	
-	print("Dificuldade ajustada - Dia ", day, ": Max=", max_shadows, ", Interval=", spawn_timer.wait_time)
-
 func update_type_probabilities(day: int):
 	# Resetar probabilidades
 	type_probabilities = [1.0, 0.0, 0.0]
@@ -103,8 +96,6 @@ func spawn_shadow():
 			shadow.took_damage.connect(_on_shadow_took_damage)
 		
 		active_shadows.append(shadow)
-		
-		print("Sombra spawnada - Tipo: ", shadow_type)
 
 func _on_shadow_destroyed(shadow_node):
 	if active_shadows.has(shadow_node):

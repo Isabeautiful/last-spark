@@ -22,13 +22,11 @@ func _on_timer_timeout():
 		is_day = false
 		timer.wait_time = night_duration
 		emit_signal("night_started")
-		print("Noite iniciada")
 	else:
 		is_day = true
 		current_day += 1
 		timer.wait_time = day_duration
 		emit_signal("day_started", current_day)
-		print("Dia ", current_day, " iniciado")
 	
 	timer.start()
 

@@ -22,6 +22,8 @@ var max_coord: int
 var path_length: int
 var diagonal_length: int
 
+@onready var planting_system: PlantingSystem
+
 func _ready():
 	if not tilemap_layer:
 		return
@@ -29,17 +31,21 @@ func _ready():
 	if not tree_container:
 		return
 	
+	planting_system = get_tree().get_first_node_in_group("planting_system")
+	
+	if not planting_system:
+		planting_system = PlantingSystem.new()
+		planting_system.add_to_group("planting_system")
+		get_tree().root.add_child(planting_system)
+	
 	PoolManager.ensure_pool("tree")
 	PoolManager.ensure_pool("bush")
 	
 	calculate_derived_variables()
 	generate_ground_layer()
+	generate_map_borders()
 	place_resources()
 	place_central_path()
-	
-	print("=== MAPA GERADO ===")
-	print("Árvores: ", placed_trees.size())
-	print("Arbustos: ", placed_food.size())
 
 func calculate_derived_variables():
 	map_size = 2 * map_radius + 1
@@ -56,6 +62,37 @@ func generate_ground_layer():
 			if tile_pos.distance_to(map_center) < safe_zone_radius:
 				continue
 			tilemap_layer.set_cell(tile_pos, 0, Vector2i(0, 0), 0)
+
+func generate_map_borders():
+	var borders = []
+	var collision_shapes = []
+	
+	for i in range(4):
+		var staticBody = StaticBody2D.new()
+		var shapeInstance = CollisionShape2D.new()
+		var col = RectangleShape2D.new()
+		
+		shapeInstance.shape = col
+		staticBody.collision_layer = 2
+		staticBody.collision_mask = 1
+		
+		borders.push_back(staticBody)
+		collision_shapes.push_back(shapeInstance)
+		
+		borders[i].add_child(collision_shapes[i])
+	
+	borders[0].position = Vector2(0, map_radius * 16)
+	borders[1].position = Vector2(map_radius * 16, 0)
+	borders[2].position = Vector2(0, -map_radius * 16)
+	borders[3].position = Vector2(-map_radius * 16, 0)
+	
+	collision_shapes[0].scale = Vector2(map_radius * 16, 1.0)
+	collision_shapes[1].scale = Vector2(1.0, map_radius * 16)
+	collision_shapes[2].scale = Vector2(map_radius * 16, 1.0)
+	collision_shapes[3].scale = Vector2(1.0, map_radius * 16)
+	
+	for i in range(4):
+		add_child(borders[i])
 
 func place_central_path():
 	if not tilemap_layer:
@@ -103,11 +140,10 @@ func place_trees():
 	var target_count = int(base_tree_count * tree_density)
 	
 	for i in range(target_count):
-		var pos = find_valid_position(15, 25, false)
+		var pos = find_valid_position(30, 25, false)
 		if pos != Vector2.ZERO:
 			var tree = PoolManager.get_object("tree", pos)
 			if tree:
-				# VERIFICAÇÃO CRÍTICA: Não conectar se já estiver conectado
 				if not tree.harvested.is_connected(_on_tree_harvested):
 					tree.harvested.connect(_on_tree_harvested.bind(tree, pos))
 				
@@ -124,12 +160,10 @@ func place_food_resources():
 		if pos != Vector2.ZERO:
 			var bush = PoolManager.get_object("bush", pos)
 			if bush:
-				# VERIFICAÇÃO CRÍTICA: Não conectar se já estiver conectado
 				if not bush.harvested.is_connected(_on_bush_harvested):
 					bush.harvested.connect(_on_bush_harvested.bind(bush, pos))
 				
 				placed_food.append(bush)
-				print("Arbusto ", i, " colocado em ", pos, " (Visível: ", bush.visible, ")")
 
 func find_valid_position(min_distance_from_center: int, min_spacing: int, is_food: bool) -> Vector2:
 	var attempts = 0
@@ -178,54 +212,93 @@ func find_valid_position(min_distance_from_center: int, min_spacing: int, is_foo
 	return Vector2.ZERO
 
 func is_position_on_path(position: Vector2i) -> bool:
-	var atlas_coords = tilemap_layer.get_cell_atlas_coords(Vector2i(position.x,position.y))
+	var atlas_coords = tilemap_layer.get_cell_atlas_coords(Vector2i(position.x, position.y))
 	return atlas_coords == Vector2i(0, 8)
 
-# CORREÇÃO: Desconectar sinais antes de conectar novamente
 func _on_tree_harvested(amount: int, tree_node: Node, tree_pos: Vector2):
-	# Desconectar ANTES de qualquer coisa
 	if tree_node.harvested.is_connected(_on_tree_harvested):
 		tree_node.harvested.disconnect(_on_tree_harvested)
 	
 	GameSignals.resource_collected.emit("wood", amount, tree_pos)
 	placed_trees.erase(tree_node)
-	
-	await get_tree().create_timer(30.0).timeout
-	respawn_resource("tree", tree_pos)
 
 func _on_bush_harvested(amount: int, bush_node: Node, bush_pos: Vector2):
-	# Desconectar ANTES de qualquer coisa
+	# Desconectar sinais
 	if bush_node.harvested.is_connected(_on_bush_harvested):
 		bush_node.harvested.disconnect(_on_bush_harvested)
 	
 	GameSignals.resource_collected.emit("food", amount, bush_pos)
 	placed_food.erase(bush_node)
-	
-	await get_tree().create_timer(20.0).timeout
-	respawn_resource("bush", bush_pos)
 
-func respawn_resource(resource_type: String, position: Vector2):
+# Função para verificar se uma posicao e valida
+func is_planting_position_valid(position: Vector2, is_food: bool) -> bool:
+	# Converter para coordenadas de tile
 	var tile_x = int(round(position.x / 15))
 	var tile_y = int(round(position.y / 15))
 	var tile_pos = Vector2i(tile_x, tile_y)
 	
 	if is_position_on_path(tile_pos):
-		return
+		return false
 	
-	var resource = PoolManager.get_object(resource_type, position)
+	# Verificar distancia min da fogueira
+	if position.distance_to(Vector2.ZERO) < 100:
+		return false
+	
+	# Verificar distancia min de outros recursos
+	if is_food:
+		for bush in placed_food:
+			if bush.global_position.distance_to(position) < 25:
+				return false
+		
+		# Distância de arvores também
+		for tree in placed_trees:
+			if tree.global_position.distance_to(position) < 30:
+				return false
+	else:
+		for tree in placed_trees:
+			if tree.global_position.distance_to(position) < 30:
+				return false
+		
+		# Distância de arbustos também
+		for bush in placed_food:
+			if bush.global_position.distance_to(position) < 25:
+				return false
+	
+	return true
+
+# Função para verificar se pode plantar uma semente
+func can_plant_seed(seed_type: String, position: Vector2) -> bool:
+	return is_planting_position_valid(position, seed_type == "bush")
+
+# Função para o plantio inicial
+func plant_seed(seed_type: String, position: Vector2) -> bool:
+	# Verificar se e uma posição válida para plantar
+	if not can_plant_seed(seed_type, position):
+		return false
+	
+	var resource = PoolManager.get_object(seed_type, position)
 	if resource:
-		# VERIFICAÇÃO DUPLA: Desconectar qualquer conexão existente
+		# Desconectar qualquer conexao existente
 		if resource.harvested.is_connected(_on_tree_harvested):
 			resource.harvested.disconnect(_on_tree_harvested)
 		if resource.harvested.is_connected(_on_bush_harvested):
 			resource.harvested.disconnect(_on_bush_harvested)
 		
-		if resource_type == "tree":
+		if seed_type == "tree":
 			placed_trees.append(resource)
 			resource.harvested.connect(_on_tree_harvested.bind(resource, position))
+			return true
 		else:
 			placed_food.append(resource)
 			resource.harvested.connect(_on_bush_harvested.bind(resource, position))
+			return true
+	
+	return false
+
+func plant_seed_manual(seed_type: String, position: Vector2) -> bool:
+	if planting_system:
+		return planting_system.plant_seed_at_position(position)
+	return false
 
 func clear_placed_resources(resource_list: Array, pool_type: String):
 	for resource in resource_list:
@@ -237,3 +310,25 @@ func get_tree_count() -> int:
 
 func get_food_count() -> int:
 	return placed_food.size()
+
+func clear_loaded_elements():
+	clear_placed_resources(placed_trees, "tree")
+	clear_placed_resources(placed_food, "bush")
+	placed_food.clear()
+	placed_trees.clear()
+
+func add_plant_to_list(seed_type: String, plant: Node, position: Vector2):
+	match seed_type:
+		"tree":
+			if not plant in placed_trees:
+				placed_trees.append(plant)
+				if plant.harvested.is_connected(_on_tree_harvested):
+					plant.harvested.disconnect(_on_tree_harvested)
+				plant.harvested.connect(_on_tree_harvested.bind(plant, position))
+		
+		"bush":
+			if not plant in placed_food:
+				placed_food.append(plant)
+				if plant.harvested.is_connected(_on_bush_harvested):
+					plant.harvested.disconnect(_on_bush_harvested)
+				plant.harvested.connect(_on_bush_harvested.bind(plant, position))
